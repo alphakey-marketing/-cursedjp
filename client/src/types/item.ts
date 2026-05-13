@@ -1,4 +1,4 @@
-import { DamageType } from "./combat";
+import type { DamageType } from "./combat";
 
 export type ItemGrade = "Normal" | "Magic" | "Rare" | "Legendary" | "Unique" | "Holy";
 export type ItemSlot =

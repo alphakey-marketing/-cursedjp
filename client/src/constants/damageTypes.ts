@@ -1,4 +1,4 @@
-import { DamageType } from "../types/combat";
+import type { DamageType } from "../types/combat";
 
 export const DAMAGE_TYPES: DamageType[] = [
   "Physical",

@@ -1,7 +1,7 @@
-import { DamageType } from "./combat";
-import { ItemSlot, AnyItem } from "./item";
-import { EquippedSkillSlot, AnyRune } from "./rune";
-import { PassiveWebState } from "./passive";
+import type { DamageType } from "./combat";
+import type { ItemSlot, AnyItem } from "./item";
+import type { EquippedSkillSlot, AnyRune } from "./rune";
+import type { PassiveWebState } from "./passive";
 
 export interface CharacterStats {
   // Core attributes

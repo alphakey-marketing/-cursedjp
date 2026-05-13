@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { CharacterStats, PlayerCharacter } from "../types/character";
-import { ItemSlot, AnyItem } from "../types/item";
-import { EquippedSkillSlot } from "../types/rune";
+import type { CharacterStats, PlayerCharacter } from "../types/character";
+import type { ItemSlot, AnyItem } from "../types/item";
+import type { EquippedSkillSlot } from "../types/rune";
 import { DEFAULT_ELEMENTAL_RESISTANCES } from "../constants/damageTypes";
 
 const DEFAULT_STATS: CharacterStats = {

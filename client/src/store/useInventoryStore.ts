@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { AnyItem, ItemSlot } from "../types/item";
+import type { AnyItem, ItemSlot } from "../types/item";
 
 interface InventoryStore {
   equippedSlots: Partial<Record<ItemSlot, AnyItem>>;

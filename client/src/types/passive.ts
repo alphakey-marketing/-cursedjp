@@ -1,4 +1,4 @@
-import { CharacterStats } from "./character";
+import type { CharacterStats } from "./character";
 
 export type PassiveNodeType = "StatNode" | "Keystone" | "SkillCluster" | "NotableNode";
 

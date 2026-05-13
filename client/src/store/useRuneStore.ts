@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { AnyRune, SkillRune, EquippedSkillSlot } from "../types/rune";
+import type { AnyRune, SkillRune, EquippedSkillSlot } from "../types/rune";
 
 interface RuneStore {
   ownedRunes: AnyRune[];

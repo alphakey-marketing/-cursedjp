@@ -1,5 +1,5 @@
-import { DamageType, DeliveryMode } from "./combat";
-import { WeaponFamily } from "./item";
+import type { DamageType, DeliveryMode } from "./combat";
+import type { WeaponFamily } from "./item";
 
 export type RuneCategory = "Skill" | "Link" | "Support";
 
