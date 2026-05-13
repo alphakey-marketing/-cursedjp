@@ -28,7 +28,7 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
   const { equipDirectly, sellFromBag } = useItemEquip()
 
   const [collectedGold, setCollectedGold] = React.useState(false)
-  const [stakedItems, setStashedItems] = React.useState<Set<string>>(new Set())
+  const [stashedItems, setStashedItems] = React.useState<Set<string>>(new Set())
   const [soldItems, setSoldItems] = React.useState<Set<string>>(new Set())
   const [equippedItems, setEquippedItems] = React.useState<Set<string>>(new Set())
   const [errors, setErrors] = React.useState<Record<string, string>>({})
@@ -75,7 +75,7 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
 
   const pendingItems = drops.items.filter(
     (item) =>
-      !stakedItems.has(item.instanceId) &&
+      !stashedItems.has(item.instanceId) &&
       !soldItems.has(item.instanceId) &&
       !equippedItems.has(item.instanceId)
   )
@@ -186,7 +186,7 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {drops.items.map((item) => {
                 const isActedOn =
-                  stakedItems.has(item.instanceId) ||
+                  stashedItems.has(item.instanceId) ||
                   soldItems.has(item.instanceId) ||
                   equippedItems.has(item.instanceId)
                 return (
@@ -216,7 +216,7 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
                     {equippedItems.has(item.instanceId) && (
                       <div style={{ color: '#60a060', fontSize: 10, marginTop: 2 }}>✓ Equipped</div>
                     )}
-                    {stakedItems.has(item.instanceId) && (
+                    {stashedItems.has(item.instanceId) && (
                       <div style={{ color: '#6060a0', fontSize: 10, marginTop: 2 }}>
                         ✓ Added to bag
                       </div>
