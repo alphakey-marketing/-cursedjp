@@ -1,0 +1,942 @@
+# Cursed Japan ARPG — Combat Engine Pseudocode Spec v1.0
+
+> This document specifies the six-stage damage pipeline in TypeScript pseudocode,
+> with fully worked test vectors, sample TTK numbers, and implementation rules.
+> It is intended to be handed directly to a developer or used with GitHub Copilot
+> to implement `engine/combat/` from scratch.
+
+---
+
+## 1. Pipeline Overview
+
+Every hit — whether a player skill, an enemy attack, or a triggered effect — passes
+through exactly these six stages in order. No stage may be skipped except where
+explicitly flagged (e.g. DoT bypasses Stage 5 hit resolution).
+
+```
+Stage 1: BASE CONSTRUCTION
+  SkillCoef × SourceDamage + FlatDamage
+          ↓
+Stage 2: TYPE CONVERSION  (optional)
+  Split base into original type + converted portion
+          ↓
+Stage 3: OFFENSIVE SCALING
+  Apply additive bucket → then multiplicative bucket
+          ↓
+Stage 4: CRIT RESOLUTION
+  Apply crit expectation (simulation) or crit roll (real-time)
+          ↓
+Stage 5: HIT OUTCOME
+  Resolve miss / dodge → if failed, damage = 0, exit
+          ↓
+Stage 6: DEFENSE MITIGATION + APPLICATION
+  Armor → Elemental Resist → DamageTakenDecrease → Dampening
+  Apply to Barrier first, then HP
+```
+
+---
+
+## 2. TypeScript Pseudocode
+
+### `engine/combat/damageCalc.ts`
+
+```typescript
+import { DamagePacket, DefenseProfile, CombatResult, DoTInstance } from '../../types/combat';
+import { clamp, productOf, sumOf } from '../utils/mathHelpers';
+import { BALANCE } from '../../constants/gameBalance';
+
+// ─── MAIN ENTRY POINT ───────────────────────────────────────────────────────
+
+export function resolveDamage(
+  packet: DamagePacket,
+  defense: DefenseProfile,
+  random: () => number = Math.random   // injectable for deterministic tests
+): CombatResult {
+
+  // DoT path: skip stages 4 and 5
+  if (packet.isDoT) {
+    return resolveDoTDamage(packet, defense);
+  }
+
+  // Stage 1 — Base Construction
+  const base = buildBase(packet);
+
+  // Stage 2 — Type Conversion
+  const { primaryDmg, convertedDmg, convertedType } = convertDamage(base, packet);
+
+  // Stage 3 — Offensive Scaling (run once per damage portion)
+  const scaledPrimary    = scaleOffensive(primaryDmg,   packet);
+  const scaledConverted  = convertedDmg > 0
+    ? scaleOffensive(convertedDmg, packet)
+    : 0;
+
+  const scaledTotal = scaledPrimary + scaledConverted;
+
+  // Stage 4 — Crit Resolution
+  const { afterCrit, isCrit } = resolveCrit(scaledTotal, packet, random);
+
+  // Stage 5 — Hit Outcome
+  const hitResult = resolveHitOutcome(defense, random);
+  if (!hitResult.isHit) {
+    return buildMissResult(hitResult.isDodge);
+  }
+
+  // Stage 6 — Defense Mitigation
+  // Primary portion uses its own armor/resist bucket
+  const mitigatedPrimary = applyDefenses(
+    afterCrit * (scaledPrimary / scaledTotal),
+    packet.damageType,
+    defense
+  );
+  // Converted portion uses converted type's resist bucket
+  const mitigatedConverted = convertedDmg > 0
+    ? applyDefenses(
+        afterCrit * (scaledConverted / scaledTotal),
+        convertedType!,
+        defense
+      )
+    : 0;
+
+  const totalMitigated = mitigatedPrimary + mitigatedConverted;
+
+  // Apply to Barrier → HP
+  const { barrierDamage, hpDamage } = applyToResources(totalMitigated, defense, packet);
+
+  // Status procs (fire after damage is confirmed)
+  const statusProcs = resolveStatusProcs(packet, random);
+
+  // Lifesteal (% of damage dealt to HP)
+  const lifeStealAmount = hpDamage * (packet.lifeStealPercent ?? 0);
+
+  return {
+    missed:          false,
+    dodged:          false,
+    isCrit,
+    rawDamage:       afterCrit,
+    mitigatedDamage: totalMitigated,
+    barrierDamage,
+    hpDamage,
+    statusProcs,
+    lifeStealAmount,
+  };
+}
+
+
+// ─── STAGE 1: BASE CONSTRUCTION ─────────────────────────────────────────────
+
+function buildBase(packet: DamagePacket): number {
+  // Base = SkillCoef × SourceDamage + FlatDamage
+  return packet.skillCoef * packet.sourceDamage + (packet.flatDamage ?? 0);
+}
+
+
+// ─── STAGE 2: TYPE CONVERSION ────────────────────────────────────────────────
+
+function convertDamage(
+  base: number,
+  packet: DamagePacket
+): { primaryDmg: number; convertedDmg: number; convertedType?: DamageType } {
+  const conv = clamp(packet.conversionPercent ?? 0, 0, 1);
+  if (conv === 0 || !packet.convertToType) {
+    return { primaryDmg: base, convertedDmg: 0 };
+  }
+  return {
+    primaryDmg:    base * (1 - conv),
+    convertedDmg:  base * conv,
+    convertedType: packet.convertToType,
+  };
+}
+
+
+// ─── STAGE 3: OFFENSIVE SCALING ──────────────────────────────────────────────
+
+function scaleOffensive(damage: number, packet: DamagePacket): number {
+  // ADDITIVE bucket: all % increases sum first, then apply once
+  const additiveFactor = 1 + sumOf(packet.additiveIncreases);
+
+  // MULTIPLICATIVE bucket: each amplifier applies independently
+  const multiplicativeFactor = productOf(
+    packet.multiplicativeAmplifiers.map(a => 1 + a)
+  );
+
+  return damage * additiveFactor * multiplicativeFactor;
+}
+
+
+// ─── STAGE 4: CRIT RESOLUTION ────────────────────────────────────────────────
+
+function resolveCrit(
+  scaledDamage: number,
+  packet: DamagePacket,
+  random: () => number
+): { afterCrit: number; isCrit: boolean } {
+  const critChance = clamp(packet.critChance, 0, 1);
+  const critMulti  = clamp(1 + packet.critBonus, 1, BALANCE.CRIT_DAMAGE_CAP);
+
+  const isCrit = random() < critChance;
+  return {
+    afterCrit: isCrit ? scaledDamage * critMulti : scaledDamage,
+    isCrit,
+  };
+}
+
+
+// ─── STAGE 5: HIT OUTCOME ────────────────────────────────────────────────────
+
+function resolveHitOutcome(
+  defense: DefenseProfile,
+  random: () => number
+): { isHit: boolean; isDodge: boolean } {
+  const dodge = clamp(defense.dodgeChance, 0, 0.80); // hard cap dodge at 80%
+  if (random() < dodge) {
+    return { isHit: false, isDodge: true };
+  }
+  return { isHit: true, isDodge: false };
+}
+
+
+// ─── STAGE 6: DEFENSE MITIGATION ─────────────────────────────────────────────
+
+function applyDefenses(
+  damage: number,
+  damageType: DamageType,
+  defense: DefenseProfile
+): number {
+  let d = damage;
+
+  // Physical portion → Armor mitigation
+  if (damageType === 'Physical') {
+    const armorMit = clamp(defense.armor, 0, BALANCE.ARMOR_MITIGATION_CAP);
+    d *= (1 - armorMit);
+  }
+
+  // Elemental portion → Resistance mitigation
+  if (damageType !== 'Physical' && damageType !== 'Chaos') {
+    const resMit = clamp(
+      defense.elementalResistances[damageType] ?? 0,
+      0,
+      BALANCE.RESISTANCE_CAP
+    );
+    d *= (1 - resMit);
+  }
+
+  // Chaos / True damage: bypasses armor AND elemental resist entirely
+
+  // Additive DamageTaken decreases (e.g. Iron Skin skill, guard effects)
+  const dtFactor = 1 - clamp(sumOf(defense.damageTakenDecrease), 0, 0.80);
+  d *= dtFactor;
+
+  // Multiplicative dampening (boss nerfs, global modifiers)
+  d *= productOf(defense.dampening.map(x => 1 - x));
+
+  return Math.max(0, Math.floor(d));
+}
+
+
+// ─── STAGE 6 CONTINUED: APPLY TO RESOURCES ───────────────────────────────────
+
+function applyToResources(
+  damage: number,
+  defense: DefenseProfile,
+  packet: DamagePacket
+): { barrierDamage: number; hpDamage: number } {
+  // Some damage types bypass barrier (e.g. Bleed, Poison bypass shield)
+  if (packet.bypassShield || defense.currentBarrier <= 0) {
+    return { barrierDamage: 0, hpDamage: damage };
+  }
+
+  const barrierAbsorbed = Math.min(damage, defense.currentBarrier);
+  const remainder       = damage - barrierAbsorbed;
+  return { barrierDamage: barrierAbsorbed, hpDamage: remainder };
+}
+
+
+// ─── DOT PATH ────────────────────────────────────────────────────────────────
+
+function resolveDoTDamage(
+  packet: DamagePacket,
+  defense: DefenseProfile
+): CombatResult {
+  // DoT skips: Stage 4 (crit), Stage 5 (hit/dodge)
+  const base     = buildBase(packet);
+  const { primaryDmg } = convertDamage(base, packet);
+  const scaled   = scaleOffensive(primaryDmg, packet);
+
+  // DoT-specific defense (Bleed bypasses armor; Poison bypasses armor partially)
+  let mitigated = scaled;
+  if (!packet.bypassArmor) {
+    const armorMit = clamp(defense.armor, 0, BALANCE.ARMOR_MITIGATION_CAP);
+    mitigated *= (1 - armorMit);
+  }
+  if (packet.damageType !== 'Physical' && packet.damageType !== 'Chaos') {
+    const resMit = clamp(
+      defense.elementalResistances[packet.damageType] ?? 0,
+      0,
+      BALANCE.RESISTANCE_CAP
+    );
+    mitigated *= (1 - resMit);
+  }
+
+  const final = Math.max(0, Math.floor(mitigated));
+  const { barrierDamage, hpDamage } = applyToResources(final, defense, packet);
+
+  return {
+    missed: false, dodged: false, isCrit: false,
+    rawDamage: scaled, mitigatedDamage: final,
+    barrierDamage, hpDamage,
+    statusProcs: [], lifeStealAmount: 0,
+  };
+}
+
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+
+function resolveStatusProcs(
+  packet: DamagePacket,
+  random: () => number
+): StatusEffect[] {
+  const procs: StatusEffect[] = [];
+  if (!packet.statusProcChances) return procs;
+  for (const [status, chance] of Object.entries(packet.statusProcChances)) {
+    if (random() < (chance as number)) {
+      procs.push(status as StatusEffect);
+    }
+  }
+  return procs;
+}
+
+function buildMissResult(isDodge: boolean): CombatResult {
+  return {
+    missed: !isDodge, dodged: isDodge, isCrit: false,
+    rawDamage: 0, mitigatedDamage: 0,
+    barrierDamage: 0, hpDamage: 0,
+    statusProcs: [], lifeStealAmount: 0,
+  };
+}
+```
+
+---
+
+### `engine/utils/mathHelpers.ts`
+
+```typescript
+export const clamp = (val: number, min: number, max: number): number =>
+  Math.max(min, Math.min(max, val));
+
+export const sumOf = (arr: number[]): number =>
+  arr.reduce((acc, v) => acc + v, 0);
+
+export const productOf = (arr: number[]): number =>
+  arr.reduce((acc, v) => acc * v, 1);
+```
+
+---
+
+### `engine/combat/dotEngine.ts`
+
+```typescript
+import { DoTInstance, DefenseProfile, CombatResult } from '../../types/combat';
+import { resolveDamage } from './damageCalc';
+
+export interface ActiveDoT extends DoTInstance {
+  instanceId: string;
+}
+
+/**
+ * Called once per combat tick for every active DoT on a target.
+ * Returns the tick result and decrements ticksRemaining.
+ */
+export function tickDoT(
+  dot: ActiveDoT,
+  defense: DefenseProfile
+): { result: CombatResult; expired: boolean } {
+  const packet = {
+    skillId:                 dot.sourceSkillId,
+    skillCoef:               1.0,
+    sourceDamage:            dot.damagePerTick,
+    flatDamage:              0,
+    damageType:              dot.type,
+    deliveryMode:            'DoT' as const,
+    additiveIncreases:       [],
+    multiplicativeAmplifiers:[],
+    critChance:              0,
+    critBonus:               0,
+    isDoT:                   true,
+    bypassDodge:             true,
+    bypassArmor:             dot.bypassArmor,
+    bypassShield:            dot.bypassShield,
+  };
+
+  const result = resolveDamage(packet, defense);
+  dot.ticksRemaining -= 1;
+
+  return { result, expired: dot.ticksRemaining <= 0 };
+}
+
+/**
+ * Stacking rule: Poison stacks independently (multiple instances allowed).
+ * Bleed refreshes duration if new application is higher damage.
+ * Burn replaces if new application deals more per tick.
+ */
+export function applyDoT(
+  existing: ActiveDoT[],
+  incoming: ActiveDoT
+): ActiveDoT[] {
+  if (incoming.type === 'Poison') {
+    // Poison stacks — always add new instance
+    return [...existing, incoming];
+  }
+  const same = existing.filter(d => d.type === incoming.type);
+  const others = existing.filter(d => d.type !== incoming.type);
+  if (same.length === 0) return [...existing, incoming];
+
+  // Bleed / Burn: keep strongest instance, refresh ticks if new is stronger
+  const strongest = same.reduce((a, b) =>
+    a.damagePerTick >= b.damagePerTick ? a : b
+  );
+  if (incoming.damagePerTick >= strongest.damagePerTick) {
+    return [...others, incoming]; // replace with new (stronger) instance
+  }
+  return existing; // keep existing stronger DoT
+}
+```
+
+---
+
+## 3. Test Vectors
+
+All test vectors use a **deterministic random function** seeded to always return the same value, making
+results fully reproducible. The notation `random → 0.05` means the mock always returns 0.05.
+
+---
+
+### Test Vector 1 — Early Game: Basic Physical Strike (No Crit, No Special)
+
+**Setup:**
+```
+Player: Level 5 Katana build
+Skill:  Shadow Slash — SkillCoef 1.4, SourceDamage 38 (weapon mid-roll), FlatDamage 5
+No conversion, No additive bonuses, No multiplicative amplifiers
+CritChance 0.05, CritBonus 0.5
+random → 0.20  (no crit: 0.20 > 0.05)
+random → 0.10  (no dodge: enemy dodge = 0.08)
+
+Enemy: City Ronin
+Armor 0.15 (15% physical mitigation)
+ElementalResistances: all 0
+DodgeChance 0.08
+Barrier 0, HP 200
+DamageTakenDecrease [], Dampening []
+```
+
+**Stage-by-stage walkthrough:**
+```
+Stage 1 — Base:
+  Base = 1.4 × 38 + 5 = 53.2 + 5 = 58.2
+
+Stage 2 — Conversion:
+  No conversion → primaryDmg = 58.2, convertedDmg = 0
+
+Stage 3 — Offensive Scaling:
+  AdditiveFactor      = 1 + 0 = 1.0
+  MultiplicativeFactor = 1.0  (no amplifiers)
+  Scaled = 58.2 × 1.0 × 1.0 = 58.2
+
+Stage 4 — Crit:
+  random (0.20) >= critChance (0.05) → No crit
+  afterCrit = 58.2
+
+Stage 5 — Hit Outcome:
+  random (0.10) >= dodgeChance (0.08) → HIT
+
+Stage 6 — Defense:
+  Physical → ArmorMit = 0.15
+  d = 58.2 × (1 − 0.15) = 58.2 × 0.85 = 49.47
+  DamageTakenDecrease = none → ×1.0
+  Dampening = none → ×1.0
+  floor(49.47) = 49
+
+Application:
+  Barrier = 0 → all goes to HP
+  HP damage = 49
+```
+
+**Expected result:**
+```
+{ missed: false, dodged: false, isCrit: false,
+  rawDamage: 58, mitigatedDamage: 49,
+  barrierDamage: 0, hpDamage: 49,
+  statusProcs: [], lifeStealAmount: 0 }
+```
+
+---
+
+### Test Vector 2 — Mid Game: Fire Skill with Additive + Multiplicative + Crit
+
+**Setup:**
+```
+Player: Level 20 Staff build with Fire affixes
+Skill:  Flame Burst — SkillCoef 1.8, SourceDamage 75, FlatDamage 20
+ConversionPercent 0 (pure fire skill, no conversion needed)
+AdditiveIncreases [0.30, 0.15]  → +45% increased fire damage from gear/passives
+MultiplicativeAmplifiers [0.20] → ×1.20 from passive keystone
+CritChance 0.25, CritBonus 0.80
+random → 0.18  (CRIT: 0.18 < 0.25)
+random → 0.05  (no dodge: enemy dodge = 0.10, but 0.05 < 0.10 → DODGED?)
+
+Wait — 0.05 < 0.10 → DODGE. Let us adjust to make this a hit vector:
+random → 0.15  for hit outcome (0.15 >= 0.10 → HIT)
+
+Enemy: Forest Oni (Elite)
+Armor 0.20 (physical only — fire ignores this)
+ElementalResistances: { Fire: 0.25 }
+DodgeChance 0.10
+Barrier 300, HP 1200
+DamageTakenDecrease [], Dampening []
+```
+
+**Stage-by-stage walkthrough:**
+```
+Stage 1 — Base:
+  Base = 1.8 × 75 + 20 = 135 + 20 = 155.0
+
+Stage 2 — Conversion:
+  No conversion → primaryDmg = 155.0, convertedDmg = 0
+
+Stage 3 — Offensive Scaling:
+  AdditiveFactor      = 1 + (0.30 + 0.15) = 1 + 0.45 = 1.45
+  MultiplicativeFactor = 1.20
+  Scaled = 155.0 × 1.45 × 1.20 = 155.0 × 1.74 = 269.7
+
+Stage 4 — Crit:
+  random (0.18) < critChance (0.25) → CRIT!
+  critMulti = 1 + 0.80 = 1.80  (within CRIT_DAMAGE_CAP 4.0)
+  afterCrit = 269.7 × 1.80 = 485.46
+
+Stage 5 — Hit Outcome:
+  random (0.15) >= dodgeChance (0.10) → HIT
+
+Stage 6 — Defense:
+  Fire damage → skip armor, apply Fire resistance
+  FireResMit = 0.25
+  d = 485.46 × (1 − 0.25) = 485.46 × 0.75 = 364.1
+  DamageTakenDecrease = none, Dampening = none
+  floor(364.1) = 364
+
+Application:
+  Barrier = 300 → absorbs 300
+  Remainder to HP = 364 − 300 = 64
+```
+
+**Expected result:**
+```
+{ missed: false, dodged: false, isCrit: true,
+  rawDamage: 485, mitigatedDamage: 364,
+  barrierDamage: 300, hpDamage: 64,
+  statusProcs: [], lifeStealAmount: 0 }
+```
+
+---
+
+### Test Vector 3 — Dodge Outcome
+
+**Setup (same as Vector 2 but random dodge = 0.05):**
+```
+random for hit outcome → 0.05
+Enemy DodgeChance = 0.10
+0.05 < 0.10 → DODGED
+```
+
+**Expected result:**
+```
+{ missed: false, dodged: true, isCrit: false,
+  rawDamage: 0, mitigatedDamage: 0,
+  barrierDamage: 0, hpDamage: 0,
+  statusProcs: [], lifeStealAmount: 0 }
+```
+
+---
+
+### Test Vector 4 — Bleed DoT Tick (Bypasses Armor)
+
+**Setup:**
+```
+DoT instance: Bleed
+  damagePerTick: 30
+  bypassArmor: true
+  bypassShield: true  (Bleed ignores barrier)
+  type: 'Bleed'
+
+Enemy: City Guard
+  Armor 0.30
+  ElementalResistances: {} (Bleed is physical-typed but armor-bypassed)
+  DodgeChance irrelevant (DoT skips)
+  Barrier 150, HP 500
+  DamageTakenDecrease [0.10]  (10% damage reduction buff active)
+  Dampening []
+```
+
+**Stage-by-stage walkthrough:**
+```
+Stage 1 — Base:
+  Base = 1.0 × 30 + 0 = 30
+
+Stage 2 — Conversion: none
+
+Stage 3 — Scaling: no additives, no amplifiers
+  Scaled = 30
+
+Stage 4 — SKIPPED (DoT)
+
+Stage 5 — SKIPPED (DoT)
+
+Stage 6 — Defense:
+  bypassArmor = true → skip armor
+  Bleed is Physical type but armor-bypassed → skip resist too
+  DamageTakenDecrease [0.10]:
+    dtFactor = 1 − 0.10 = 0.90
+  d = 30 × 0.90 = 27.0
+  Dampening = none
+  floor(27.0) = 27
+
+Application:
+  bypassShield = true → goes directly to HP
+  HP damage = 27
+```
+
+**Expected result:**
+```
+{ missed: false, dodged: false, isCrit: false,
+  rawDamage: 30, mitigatedDamage: 27,
+  barrierDamage: 0, hpDamage: 27,
+  statusProcs: [], lifeStealAmount: 0 }
+```
+
+---
+
+### Test Vector 5 — Partial Type Conversion (Physical → Fire)
+
+**Setup:**
+```
+Skill: Infused Slash
+  SkillCoef 1.5, SourceDamage 60, FlatDamage 0
+  ConversionPercent 0.50  (50% converted to Fire)
+  ConvertToType: 'Fire'
+  AdditiveIncreases [0.20]  (+20% increased damage — applies to BOTH portions)
+  MultiplicativeAmplifiers []
+  CritChance 0.10, CritBonus 0.50
+  random → 0.50  (no crit)
+  random → 0.30  (hit: enemy dodge 0.10)
+
+Enemy: Armored Samurai
+  Armor 0.35 (high physical mitigation)
+  ElementalResistances: { Fire: 0.10 }
+  DodgeChance 0.10
+  Barrier 0, HP 800
+  DamageTakenDecrease [], Dampening []
+```
+
+**Stage-by-stage walkthrough:**
+```
+Stage 1 — Base:
+  Base = 1.5 × 60 + 0 = 90.0
+
+Stage 2 — Conversion:
+  primaryDmg (Physical) = 90 × (1 − 0.50) = 45.0
+  convertedDmg (Fire)   = 90 × 0.50       = 45.0
+
+Stage 3 — Scale each portion:
+  AdditiveFactor = 1 + 0.20 = 1.20
+  scaledPrimary    = 45.0 × 1.20 = 54.0
+  scaledConverted  = 45.0 × 1.20 = 54.0
+  scaledTotal = 54.0 + 54.0 = 108.0
+
+Stage 4 — Crit (applied to total):
+  random (0.50) >= 0.10 → No crit
+  afterCrit = 108.0
+
+Stage 5 — Hit:
+  random (0.30) >= 0.10 → HIT
+
+Stage 6 — Defense per portion (proportional split):
+  Physical portion share = 54/108 = 0.50 → afterCrit × 0.50 = 54.0
+    ArmorMit (Physical) = 0.35
+    d_phys = 54.0 × (1 − 0.35) = 54.0 × 0.65 = 35.1
+
+  Fire portion share = 54/108 = 0.50 → afterCrit × 0.50 = 54.0
+    FireResMit = 0.10
+    d_fire = 54.0 × (1 − 0.10) = 54.0 × 0.90 = 48.6
+
+  totalMitigated = floor(35.1) + floor(48.6) = 35 + 48 = 83
+
+Application:
+  Barrier = 0 → all to HP
+  HP damage = 83
+```
+
+**Expected result:**
+```
+{ missed: false, dodged: false, isCrit: false,
+  rawDamage: 108, mitigatedDamage: 83,
+  barrierDamage: 0, hpDamage: 83,
+  statusProcs: [], lifeStealAmount: 0 }
+```
+*Note: Pure physical (no conversion) same weapon would deal floor(108 × 0.65) = 70 to HP.
+Converting 50% to Fire vs a fire-weak enemy gives 83 — a 18% damage gain confirming
+conversion is meaningful vs high-armor enemies.*
+
+---
+
+## 4. TTK Sample Numbers
+
+TTK (Time to Kill) is the number of seconds needed for a player to kill a target at the designed power level.
+These numbers are **tuning targets**, not hard-coded values. Adjust `baseHP` on enemies and
+`baseDamage` scaling tables to keep actual TTK within these ranges.
+
+### Player reference loadout
+
+| Stat | Early (Lv.5) | Mid (Lv.20) | Late (Lv.40) | Boss Fight |
+|---|---|---|---|---|
+| Base weapon dmg (avg) | 35 | 85 | 200 | 200 |
+| Skill coef | 1.4 | 1.6 | 1.8 | 1.8 |
+| Additive total | 0% | +45% | +90% | +90% |
+| Multiplicative total | ×1.0 | ×1.20 | ×1.40 | ×1.40 |
+| Crit chance | 5% | 20% | 35% | 35% |
+| Crit bonus | 50% | 75% | 100% | 100% |
+| Base attack / sec | 1.0 | 1.2 | 1.5 | 1.5 |
+
+**Formula for expected DPS:**
+```
+SkillDmg   = SkillCoef × WeaponDmgAvg × (1 + AdditiveTotal) × MultiplicativeTotal
+CritFactor = (1 − CritChance) + CritChance × (1 + CritBonus)
+SkillDPS   = SkillDmg × CritFactor × AttacksPerSec × (1 − EnemyPhysicalMitigation)
+```
+
+### TTK targets by game phase
+
+| Phase | Enemy HP | Expected DPS | Target TTK | Acceptable TTK range |
+|---|---|---|---|---|
+| Early game (Lv.5) | 120–300 | ~50 | 3–5 s | 2–7 s |
+| Mid game (Lv.20) | 800–1,800 | ~250 | 5–8 s | 4–10 s |
+| Late game (Lv.40) | 5,000–12,000 | ~900 | 8–14 s | 6–18 s |
+| Boss fights | 8,000–50,000 | ~900 | 20–40 s | 15–60 s |
+| Idle auto-farm (common mob) | 150–400 | ~50 | 2–3 s | 1–5 s |
+
+*Idle auto-farm TTK deliberately faster than active play TTK — the player feels strong while farming.*
+
+---
+
+### Worked TTK examples
+
+#### Example A — Early Game: Shadow Slash vs City Ronin (Lv.5)
+
+```
+SkillDmg   = 1.4 × 36 × (1 + 0) × 1.0 = 50.4
+CritFactor = (1 − 0.05) + 0.05 × (1 + 0.5) = 0.95 + 0.075 = 1.025
+SkillDPS   = 50.4 × 1.025 × 1.0 × (1 − 0.15) = 50.4 × 1.025 × 0.85 = 43.9
+
+City Ronin HP = 200
+TTK = 200 / 43.9 = 4.6 seconds ✅  (within 2–7s target)
+```
+
+#### Example B — Mid Game: Flame Burst vs Elite Oni (Lv.20)
+
+```
+SkillDmg   = 1.8 × 75 × (1 + 0.45) × 1.20 = 135 × 1.45 × 1.20 = 235.1
+CritFactor = (1 − 0.25) + 0.25 × (1 + 0.80) = 0.75 + 0.45 = 1.20
+FireMitigation (Elite Oni) = 0.25
+SkillDPS   = 235.1 × 1.20 × 1.0 attacks/s × (1 − 0.25) = 235.1 × 1.20 × 0.75 = 211.6
+
+Elite Oni HP = 1,200
+TTK = 1200 / 211.6 = 5.7 seconds ✅  (within 4–10s target)
+```
+
+#### Example C — Boss Fight: Oni War General (Lv.15 Boss, Player Lv.20)
+
+```
+Player DPS: ~250 (from above calculation, adjusted for boss armor 0.20 physical)
+Effective DPS vs Boss Physical = 250 × (1 − 0.20) = 200
+
+Boss HP: 8,000 (Phase 1 only, no phase boost)
+TTK Phase 1 = 8000 / 200 = 40 seconds ✅  (within 15–60s target)
+
+Phase 2 (50% HP, enrage +40% boss attack speed — player takes more damage, forced to use guard):
+  Boss Phase 2 HP = 4,000
+  Player DPS unchanged (DPS is about player output, not boss aggression)
+  TTK Phase 2 = 4000 / 200 = 20 more seconds
+  Total boss encounter = ~60 seconds for underpowered player, ~30s for on-level player ✅
+```
+
+#### Example D — Idle Auto-Farm: Common Mob (Player Lv.20)
+
+```
+Auto-attack (SkillCoef 1.0, basic hit): SkillDmg = 1.0 × 85 × 1.45 × 1.20 = 147.9
+CritFactor = 1.20
+EnemyArmor = 0.12 (common mob, lighter armor)
+DPS = 147.9 × 1.20 × 1.5 attacks/s × (1 − 0.12) = 147.9 × 1.20 × 1.5 × 0.88 = 234.7
+
+Common Mob HP = 250 (mid-game common mob)
+TTK = 250 / 234.7 = 1.1 seconds  (feels fast, appropriately overpowered for idle) ✅
+```
+
+---
+
+## 5. Balance Guardrails
+
+Derived from the TTK analysis above, these guardrails prevent the pipeline from producing runaway numbers.
+
+```typescript
+// constants/gameBalance.ts
+export const BALANCE = {
+  // Pipeline caps
+  CRIT_DAMAGE_CAP:          4.0,    // max (1 + CritBonus): floor at 4x crit
+  ARMOR_MITIGATION_CAP:     0.85,   // 85% max physical damage reduction
+  RESISTANCE_CAP:           0.80,   // 80% max elemental damage reduction
+  DODGE_CAP:                0.80,   // 80% max dodge chance
+  DAMAGE_TAKEN_DEC_CAP:     0.80,   // 80% max additive DT reduction
+  MAX_ADDITIVE_TOTAL:       4.0,    // clamp additive bucket if > 400% increase
+  MAX_MULTIPLICATIVE_TOTAL: 10.0,   // clamp product if > 10× amplification
+
+  // TTK targets (seconds)
+  TTK_TARGETS: {
+    earlyGame_common: { min: 2, max: 7 },
+    midGame_elite:    { min: 4, max: 10 },
+    lateGame_rare:    { min: 6, max: 18 },
+    boss:             { min: 15, max: 60 },
+    idleFarm_common:  { min: 1, max: 5 },
+  },
+
+  // Offline accrual
+  MAX_OFFLINE_SECONDS:  8 * 60 * 60,  // 8 hour cap
+  BASE_EXP_RATE:        12,            // exp per second per level in normal zone
+
+  // Item drops
+  BOSS_SIGNATURE_RUNE_RATE: 0.04,   // 4%
+  BOSS_UNIQUE_RATE:          0.01,   // 1%
+} as const;
+```
+
+### Tuning workflow (recommended cycle)
+
+```
+1. Set base enemy HP to hit TTK_TARGET.min at average player gear for the zone.
+2. Verify TTK_TARGET.max is not exceeded with max-roll gear for the zone.
+3. If player power exceeds TTK_TARGET.max → reduce enemy HP, not player damage.
+4. If boss fight is too short → increase boss HP, add a second phase.
+5. If idle auto-farm is too slow → lower common mob HP, not raise player DPS.
+   (Raising player DPS also breaks boss TTK — always tune via mob HP first.)
+6. Recheck after every new passive keystone or unique item is added to the game.
+```
+
+---
+
+## 6. Unit Test Scaffold
+
+```typescript
+// engine/combat/__tests__/damageCalc.test.ts
+
+import { resolveDamage } from '../damageCalc';
+import { DamagePacket, DefenseProfile } from '../../../types/combat';
+
+// Deterministic random factories
+const alwaysReturn = (val: number) => () => val;
+const noCrit   = alwaysReturn(0.99);
+const yesCrit  = alwaysReturn(0.01);
+const yesHit   = alwaysReturn(0.99);
+const yesDodge = alwaysReturn(0.01);
+
+const baseDefense: DefenseProfile = {
+  armor: 0.15,
+  elementalResistances: { Physical:0, Fire:0.25, Cold:0, Lightning:0, Poison:0, Bleed:0, Holy:0, Chaos:0 },
+  dodgeChance: 0.08,
+  barrierCurrent: 0,
+  barrierMax: 0,
+  hpCurrent: 200,
+  hpMax: 200,
+  damageTakenDecrease: [],
+  dampening: [],
+};
+
+const basePacket: DamagePacket = {
+  skillId:                 'test_slash',
+  skillCoef:               1.4,
+  sourceDamage:            38,
+  flatDamage:              5,
+  damageType:              'Physical',
+  deliveryMode:            'Strike',
+  conversionPercent:       0,
+  additiveIncreases:       [],
+  multiplicativeAmplifiers:[],
+  critChance:              0.05,
+  critBonus:               0.50,
+  isDoT:                   false,
+  bypassDodge:             false,
+  bypassArmor:             false,
+  bypassShield:            false,
+};
+
+describe('Stage 1-6: Basic physical strike', () => {
+  it('Vector 1 — no crit, hit, physical mitigation', () => {
+    const mockRandom = (() => {
+      const vals = [0.20, 0.10]; let i = 0;
+      return () => vals[i++];
+    })();
+    const result = resolveDamage(basePacket, baseDefense, mockRandom);
+    expect(result.hpDamage).toBe(49);
+    expect(result.isCrit).toBe(false);
+    expect(result.dodged).toBe(false);
+  });
+
+  it('Vector 3 — dodge', () => {
+    const mockRandom = (() => {
+      const vals = [0.20, 0.05]; let i = 0;
+      return () => vals[i++];
+    })();
+    const result = resolveDamage(basePacket, baseDefense, mockRandom);
+    expect(result.dodged).toBe(true);
+    expect(result.hpDamage).toBe(0);
+  });
+});
+
+describe('DoT path', () => {
+  it('Vector 4 — Bleed bypasses armor and barrier', () => {
+    const bleedPacket: DamagePacket = {
+      ...basePacket,
+      sourceDamage: 30,
+      skillCoef: 1.0,
+      flatDamage: 0,
+      damageType: 'Bleed',
+      deliveryMode: 'DoT',
+      isDoT: true,
+      bypassArmor: true,
+      bypassShield: true,
+    };
+    const bleedDefense = {
+      ...baseDefense,
+      barrierCurrent: 150,
+      damageTakenDecrease: [0.10],
+    };
+    const result = resolveDamage(bleedPacket, bleedDefense);
+    expect(result.hpDamage).toBe(27);
+    expect(result.barrierDamage).toBe(0);
+  });
+});
+```
+
+---
+
+## 7. Developer Implementation Checklist
+
+```
+[ ] Implement mathHelpers.ts (clamp, sumOf, productOf)
+[ ] Implement damageCalc.ts — all 6 stages with DoT branch
+[ ] Implement dotEngine.ts — tick, stacking rules
+[ ] Implement statusEffects.ts — proc application and duration tracking
+[ ] Implement hitResolution.ts — extracted from Stage 5 (for reuse)
+[ ] Implement defenseCalc.ts — extracted Stage 6 (for reuse in enemy attacks)
+[ ] Wire unit tests for all 5 test vectors
+[ ] Verify TTK matches targets for: early mob, mid elite, boss Phase 1, idle auto
+[ ] Add BALANCE constants file and import into damageCalc
+[ ] Connect damageCalc output to Phaser EventBus (emit COMBAT_TICK with result)
+[ ] Connect damageCalc output to Zustand usePlayerStore (apply hpDamage)
+```
