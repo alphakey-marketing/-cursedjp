@@ -203,16 +203,11 @@ export const PassiveWebScreen: React.FC<PassiveWebScreenProps> = ({ onClose }) =
 
           {selectedNode.stats && Object.keys(selectedNode.stats).length > 0 && (
             <div style={{ fontSize: 12, color: '#b0a080', marginBottom: 6 }}>
-              {Object.entries(selectedNode.stats).map(([k, v]) => {
-                const displayVal = typeof v === 'number'
-                  ? (v < 1 && v > 0 ? `${(v * 100).toFixed(0)}%` : String(v))
-                  : JSON.stringify(v)
-                return (
-                  <span key={k} style={{ marginRight: 12 }}>
-                    +{displayVal} {k}
-                  </span>
-                )
-              })}
+              {Object.entries(selectedNode.stats).map(([k, v]) => (
+                <span key={k} style={{ marginRight: 12 }}>
+                  +{formatStatValue(v)} {k}
+                </span>
+              ))}
             </div>
           )}
 
@@ -263,16 +258,11 @@ export const PassiveWebScreen: React.FC<PassiveWebScreenProps> = ({ onClose }) =
           }}
         >
           <span style={{ color: '#7a7a8a', marginRight: 8 }}>Passive bonuses:</span>
-          {Object.entries(passiveTotals).map(([k, v]) => {
-            const displayVal = typeof v === 'number'
-              ? (v < 1 && v > 0 ? `${(v * 100).toFixed(0)}%` : String(v))
-              : JSON.stringify(v)
-            return (
-              <span key={k} style={{ marginRight: 10, color: '#a0c080' }}>
-                +{displayVal} {k}
-              </span>
-            )
-          })}
+          {Object.entries(passiveTotals).map(([k, v]) => (
+            <span key={k} style={{ marginRight: 10, color: '#a0c080' }}>
+              +{formatStatValue(v)} {k}
+            </span>
+          ))}
           <span style={{ marginLeft: 8, color: '#555' }}>
             (Lv.{character.stats.level})
           </span>
@@ -292,4 +282,9 @@ function btnStyle(bg: string): React.CSSProperties {
     cursor: 'pointer',
     fontSize: 12,
   }
+}
+
+function formatStatValue(value: unknown): string {
+  if (typeof value !== 'number') return JSON.stringify(value)
+  return value < 1 && value > 0 ? `${(value * 100).toFixed(0)}%` : String(value)
 }

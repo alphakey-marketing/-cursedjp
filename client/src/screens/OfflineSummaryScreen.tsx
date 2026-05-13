@@ -1,7 +1,6 @@
 import React from 'react'
 import { useOfflineStore } from '../store/useOfflineStore'
 import { usePlayerStore } from '../store/usePlayerStore'
-import { useInventoryStore } from '../store/useInventoryStore'
 
 interface OfflineSummaryScreenProps {
   onCollect: () => void
@@ -28,7 +27,6 @@ export const OfflineSummaryScreen: React.FC<OfflineSummaryScreenProps> = ({ onCo
   const gainExp = usePlayerStore((s) => s.gainExp)
   const addGold = usePlayerStore((s) => s.addGold)
   const character = usePlayerStore((s) => s.character)
-  const addToBag = useInventoryStore((s) => s.addToBag)
 
   if (!hasPendingGains) return null
 
@@ -54,9 +52,7 @@ export const OfflineSummaryScreen: React.FC<OfflineSummaryScreenProps> = ({ onCo
     if (pendingGold > 0) {
       addGold(pendingGold)
     }
-    // Materials would go to inventory — for now just acknowledge them
-    // (material items would need item templates; for now skip bag add to avoid type errors)
-    void addToBag // referenced to avoid unused-import warning
+    // TODO: Apply non-gold materials to inventory once material item templates are defined
     clearPendingGains()
     onCollect()
   }
@@ -192,7 +188,7 @@ export const OfflineSummaryScreen: React.FC<OfflineSummaryScreenProps> = ({ onCo
             fontWeight: 'bold',
           }}
         >
-          ✅ Collect &amp; Continue
+          ✅ Collect & Continue
         </button>
       </div>
     </div>

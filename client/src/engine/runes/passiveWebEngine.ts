@@ -79,7 +79,8 @@ export function sumPassiveStats(
     const node = allNodes.find((n) => n.id === nodeId)
     if (!node?.stats) continue
 
-    for (const [key, value] of Object.entries(node.stats) as [keyof CharacterStats, number][]) {
+    for (const [key, value] of Object.entries(node.stats) as [keyof CharacterStats, unknown][]) {
+      if (typeof value !== 'number') continue
       const current = (totals[key] as number | undefined) ?? 0
       ;(totals as Record<string, number>)[key] = current + value
     }
