@@ -1,10 +1,15 @@
 import { useState } from 'react'
 import { usePlayerStore } from './store/usePlayerStore'
-import { useMapStore } from './store/useMapStore'
+import { useOfflineStore } from './store/useOfflineStore'
 import { WorldMapScreen } from './screens/WorldMapScreen'
 import { BattleScreen } from './screens/BattleScreen'
 import { ResultScreen } from './screens/ResultScreen'
 import { InventoryScreen } from './screens/InventoryScreen'
+import { RuneScreen } from './screens/RuneScreen'
+import { PassiveWebScreen } from './screens/PassiveWebScreen'
+import { ShrineScreen } from './screens/ShrineScreen'
+import { OfflineSummaryScreen } from './screens/OfflineSummaryScreen'
+import { useOfflineAccrual } from './hooks/useOfflineAccrual'
 import { resolveDrops } from './engine/items/dropResolver'
 import type { BattleEndResult } from './hooks/useCombatLoop'
 import type { DropResult } from './engine/items/dropResolver'
@@ -17,9 +22,13 @@ function App() {
   const [battleNodeId, setBattleNodeId] = useState<string>('')
   const [lastBattleResult, setLastBattleResult] = useState<BattleEndResult | null>(null)
   const [lastDrops, setLastDrops] = useState<DropResult | null>(null)
+  const [showShrine, setShowShrine] = useState(false)
 
   const character = usePlayerStore((s) => s.character)
-  const { currentNodeId } = useMapStore()
+  const { hasPendingGains } = useOfflineStore()
+
+  // Run offline accrual check on mount
+  useOfflineAccrual()
 
   const handleFight = (nodeId: string) => {
     setBattleNodeId(nodeId)
@@ -97,7 +106,11 @@ function App() {
       {/* ── Screen Router ── */}
 
       {screen === 'map' && (
-        <WorldMapScreen onFight={handleFight} onBossInfo={handleBossInfo} />
+        <WorldMapScreen
+          onFight={handleFight}
+          onBossInfo={handleBossInfo}
+          onShrineVisit={() => setShowShrine(true)}
+        />
       )}
 
       {screen === 'battle' && battleNodeId && (
@@ -123,61 +136,24 @@ function App() {
       )}
 
       {screen === 'runes' && (
-        <div>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-              marginBottom: 12,
-              borderBottom: '1px solid #444',
-              paddingBottom: 8,
-            }}
-          >
-            <button style={backBtnStyle()} onClick={() => setScreen('map')}>
-              ◀ Back
-            </button>
-            <span style={{ fontWeight: 'bold', color: '#f0c060' }}>RUNE CONFIGURATION</span>
-          </div>
-          <p style={{ color: '#888' }}>
-            Rune Screen — Milestone 6 (coming soon)
-          </p>
-          <p style={{ color: '#666', fontSize: 12 }}>
-            Owned runes: {character.runeInventory.length}
-          </p>
-        </div>
+        <RuneScreen onClose={() => setScreen('map')} />
       )}
 
       {screen === 'passive' && (
-        <div>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-              marginBottom: 12,
-              borderBottom: '1px solid #444',
-              paddingBottom: 8,
-            }}
-          >
-            <button style={backBtnStyle()} onClick={() => setScreen('map')}>
-              ◀ Back
-            </button>
-            <span style={{ fontWeight: 'bold', color: '#f0c060' }}>PASSIVE WEB</span>
-          </div>
-          <p style={{ color: '#888' }}>
-            Passive Web — Milestone 7 (coming soon)
-          </p>
-          <p style={{ color: '#aaa', fontSize: 12 }}>
-            Points available: {character.passiveWeb.totalPointsAvailable}
-          </p>
-          <p style={{ color: '#aaa', fontSize: 12 }}>
-            Points spent: {character.passiveWeb.totalPointsSpent}
-          </p>
-          <p style={{ color: '#aaa', fontSize: 12 }}>
-            Node: {currentNodeId}
-          </p>
-        </div>
+        <PassiveWebScreen onClose={() => setScreen('map')} />
+      )}
+
+      {/* Shrine modal overlay */}
+      {showShrine && (
+        <ShrineScreen
+          onReturnToMap={() => setShowShrine(false)}
+          onClose={() => setShowShrine(false)}
+        />
+      )}
+
+      {/* Offline Summary modal — shown on app load if gains exist */}
+      {hasPendingGains && !showShrine && (
+        <OfflineSummaryScreen onCollect={() => setScreen('map')} />
       )}
     </div>
   )
@@ -189,18 +165,6 @@ function navBtnStyle(active: boolean): React.CSSProperties {
     border: active ? '1px solid #806040' : '1px solid #444',
     color: active ? '#f0c060' : '#c0b090',
     padding: '4px 10px',
-    borderRadius: 3,
-    cursor: 'pointer',
-    fontSize: 12,
-  }
-}
-
-function backBtnStyle(): React.CSSProperties {
-  return {
-    background: '#2a2010',
-    border: '1px solid #555',
-    color: '#e0d5c0',
-    padding: '4px 12px',
     borderRadius: 3,
     cursor: 'pointer',
     fontSize: 12,

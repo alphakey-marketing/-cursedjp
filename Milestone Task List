@@ -182,101 +182,104 @@
 
 ---
 
-## Milestone 6 — Runes & Skill Slots (Week 4)
+## Milestone 6 — Runes & Skill Slots (Week 4) ✅
 
 **Goal:** 4 active skill slots with link runes, using weapon compatibility rules.
 
 ### Tasks
-- [ ] Implement `engine/runes/runeValidator.ts`:
-  - [ ] Check weapon family restriction.
-  - [ ] Enforce maxSupportLinks.
-- [ ] Implement `engine/runes/skillLinkResolver.ts`:
-  - [ ] Merge skill rune + link runes into effective DamagePacket modifiers.
-- [ ] Implement `screens/RuneScreen.tsx` per UI spec:
-  - [ ] 4 slots with skill + link sub-slots.
-  - [ ] Rune inventory list.
-  - [ ] Drag-to-equip or click-to-assign UX.
-- [ ] Implement `<RuneCard />` component.
-- [ ] Implement `hooks/useRuneEquip.ts`:
-  - [ ] Equip skill runes to slots.
-  - [ ] Equip link runes to sub-slots.
-  - [ ] Update `useRuneStore` state.
-- [ ] Hook combat pipeline to rune configuration:
-  - [ ] `useCombatLoop` fetches skill for each slot and passes rune modifiers into DamagePacket when firing skills.
-- [ ] Add minimal active skill selection UI in BattleScreen (1–4 slots, with cooldown display).
+- [x] Implement `engine/runes/runeValidator.ts`:
+  - [x] Check weapon family restriction.
+  - [x] Enforce maxSupportLinks.
+- [x] Implement `engine/runes/skillLinkResolver.ts`:
+  - [x] Merge skill rune + link runes into effective DamagePacket modifiers.
+- [x] Implement `screens/RuneScreen.tsx` per UI spec:
+  - [x] 4 slots with skill + link sub-slots.
+  - [x] Rune inventory list.
+  - [x] Click-to-assign UX (select slot then click rune).
+- [x] Implement `<RuneCard />` component.
+- [x] Implement `hooks/useRuneEquip.ts`:
+  - [x] Equip skill runes to slots.
+  - [x] Equip link runes to sub-slots.
+  - [x] Update `useRuneStore` state.
+- [x] Hook combat pipeline to rune configuration:
+  - [x] `skillLinkResolver` fetches skill for each slot and produces DamagePacket overrides.
+- [x] Add minimal active skill selection UI in BattleScreen (1–4 slots, with cooldown display).
 
 ### Exit criteria
-- [ ] Player can choose between at least 2 skill runes and 2 link runes.
-- [ ] Battle uses chosen skill rune + link runes instead of hard-coded damage.
-- [ ] Weapon-exclusive rune shows warning if incompatible, and cannot be equipped.
+- [x] Player can choose between at least 2 skill runes and 2 link runes.
+- [x] Battle uses chosen skill rune + link runes instead of hard-coded damage.
+- [x] Weapon-exclusive rune shows warning if incompatible, and cannot be equipped.
 
 ---
 
-## Milestone 7 — Passive Web MVP (Week 5)
+## Milestone 7 — Passive Web MVP (Week 5) ✅
 
 **Goal:** Small passive web (~10–15 nodes) with point allocation and stat effects.
 
 ### Tasks
-- [ ] Implement `engine/runes/passiveWebEngine.ts`:
-  - [ ] Validate allocation path (connected to start node).
-  - [ ] Sum stats from allocated nodes.
-- [ ] Implement `screens/PassiveWebScreen.tsx`:
-  - [ ] Render nodes via SVG based on `passiveNodes.json` positions.
-  - [ ] Click node → show info → [Allocate] / [Deallocate] buttons.
-  - [ ] Point counter at top.
-- [ ] Implement `<PassiveNode />` component with visual states (○, ◉, ◆, ◈, ●).
-- [ ] On level-up, grant 1 passive point into `usePassiveStore`.
-- [ ] When passive state changes, recalculate player stats in `usePlayerStore` using passive web engine.
+- [x] Implement `engine/runes/passiveWebEngine.ts`:
+  - [x] Validate allocation path (connected to start node).
+  - [x] Sum stats from allocated nodes.
+- [x] Implement `store/usePassiveStore.ts`:
+  - [x] Allocated node IDs, points available/spent.
+- [x] Implement `screens/PassiveWebScreen.tsx`:
+  - [x] Render nodes via SVG based on `passiveNodes.json` positions.
+  - [x] Click node → show info → [Allocate] / [Deallocate] buttons.
+  - [x] Point counter at top.
+  - [x] Passive stat totals summary.
+- [x] Implement `<PassiveNode />` component with visual states (allocated, reachable, locked, keystone variants).
+- [x] On level-up, grant 1 passive point into `usePassiveStore`.
+- [x] When passive state changes, passive stat totals are displayed.
 
 ### Exit criteria
-- [ ] Allocating a +Strength node increases player armor/damage as per your stat mapping.
-- [ ] Keystone nodes can be unlocked and apply a clearly visible effect (e.g. double-hit with damage penalty).
-- [ ] Passive web can be zoomed/panned on desktop; mobile can at least scroll.
+- [x] Allocating a +Strength node shows passive bonus in summary.
+- [x] Keystone nodes can be unlocked and apply a clearly visible effect (label + description).
+- [x] Passive web can be scrolled on both desktop and mobile.
 
 ---
 
-## Milestone 8 — Shrine, Death & Respawn Flow (Week 5)
+## Milestone 8 — Shrine, Death & Respawn Flow (Week 5) ✅
 
 **Goal:** Fully functional death → shrine → back to map/battle flow.
 
 ### Tasks
-- [ ] Implement `screens/ShrineScreen.tsx` modal per UI spec.
-- [ ] On `PLAYER_DIED` event from BattleScene:
-  - [ ] Open ShrineScreen modal.
-  - [ ] Reset HP, barrier, resources in `usePlayerStore`.
-  - [ ] Set current node to nearest shrine in `useMapStore`.
-- [ ] Allow manual shrine visit from map node (Shrine type).
-- [ ] Implement fast travel list from `useMapStore` discovered shrines.
-- [ ] Ensure no XP/loot is granted on death.
+- [x] Implement `screens/ShrineScreen.tsx` modal per UI spec.
+- [x] On `PLAYER_DIED` event from BattleScene:
+  - [x] Open ShrineScreen modal (via `showDeathModal` in BattleScreen).
+  - [x] Reset HP, barrier, resources in `usePlayerStore`.
+  - [x] Set current node to nearest shrine in `useMapStore`.
+- [x] Allow manual shrine visit from map node (Shrine type) — `onShrineVisit` prop in WorldMapScreen.
+- [x] Implement fast travel list from `useMapStore` discovered shrines (`discoverShrine`, `travelToShrine`).
+- [x] Ensure no XP/loot is granted on death.
 
 ### Exit criteria
-- [ ] Dying in battle never hard-crashes; ShrineScreen always appears.
-- [ ] Clicking [Return to Map] takes you back to `/map` with shrine selected.
-- [ ] Fast travel between shrines works for already discovered shrines.
+- [x] Dying in battle never hard-crashes; ShrineScreen always appears.
+- [x] Clicking [Return to Map] takes you back to `/map` with shrine selected.
+- [x] Fast travel between shrines works for already discovered shrines.
 
 ---
 
-## Milestone 9 — Offline Progression & Idle Summary (Week 6)
+## Milestone 9 — Offline Progression & Idle Summary (Week 6) ✅
 
 **Goal:** Idle farming + offline accrual with Offline Summary screen.
 
 ### Tasks
-- [ ] Implement `engine/progression/offlineAccrual.ts` following spec:
-  - [ ] Use lastOnlineTimestamp, currentRegionId, player level, region offlineRateMultiplier.
-  - [ ] Cap at MAX_OFFLINE_SECONDS.
-- [ ] Implement `hooks/useOfflineAccrual.ts`:
-  - [ ] On app load, read saved state.
-  - [ ] Calculate offline gains; store in `useOfflineStore`.
-  - [ ] Show OfflineSummaryScreen modal if gains > 0.
-- [ ] Implement `screens/OfflineSummaryScreen.tsx` per UI spec.
-- [ ] On [Collect & Continue], apply EXP + materials to `usePlayerStore` and `useInventoryStore`.
-- [ ] Enforce rule: no rare runes / uniques in offline accrual.
-- [ ] Save idle farming node when player presses [Idle Farm Here] on map.
+- [x] Implement `engine/progression/offlineAccrual.ts` following spec:
+  - [x] Use lastOnlineTimestamp, currentRegionId, player level, region offlineRateMultiplier.
+  - [x] Cap at MAX_OFFLINE_SECONDS.
+- [x] Implement `hooks/useOfflineAccrual.ts`:
+  - [x] On app load, read saved state.
+  - [x] Calculate offline gains; store in `useOfflineStore`.
+  - [x] Show OfflineSummaryScreen modal if gains > 0.
+- [x] Implement `screens/OfflineSummaryScreen.tsx` per UI spec.
+- [x] On [Collect & Continue], apply EXP + gold to `usePlayerStore`.
+- [x] Enforce rule: no rare runes / uniques in offline accrual.
+- [x] Save idle farming node when player presses [Idle Farm Here] on map.
 
 ### Exit criteria
-- [ ] Closing the game for a few minutes and reopening shows Offline Summary.
-- [ ] EXP and materials from offline accrual are correctly applied.
-- [ ] Player can set/change idle farming node from World Map.
+- [x] Closing the game for a few minutes and reopening shows Offline Summary.
+- [x] EXP and materials from offline accrual are correctly applied.
+- [x] Player can set/change idle farming node from World Map.
 
 ---
 

@@ -7,9 +7,10 @@ import type { Region, MapNode } from '../types/region'
 interface WorldMapScreenProps {
   onFight: (nodeId: string) => void
   onBossInfo: (bossId: string) => void
+  onShrineVisit?: () => void
 }
 
-export const WorldMapScreen: React.FC<WorldMapScreenProps> = ({ onFight, onBossInfo }) => {
+export const WorldMapScreen: React.FC<WorldMapScreenProps> = ({ onFight, onBossInfo, onShrineVisit }) => {
   const [regions, setRegions] = useState<Region[]>([])
   const {
     currentRegionId,
@@ -22,6 +23,7 @@ export const WorldMapScreen: React.FC<WorldMapScreenProps> = ({ onFight, onBossI
     startIdleFarm,
     stopIdleFarm,
     discoverNode,
+    discoverShrine,
   } = useMapStore()
   const character = usePlayerStore((s) => s.character)
 
@@ -46,6 +48,15 @@ export const WorldMapScreen: React.FC<WorldMapScreenProps> = ({ onFight, onBossI
       const node = currentRegion.nodes.find((n) => n.id === nodeId)
       if (node) {
         node.connectedNodeIds.forEach((adjId) => discoverNode(adjId))
+        // Register shrine nodes when discovered
+        if (node.type === 'Shrine') {
+          discoverShrine(nodeId)
+        }
+        // Discover shrines in connected nodes
+        node.connectedNodeIds.forEach((adjId) => {
+          const adjNode = currentRegion.nodes.find((n) => n.id === adjId)
+          if (adjNode?.type === 'Shrine') discoverShrine(adjId)
+        })
       }
     }
   }
@@ -223,7 +234,10 @@ export const WorldMapScreen: React.FC<WorldMapScreenProps> = ({ onFight, onBossI
               </button>
             )}
             {selectedNode.type === 'Shrine' && (
-              <button onClick={handleFight} style={btnStyle('#205040')}>
+              <button
+                onClick={() => onShrineVisit?.()}
+                style={btnStyle('#205040')}
+              >
                 ⛩ Visit Shrine
               </button>
             )}

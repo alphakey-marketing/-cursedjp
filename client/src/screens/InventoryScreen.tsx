@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { usePlayerStore } from '../store/usePlayerStore'
 import { useInventoryStore } from '../store/useInventoryStore'
 import { useItemEquip } from '../hooks/useItemEquip'
-import { ItemCard } from '../components/ItemCard'
 import { getItemSellValue } from '../engine/items/dropResolver'
 import type { AnyItem, ItemSlot, WeaponItem, ArmorItem } from '../types/item'
 

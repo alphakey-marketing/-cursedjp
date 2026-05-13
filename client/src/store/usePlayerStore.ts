@@ -4,6 +4,7 @@ import type { CharacterStats, PlayerCharacter } from "../types/character";
 import type { ItemSlot, AnyItem } from "../types/item";
 import type { EquippedSkillSlot } from "../types/rune";
 import { DEFAULT_ELEMENTAL_RESISTANCES } from "../constants/damageTypes";
+import { usePassiveStore } from "./usePassiveStore";
 
 const DEFAULT_STATS: CharacterStats = {
   strength: 10,
@@ -166,12 +167,19 @@ export const usePlayerStore = create<PlayerStore>()(
           let exp = stats.experience + amount;
           let level = stats.level;
           let expToNext = stats.experienceToNextLevel;
+          let levelsGained = 0;
 
           while (exp >= expToNext) {
             exp -= expToNext;
             level += 1;
+            levelsGained += 1;
             // EXP to next level grows with each level
             expToNext = Math.floor(expToNext * 1.3);
+          }
+
+          // Grant passive points on level-up (1 per level)
+          if (levelsGained > 0) {
+            usePassiveStore.getState().grantPassivePoint(levelsGained);
           }
 
           return {
@@ -183,9 +191,9 @@ export const usePlayerStore = create<PlayerStore>()(
                 level,
                 experienceToNextLevel: expToNext,
                 // Grant stat gains on level up
-                maxHP: stats.maxHP + (level - stats.level) * 20,
-                currentHP: stats.maxHP + (level - stats.level) * 20,
-                maxResource: stats.maxResource + (level - stats.level) * 5,
+                maxHP: stats.maxHP + levelsGained * 20,
+                currentHP: stats.maxHP + levelsGained * 20,
+                maxResource: stats.maxResource + levelsGained * 5,
               },
             },
           };

@@ -9,8 +9,4 @@ export default defineConfig({
     port: 5000,
     allowedHosts: true,
   },
-  test: {
-    globals: true,
-    environment: 'node',
-  },
 })

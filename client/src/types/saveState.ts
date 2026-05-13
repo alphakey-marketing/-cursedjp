@@ -1,4 +1,4 @@
-import { PlayerCharacter } from "./character";
+import type { PlayerCharacter } from "./character";
 
 export interface SaveState {
   version: string;

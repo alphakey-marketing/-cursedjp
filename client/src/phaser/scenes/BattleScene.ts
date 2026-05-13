@@ -47,9 +47,8 @@ export class BattleScene extends Phaser.Scene {
   private skillCooldowns: Map<number, number> = new Map()
   private sceneData!: BattleSceneData
   private battleEnded: boolean = false
-  private tickAccum: number = 0
   private activeSkillIndex: number = 0
-  private battleSpeed: number = 1
+  battleSpeed: number = 1
 
   constructor() {
     super({ key: 'BattleScene' })
@@ -61,7 +60,6 @@ export class BattleScene extends Phaser.Scene {
     this.enemies = []
     this.skillCooldowns.clear()
     this.playerAttackTimer = 0
-    this.tickAccum = 0
     this.activeSkillIndex = 0
     this.battleSpeed = data.battleSpeed ?? 1
   }
