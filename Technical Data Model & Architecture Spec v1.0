@@ -1,0 +1,900 @@
+# Cursed Japan ARPG — Technical Data Model & Architecture Spec v1.0
+
+## Overview
+
+This document defines the full TypeScript data model, folder architecture, scene wiring, React/Phaser boundary rules, and key JSON schemas for the Cursed Japan ARPG. It is intended as the authoritative reference for implementation, handed directly to a developer or used with GitHub Copilot.
+
+---
+
+## 1. Folder Architecture
+
+```
+/
+├── client/
+│   ├── public/
+│   │   ├── assets/
+│   │   │   ├── sprites/           # Phaser sprite sheets (.png + .json atlas)
+│   │   │   ├── maps/              # Overworld region background images
+│   │   │   ├── ui/                # HUD icons, item frames, rune borders
+│   │   │   └── audio/             # BGM and SFX (.mp3 / .ogg)
+│   │   └── data/                  # Static game data (JSON schemas)
+│   │       ├── weapons.json
+│   │       ├── armors.json
+│   │       ├── accessories.json
+│   │       ├── runes.json
+│   │       ├── passiveNodes.json
+│   │       ├── bosses.json
+│   │       ├── enemies.json
+│   │       ├── regions.json
+│   │       ├── chapters.json
+│   │       ├── affixes.json
+│   │       └── craftingRecipes.json
+│   │
+│   ├── src/
+│   │   ├── main.tsx               # Entry point: mount React app
+│   │   ├── App.tsx                # Top-level router & screen switcher
+│   │   │
+│   │   ├── engine/                # Engine-agnostic game logic (NO React, NO Phaser)
+│   │   │   ├── combat/
+│   │   │   │   ├── damageCalc.ts          # Six-stage damage pipeline
+│   │   │   │   ├── dotEngine.ts           # DoT tick engine (bypass rules)
+│   │   │   │   ├── statusEffects.ts       # Burn, Freeze, Shock, Poison, Bleed etc.
+│   │   │   │   ├── hitResolution.ts       # Miss / dodge / hit outcome
+│   │   │   │   └── defenseCalc.ts         # Armor / Resist / Barrier / HP pipeline
+│   │   │   ├── items/
+│   │   │   │   ├── itemFactory.ts         # Generate items from templates + affixes
+│   │   │   │   ├── affixRoller.ts         # Roll affixes based on grade + pool
+│   │   │   │   ├── dropResolver.ts        # Resolve loot drops from enemies/bosses
+│   │   │   │   └── craftingEngine.ts      # Grade upgrade, reroll, essence use
+│   │   │   ├── runes/
+│   │   │   │   ├── runeValidator.ts       # Check weapon-exclusive rune equip rules
+│   │   │   │   ├── skillLinkResolver.ts   # Resolve skill + support link combos
+│   │   │   │   └── passiveWebEngine.ts    # Node unlock, path traversal, stat sum
+│   │   │   ├── progression/
+│   │   │   │   ├── expEngine.ts           # EXP gain, level up, stat growth
+│   │   │   │   ├── offlineAccrual.ts      # Offline EXP + material calculation
+│   │   │   │   └── chapterGate.ts         # Chapter unlock conditions
+│   │   │   └── utils/
+│   │   │       ├── mathHelpers.ts         # Clamp, diminishing returns, buckets
+│   │   │       └── idGen.ts               # Unique item/entity ID generator
+│   │   │
+│   │   ├── phaser/                # Phaser 3 scenes (combat presentation only)
+│   │   │   ├── PhaserGame.tsx             # React wrapper: mount/destroy Phaser
+│   │   │   ├── scenes/
+│   │   │   │   ├── PreloadScene.ts        # Asset preload
+│   │   │   │   ├── BattleScene.ts         # Main combat scene
+│   │   │   │   ├── BossScene.ts           # Boss encounter scene (manual)
+│   │   │   │   └── OverworldScene.ts      # Lightweight map node visuals
+│   │   │   ├── entities/
+│   │   │   │   ├── PlayerSprite.ts        # Player visual representation
+│   │   │   │   ├── EnemySprite.ts         # Enemy visual + HP bar
+│   │   │   │   └── BossSprite.ts          # Boss visual + phase tracking
+│   │   │   ├── hud/
+│   │   │   │   ├── BattleHUD.ts           # HP/resource bars in Phaser
+│   │   │   │   └── DamageNumbers.ts       # Floating damage text
+│   │   │   └── events/
+│   │   │       └── PhaserEventBus.ts      # EventEmitter bridge: Phaser <-> React
+│   │   │
+│   │   ├── store/                 # Zustand global state (React-side)
+│   │   │   ├── usePlayerStore.ts          # Character stats, level, EXP
+│   │   │   ├── useInventoryStore.ts       # Equipped items, bag, currency
+│   │   │   ├── useRuneStore.ts            # Owned runes, equipped skill slots
+│   │   │   ├── usePassiveStore.ts         # Passive web node allocations
+│   │   │   ├── useMapStore.ts             # Current region, discovered nodes
+│   │   │   ├── useChapterStore.ts         # Chapter progress, boss kills
+│   │   │   ├── useCraftingStore.ts        # Crafting materials, recipes
+│   │   │   └── useOfflineStore.ts         # Last session timestamp, accrued gains
+│   │   │
+│   │   ├── screens/               # React screens (all meta-game UI)
+│   │   │   ├── WorldMapScreen.tsx         # Connected overworld node map
+│   │   │   ├── BattleScreen.tsx           # Wrapper for PhaserGame + React HUD
+│   │   │   ├── ResultScreen.tsx           # Loot, EXP, rewards after battle
+│   │   │   ├── InventoryScreen.tsx        # Gear management, item comparison
+│   │   │   ├── RuneScreen.tsx             # Skill rune equip + support links
+│   │   │   ├── PassiveWebScreen.tsx       # Spider web passive node UI
+│   │   │   ├── CraftingScreen.tsx         # Gear upgrade, reroll, enchanting
+│   │   │   ├── BossDetailScreen.tsx       # Boss info + full loot table
+│   │   │   ├── OfflineSummaryScreen.tsx   # Offline gains report on login
+│   │   │   ├── ShrineScreen.tsx           # Respawn, travel, optional upgrades
+│   │   │   ├── CharacterScreen.tsx        # Stats, origin cosmetic, appearance
+│   │   │   └── StoryScreen.tsx            # Dialogue, chapter scenes
+│   │   │
+│   │   ├── components/            # Shared React UI components
+│   │   │   ├── ItemCard.tsx               # Item tooltip + rarity display
+│   │   │   ├── RuneCard.tsx               # Rune tooltip + element tags
+│   │   │   ├── AffixList.tsx              # List of affixes on an item
+│   │   │   ├── SkillSlot.tsx              # Active skill slot + support links
+│   │   │   ├── PassiveNode.tsx            # Single passive web node
+│   │   │   ├── LootTable.tsx              # Boss loot table display
+│   │   │   ├── RegionNode.tsx             # Overworld map node button
+│   │   │   ├── HPBar.tsx                  # Generic HP/resource bar
+│   │   │   ├── DamageTypeTag.tsx          # Fire / Ice / Poison badge
+│   │   │   └── ModalWrapper.tsx           # Reusable full-screen modal
+│   │   │
+│   │   ├── hooks/                 # Custom React hooks
+│   │   │   ├── useCombatLoop.ts           # Tick-based idle combat hook
+│   │   │   ├── useOfflineAccrual.ts       # Calculate + apply offline gains
+│   │   │   ├── useItemEquip.ts            # Equip/unequip validation
+│   │   │   ├── useRuneEquip.ts            # Rune equip + weapon rule check
+│   │   │   └── useSaveLoad.ts             # JSON save/load to localStorage
+│   │   │
+│   │   ├── types/                 # All TypeScript type definitions
+│   │   │   ├── combat.ts
+│   │   │   ├── item.ts
+│   │   │   ├── rune.ts
+│   │   │   ├── passive.ts
+│   │   │   ├── character.ts
+│   │   │   ├── region.ts
+│   │   │   ├── chapter.ts
+│   │   │   ├── enemy.ts
+│   │   │   ├── boss.ts
+│   │   │   ├── crafting.ts
+│   │   │   └── saveState.ts
+│   │   │
+│   │   └── constants/
+│   │       ├── gameBalance.ts             # TTK targets, level caps, affix caps
+│   │       ├── damageTypes.ts             # Enum: Physical, Fire, Cold, etc.
+│   │       ├── weaponFamilies.ts          # Enum + metadata for weapon types
+│   │       └── itemGrades.ts             # Enum: Normal → Holy + slot counts
+│   │
+│   ├── index.html
+│   ├── vite.config.ts
+│   └── tsconfig.json
+│
+├── server/                        # Optional backend (Node/Express or Edge)
+│   ├── routes/
+│   │   ├── save.ts                # POST /save — persist player state
+│   │   └── load.ts                # GET /load — retrieve player state
+│   └── db/
+│       └── schema.sql             # Player save table schema
+│
+└── package.json
+```
+
+---
+
+## 2. TypeScript Type Definitions
+
+### `types/combat.ts`
+
+```typescript
+export type DamageType =
+  | "Physical"
+  | "Fire"
+  | "Cold"
+  | "Lightning"
+  | "Poison"
+  | "Bleed"
+  | "Holy"
+  | "Chaos";
+
+export type DeliveryMode = "Strike" | "Projectile" | "DoT" | "AoE";
+
+export type StatusEffect =
+  | "Burn"
+  | "Chill"
+  | "Freeze"
+  | "Shock"
+  | "Stun"
+  | "Poison"
+  | "Bleed"
+  | "Blind"
+  | "Slow"
+  | "Weaken";
+
+export interface DamagePacket {
+  skillId: string;
+  skillCoef: number;
+  sourceDamage: number;
+  flatDamage: number;
+  damageType: DamageType;
+  deliveryMode: DeliveryMode;
+  conversionPercent?: number;           // % converted to another type
+  convertToType?: DamageType;
+  additiveIncreases: number[];          // separate additive bucket items
+  multiplicativeAmplifiers: number[];   // separate multiplicative bucket items
+  critChance: number;                   // 0.0 to 1.0
+  critBonus: number;                    // multiplier on crit e.g. 0.5 = 50% extra
+  isDoT: boolean;
+  bypassDodge: boolean;
+  bypassArmor: boolean;
+  bypassShield: boolean;
+}
+
+export interface DefenseProfile {
+  armor: number;                        // Physical mitigation %
+  elementalResistances: Record<DamageType, number>; // Elemental mitigation %
+  dodgeChance: number;                  // 0.0 to 1.0
+  barrierCurrent: number;
+  barrierMax: number;
+  hpCurrent: number;
+  hpMax: number;
+  damageTakenDecrease: number[];        // additive reductions
+  dampening: number[];                  // multiplicative dampening
+}
+
+export interface CombatResult {
+  missed: boolean;
+  dodged: boolean;
+  isCrit: boolean;
+  rawDamage: number;
+  mitigatedDamage: number;
+  barrierDamage: number;
+  hpDamage: number;
+  statusProcs: StatusEffect[];
+  lifeStealAmount: number;
+}
+
+export interface DoTInstance {
+  type: DamageType;
+  damagePerTick: number;
+  ticksRemaining: number;
+  bypassArmor: boolean;
+  bypassShield: boolean;
+  sourceSkillId: string;
+}
+```
+
+---
+
+### `types/item.ts`
+
+```typescript
+export type ItemGrade = "Normal" | "Magic" | "Rare" | "Legendary" | "Unique" | "Holy";
+export type ItemSlot = "Weapon" | "OffHand" | "Helmet" | "Chest" | "Gloves" | "Boots" | "Ring1" | "Ring2" | "Amulet" | "Charm";
+export type WeaponFamily = "Katana" | "Nodachi" | "Tanto" | "Naginata" | "Yumi" | "Staff" | "Ofuda";
+export type DefenseStat = "Armor" | "Dodge" | "Barrier";
+
+export interface AffixDefinition {
+  id: string;
+  label: string;
+  bucket: "Additive" | "Multiplicative" | "Utility" | "Exclusive";
+  statKey: string;                      // e.g. "attackPercent", "critChance"
+  minValue: number;
+  maxValue: number;
+  allowedGrades: ItemGrade[];
+  allowedSlots?: ItemSlot[];
+  allowedWeaponFamilies?: WeaponFamily[];
+  damageTypeTag?: DamageType;           // if affix tied to an element
+}
+
+export interface ItemAffix {
+  affixId: string;
+  value: number;
+  tier: number;
+}
+
+export interface RuneSocket {
+  socketIndex: number;
+  linkedRuneId: string | null;
+  socketType: "Skill" | "Link";
+}
+
+export interface BaseItem {
+  instanceId: string;                   // unique per drop
+  templateId: string;                   // references static template in items JSON
+  name: string;
+  slot: ItemSlot;
+  grade: ItemGrade;
+  itemLevel: number;
+  quality: number;                      // 0 to 100, boosts base stats
+  prefixes: ItemAffix[];
+  suffixes: ItemAffix[];
+  sockets: RuneSocket[];
+  isIdentified: boolean;
+  isCursed: boolean;
+  isLocked: boolean;                    // locked from accidental salvage
+}
+
+export interface WeaponItem extends BaseItem {
+  slot: "Weapon";
+  weaponFamily: WeaponFamily;
+  baseDamageMin: number;
+  baseDamageMax: number;
+  attackSpeed: number;
+  critBaseChance: number;
+  exclusiveRuneIds: string[];           // runes requiring this weapon family
+}
+
+export interface ArmorItem extends BaseItem {
+  primaryDefenseStat: DefenseStat;
+  baseDefenseValue: number;
+  attributeRequirement: {
+    Strength?: number;
+    Dexterity?: number;
+    Intelligence?: number;
+  };
+}
+
+export type AnyItem = WeaponItem | ArmorItem | BaseItem;
+```
+
+---
+
+### `types/rune.ts`
+
+```typescript
+export type RuneCategory = "Skill" | "Link" | "Support";
+
+export interface SkillRune {
+  id: string;
+  name: string;
+  category: "Skill";
+  damageType: DamageType;
+  deliveryMode: DeliveryMode;
+  skillCoef: number;
+  baseCooldown: number;               // in combat ticks
+  resourceCost: number;
+  maxSupportLinks: number;            // how many link runes it accepts
+  weaponFamilyRestriction?: WeaponFamily[];
+  tags: string[];                     // e.g. ["Strike", "AoE", "Melee"]
+  description: string;
+  iconId: string;
+  dropSourceIds: string[];            // boss or region IDs that can drop this
+}
+
+export interface LinkRune {
+  id: string;
+  name: string;
+  category: "Link" | "Support";
+  modifiesTag?: string;               // applies only if skill has this tag
+  effectType:
+    | "AddedDamage"
+    | "IncreasedAoE"
+    | "AddedDoT"
+    | "ConvertDamage"
+    | "OnHitEffect"
+    | "CooldownReduction"
+    | "ResourceLeech"
+    | "ExtraProjectile"
+    | "BurstMultiplier";
+  params: Record<string, number | string>; // flexible param bag
+  dropSourceIds: string[];
+  iconId: string;
+  description: string;
+}
+
+export type AnyRune = SkillRune | LinkRune;
+
+export interface EquippedSkillSlot {
+  slotIndex: number;                  // 0 to 3 (4 skill slots total)
+  skillRuneId: string | null;
+  linkRuneIds: string[];              // up to skill's maxSupportLinks
+}
+```
+
+---
+
+### `types/passive.ts`
+
+```typescript
+export type PassiveNodeType = "StatNode" | "Keystone" | "SkillCluster" | "NotableNode";
+
+export interface PassiveNodeDefinition {
+  id: string;
+  label: string;
+  type: PassiveNodeType;
+  position: { x: number; y: number }; // layout position in web UI
+  connectedNodeIds: string[];          // neighbours on the web
+  cost: number;                        // passive points required
+  stats?: Partial<CharacterStats>;     // for StatNode / NotableNode
+  keystoneEffect?: string;             // description for Keystone
+  requiredNodeIds?: string[];          // must unlock these first
+}
+
+export interface PassiveWebState {
+  allocatedNodeIds: string[];
+  totalPointsSpent: number;
+  totalPointsAvailable: number;
+}
+```
+
+---
+
+### `types/character.ts`
+
+```typescript
+export interface CharacterStats {
+  // Core attributes
+  strength: number;
+  dexterity: number;
+  intelligence: number;
+
+  // Offensive
+  baseAttackMin: number;
+  baseAttackMax: number;
+  attackSpeed: number;
+  critChance: number;
+  critBonus: number;
+  additiveIncreases: number;          // summed additive bucket
+  multiplicativeAmplifiers: number[]; // kept as array for pipeline
+
+  // Defensive
+  maxHP: number;
+  currentHP: number;
+  maxBarrier: number;
+  currentBarrier: number;
+  armor: number;
+  dodgeChance: number;
+  elementalResistances: Record<DamageType, number>;
+
+  // Resources
+  maxResource: number;
+  currentResource: number;
+  resourceRegen: number;
+
+  // Progression
+  level: number;
+  experience: number;
+  experienceToNextLevel: number;
+}
+
+export interface PlayerCharacter {
+  id: string;
+  name: string;
+  originCosmetic: string;             // cosmetic only
+  stats: CharacterStats;
+  equippedItems: Partial<Record<ItemSlot, AnyItem>>;
+  skillSlots: EquippedSkillSlot[];     // 4 skill slots
+  passiveWeb: PassiveWebState;
+  inventory: AnyItem[];
+  runeInventory: AnyRune[];
+  currency: {
+    gold: number;
+    runeDust: number;
+    essences: Record<string, number>; // crafting essences by type
+  };
+}
+```
+
+---
+
+### `types/region.ts`
+
+```typescript
+export type NodeType = "EnemyCamp" | "Shrine" | "Miniboss" | "BossArena" | "Passage" | "Event";
+
+export interface MapNode {
+  id: string;
+  regionId: string;
+  label: string;
+  type: NodeType;
+  position: { x: number; y: number }; // position on map canvas
+  connectedNodeIds: string[];
+  enemyIds?: string[];                 // enemies that spawn here
+  bossId?: string;                     // if BossArena
+  recommendedPower: number;            // suggested gear score
+  isDiscovered: boolean;
+  isCleared: boolean;                  // first clear flag
+}
+
+export interface Region {
+  id: string;
+  name: string;
+  theme: string;                       // e.g. "Feudal City", "Dark Forest"
+  chapterId: string;
+  nodes: MapNode[];
+  ambientEnemyPool: string[];          // idle farming pool
+  offlineRateMultiplier: number;       // scales offline EXP and materials
+  backgroundAssetId: string;
+}
+```
+
+---
+
+### `types/enemy.ts`
+
+```typescript
+export interface EnemyTemplate {
+  id: string;
+  name: string;
+  tier: "Common" | "Elite" | "Miniboss" | "Boss";
+  regionIds: string[];
+  level: number;
+  baseHP: number;
+  defenseProfile: Omit<DefenseProfile, "hpCurrent" | "barrierCurrent">;
+  attackDamageMin: number;
+  attackDamageMax: number;
+  attackSpeed: number;
+  damageType: DamageType;
+  statusProcChance: Partial<Record<StatusEffect, number>>;
+  expReward: number;
+  dropTableId: string;
+  spriteId: string;
+}
+
+export interface BossTemplate extends EnemyTemplate {
+  tier: "Boss";
+  phases: BossPhase[];
+  telegraphAttacks: TelegraphAttack[];
+  signatureDrops: SignatureDrop[];
+  lootTableId: string;
+}
+
+export interface BossPhase {
+  phaseIndex: number;
+  hpThreshold: number;                 // triggers at this HP %
+  behaviorModifier: string;            // description of phase change
+  statMultipliers: Partial<CharacterStats>;
+}
+
+export interface TelegraphAttack {
+  id: string;
+  name: string;
+  warningDurationTicks: number;        // how long the warning shows
+  damagePacket: Partial<DamagePacket>;
+  description: string;
+}
+
+export interface SignatureDrop {
+  runeId?: string;
+  itemTemplateId?: string;
+  dropChance: number;                  // 0.0 to 1.0
+  isGuaranteedFirstKill: boolean;
+}
+```
+
+---
+
+### `types/chapter.ts`
+
+```typescript
+export interface ChapterDialogue {
+  dialogueId: string;
+  speakerName: string;
+  speakerPortraitId: string;
+  lines: string[];
+  triggerCondition: "ChapterStart" | "BossKill" | "RegionDiscover" | "Custom";
+}
+
+export interface Chapter {
+  id: string;
+  index: number;
+  title: string;
+  regionIds: string[];
+  chapterBossId: string;
+  unlockCondition: {
+    requiredChapterId?: string;
+    requiredLevel?: number;
+  };
+  dialogues: ChapterDialogue[];
+  isCompleted: boolean;
+}
+```
+
+---
+
+### `types/saveState.ts`
+
+```typescript
+export interface SaveState {
+  version: string;                     // schema version for migration
+  savedAt: number;                     // Unix timestamp
+  player: PlayerCharacter;
+  mapProgress: {
+    discoveredNodeIds: string[];
+    clearedNodeIds: string[];
+    currentRegionId: string;
+    currentNodeId: string;
+  };
+  chapterProgress: {
+    completedChapterIds: string[];
+    killedBossIds: string[];
+    unlockedDialogueIds: string[];
+  };
+  offlineData: {
+    lastOnlineTimestamp: number;
+    pendingExp: number;
+    pendingMaterials: Record<string, number>;
+  };
+  settings: {
+    autoFarmEnabled: boolean;
+    battleSpeed: number;               // 1x to 4x
+    sfxVolume: number;
+    bgmVolume: number;
+  };
+}
+```
+
+---
+
+## 3. Key JSON Schemas
+
+### `data/runes.json` (example entries)
+
+```json
+[
+  {
+    "id": "skill_rune_shadowslash",
+    "name": "Shadow Slash",
+    "category": "Skill",
+    "damageType": "Physical",
+    "deliveryMode": "Strike",
+    "skillCoef": 1.4,
+    "baseCooldown": 3,
+    "resourceCost": 20,
+    "maxSupportLinks": 3,
+    "weaponFamilyRestriction": ["Katana", "Tanto"],
+    "tags": ["Strike", "Melee", "SingleTarget"],
+    "description": "A swift slashing strike. Katana and Tanto only.",
+    "iconId": "icon_shadowslash",
+    "dropSourceIds": ["boss_oni_general", "region_dark_forest"]
+  },
+  {
+    "id": "link_rune_addedfire",
+    "name": "Infused Flame",
+    "category": "Link",
+    "effectType": "AddedDamage",
+    "modifiesTag": "Strike",
+    "params": { "addedFireDamageMin": 10, "addedFireDamageMax": 18 },
+    "dropSourceIds": ["boss_fire_kami", "region_volcano_pass"],
+    "iconId": "icon_infusedflame",
+    "description": "Adds fire damage to linked strike skills."
+  }
+]
+```
+
+---
+
+### `data/bosses.json` (example entry)
+
+```json
+[
+  {
+    "id": "boss_oni_general",
+    "name": "Oni War General",
+    "tier": "Boss",
+    "regionIds": ["region_dark_forest"],
+    "level": 15,
+    "baseHP": 8000,
+    "attackDamageMin": 80,
+    "attackDamageMax": 120,
+    "attackSpeed": 1.2,
+    "damageType": "Physical",
+    "expReward": 1200,
+    "lootTableId": "loot_oni_general",
+    "spriteId": "sprite_oni_general",
+    "phases": [
+      {
+        "phaseIndex": 1,
+        "hpThreshold": 0.5,
+        "behaviorModifier": "Enrage: attack speed +40%, gains Bleed procs",
+        "statMultipliers": { "attackSpeed": 1.4 }
+      }
+    ],
+    "telegraphAttacks": [
+      {
+        "id": "smash_warning",
+        "name": "Ground Smash",
+        "warningDurationTicks": 4,
+        "damagePacket": { "skillCoef": 2.5, "damageType": "Physical", "deliveryMode": "AoE" },
+        "description": "Boss raises weapon — dodge or use guard skill."
+      }
+    ],
+    "signatureDrops": [
+      {
+        "runeId": "skill_rune_shadowslash",
+        "dropChance": 0.04,
+        "isGuaranteedFirstKill": false
+      },
+      {
+        "itemTemplateId": "unique_oni_mask",
+        "dropChance": 0.01,
+        "isGuaranteedFirstKill": false
+      }
+    ]
+  }
+]
+```
+
+---
+
+### `data/passiveNodes.json` (example entries)
+
+```json
+[
+  {
+    "id": "node_str_001",
+    "label": "+8 Strength",
+    "type": "StatNode",
+    "position": { "x": 120, "y": 340 },
+    "connectedNodeIds": ["node_str_002", "node_armor_001"],
+    "cost": 1,
+    "stats": { "strength": 8 }
+  },
+  {
+    "id": "keystone_blade_fury",
+    "label": "Blade Fury",
+    "type": "Keystone",
+    "position": { "x": 400, "y": 180 },
+    "connectedNodeIds": ["node_atk_crit_004", "node_katana_001"],
+    "cost": 1,
+    "keystoneEffect": "Your Strike skills hit twice but deal 30% less damage per hit. Total damage increases with attack speed.",
+    "requiredNodeIds": ["node_atk_crit_004"]
+  }
+]
+```
+
+---
+
+### `data/regions.json` (example entry)
+
+```json
+[
+  {
+    "id": "region_edo_streets",
+    "name": "Edo Streets",
+    "theme": "Feudal City",
+    "chapterId": "chapter_01",
+    "offlineRateMultiplier": 1.0,
+    "backgroundAssetId": "bg_edo_streets",
+    "ambientEnemyPool": ["enemy_ronin", "enemy_city_guard", "enemy_street_thug"],
+    "nodes": [
+      {
+        "id": "node_edo_01",
+        "regionId": "region_edo_streets",
+        "label": "Market Camp",
+        "type": "EnemyCamp",
+        "position": { "x": 200, "y": 300 },
+        "connectedNodeIds": ["node_edo_shrine_01", "node_edo_02"],
+        "enemyIds": ["enemy_ronin", "enemy_city_guard"],
+        "recommendedPower": 100,
+        "isDiscovered": true,
+        "isCleared": false
+      },
+      {
+        "id": "node_edo_shrine_01",
+        "regionId": "region_edo_streets",
+        "label": "River Shrine",
+        "type": "Shrine",
+        "position": { "x": 350, "y": 280 },
+        "connectedNodeIds": ["node_edo_01", "node_edo_boss_01"],
+        "recommendedPower": 0,
+        "isDiscovered": false,
+        "isCleared": false
+      }
+    ]
+  }
+]
+```
+
+---
+
+## 4. React ↔ Phaser Boundary Rules
+
+### Hard rules
+
+| Layer | Owns | Must NOT do |
+|---|---|---|
+| React | All meta screens, inventory, rune web, passive web, crafting, story, map, result, offline summary | Never run combat tick logic inside React render cycle |
+| Phaser | Battle scene visuals, sprite animation, enemy death FX, damage numbers, boss HP bar in-scene | Never read from Zustand store directly; only receive data via EventBus |
+| Engine (`/engine/`) | Damage calc, drop resolution, offline accrual, rune validation, crafting rules | Never import React or Phaser; must be pure TypeScript functions |
+
+### EventBus contract (`PhaserEventBus.ts`)
+
+```typescript
+// React → Phaser
+export const PHASER_EVENTS = {
+  START_BATTLE: "start_battle",         // payload: BattleStartPayload
+  PLAYER_USE_SKILL: "player_use_skill", // payload: { slotIndex: number }
+  PLAYER_USE_GUARD: "player_use_guard",
+  BOSS_PHASE_TRIGGER: "boss_phase",     // payload: { phaseIndex: number }
+  BATTLE_END: "battle_end",             // payload: BattleEndPayload
+} as const;
+
+// Phaser → React
+export const REACT_EVENTS = {
+  COMBAT_TICK: "combat_tick",           // payload: CombatTickState
+  ENEMY_DIED: "enemy_died",             // payload: { enemyId: string }
+  BOSS_DIED: "boss_died",               // payload: { bossId: string }
+  PLAYER_DIED: "player_died",
+  LOOT_DROPPED: "loot_dropped",         // payload: AnyItem[]
+  REQUEST_SKILL_RESOLVE: "skill_resolve", // Phaser asks engine to compute damage
+} as const;
+```
+
+React calls `engine/` functions directly for all calculations. Phaser only receives results via events and renders them. This keeps all game logic testable in isolation without a running Phaser instance.
+
+---
+
+## 5. Save System
+
+Save is stored in `localStorage` as a serialised `SaveState` JSON. On session start, `useOfflineAccrual` reads `lastOnlineTimestamp`, computes time delta, and calls `engine/progression/offlineAccrual.ts` to generate pending EXP and materials. These are applied when the player dismisses the Offline Summary screen.
+
+```typescript
+// engine/progression/offlineAccrual.ts
+export function calculateOfflineGains(
+  lastTimestamp: number,
+  currentRegionId: string,
+  regions: Region[],
+  playerLevel: number
+): { exp: number; materials: Record<string, number> } {
+  const elapsedSeconds = Math.min(
+    (Date.now() - lastTimestamp) / 1000,
+    MAX_OFFLINE_SECONDS // cap at 8 hours
+  );
+  const region = regions.find(r => r.id === currentRegionId);
+  if (!region) return { exp: 0, materials: {} };
+  const baseExpPerSecond = playerLevel * BASE_EXP_RATE * region.offlineRateMultiplier;
+  // materials use region ambient enemy pool drop rates, capped per type
+  // ... implementation detail
+  return { exp: Math.floor(baseExpPerSecond * elapsedSeconds), materials: {} };
+}
+```
+
+---
+
+## 6. Data Flow Summary
+
+```
+Player action (React screen)
+        │
+        ▼
+engine/ function called directly (pure TypeScript)
+        │ returns result object
+        ▼
+Zustand store updated (useXxxStore)
+        │
+        ├─ React screens re-render with new state
+        │
+        └─ If in combat → emit to PhaserEventBus
+                │
+                ▼
+          Phaser scene consumes event → renders animation, damage numbers, FX
+                │
+                ▼
+          Phaser emits REACT_EVENTS back → React reads result, shows loot / summary
+```
+
+---
+
+## 7. Balance Constants Reference
+
+```typescript
+// constants/gameBalance.ts
+export const BALANCE = {
+  MAX_OFFLINE_SECONDS: 8 * 60 * 60,
+  BASE_EXP_RATE: 12,                 // exp per second per level in normal zone
+  BOSS_DROP_SIGNATURE_RATE: 0.04,    // 4% base for signature runes
+  BOSS_DROP_UNIQUE_RATE: 0.01,
+  MAX_AFFIX_SLOTS: {
+    Normal: 1,
+    Magic: 2,
+    Rare: 4,
+    Legendary: 5,
+    Unique: 0,                       // fixed — no rolling
+    Holy: 6,
+  },
+  CRIT_DAMAGE_CAP: 4.0,              // max crit multiplier (1 + CritBonus)
+  ARMOR_MITIGATION_CAP: 0.85,        // hard cap on physical mitigation
+  RESISTANCE_CAP: 0.80,              // hard cap on elemental resist
+  TTK_TARGET_SECONDS: {
+    earlyGame: 4,
+    midGame: 8,
+    lateGame: 14,
+    boss: 30,
+  },
+} as const;
+```
+
+---
+
+## 8. MVP Vertical Slice Checklist
+
+To validate the core loop before expanding content, the following constitutes the minimum vertical slice:
+
+- [ ] `engine/combat/damageCalc.ts` — six-stage pipeline implemented and unit tested
+- [ ] `engine/items/dropResolver.ts` — working drop tables for one boss
+- [ ] `engine/progression/expEngine.ts` — level up and stat growth
+- [ ] `engine/progression/offlineAccrual.ts` — offline EXP calculation
+- [ ] `store/usePlayerStore.ts` — character state wired
+- [ ] `store/useInventoryStore.ts` — equip/unequip working
+- [ ] `store/useRuneStore.ts` — two skill rune slots working
+- [ ] `screens/WorldMapScreen.tsx` — one region, three nodes displayed
+- [ ] `screens/BattleScreen.tsx` — auto-combat loop vs. one enemy camp
+- [ ] `screens/BossDetailScreen.tsx` — one boss with full loot table shown
+- [ ] `screens/ResultScreen.tsx` — EXP and loot shown after fight
+- [ ] `screens/OfflineSummaryScreen.tsx` — offline gains report on login
+- [ ] `phaser/scenes/BattleScene.ts` — enemy sprites, damage numbers, death FX
+- [ ] `phaser/scenes/BossScene.ts` — boss phases + one telegraph visible
+- [ ] `hooks/useSaveLoad.ts` — localStorage save/load working
