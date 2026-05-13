@@ -1,5 +1,5 @@
-import { DamageType, StatusEffect, DefenseProfile, DamagePacket } from "./combat";
-import { CharacterStats } from "./character";
+import type { DamageType, StatusEffect, DefenseProfile, DamagePacket } from "./combat";
+import type { CharacterStats } from "./character";
 
 export interface EnemyTemplate {
   id: string;

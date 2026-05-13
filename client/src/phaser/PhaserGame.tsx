@@ -83,8 +83,8 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({
   useEffect(() => {
     if (!gameRef.current) return
     const scene = gameRef.current.scene.getScene('BattleScene') as BattleScene | null
-    if (scene && (scene as { battleSpeed?: number }).battleSpeed !== undefined) {
-      ;(scene as { battleSpeed: number }).battleSpeed = battleSpeed
+    if (scene) {
+      ;(scene as unknown as { battleSpeed: number }).battleSpeed = battleSpeed
     }
   }, [battleSpeed])
 

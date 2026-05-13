@@ -3,6 +3,7 @@ import { usePlayerStore } from '../store/usePlayerStore'
 import { useRuneStore } from '../store/useRuneStore'
 import { useCombatLoop } from '../hooks/useCombatLoop'
 import { PhaserGame } from '../phaser/PhaserGame'
+import { ShrineScreen } from './ShrineScreen'
 import type { EnemyTemplate } from '../types/enemy'
 import type { BattleEndResult } from '../hooks/useCombatLoop'
 
@@ -251,7 +252,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                 [{slot.slotIndex + 1}] {rune?.name ?? '(empty)'}
               </div>
               <div style={{ color: '#888', fontSize: 10 }}>
-                {rune ? `${rune.baseCooldown}s CD` : '—'}
+                {rune && 'baseCooldown' in rune ? `${rune.baseCooldown}s CD` : '—'}
               </div>
             </div>
           )
@@ -291,31 +292,19 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
         )}
       </div>
 
-      {/* Death modal */}
+      {/* Death modal — Shrine Screen */}
       {showDeathModal && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'rgba(0,0,0,0.85)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 4,
-            zIndex: 10,
+        <ShrineScreen
+          fromDeath
+          onReturnToMap={() => {
+            setShowDeathModal(false)
+            onRetreat()
           }}
-        >
-          <div style={{ fontSize: 20, color: '#c04040', marginBottom: 12 }}>
-            ☠ You were defeated
-          </div>
-          <div style={{ color: '#888', marginBottom: 20, fontSize: 13 }}>
-            Respawned at nearest shrine. No items lost.
-          </div>
-          <button onClick={onRetreat} style={{ ...btnStyle(), padding: '8px 24px', fontSize: 14 }}>
-            🗺 Return to Map
-          </button>
-        </div>
+          onClose={() => {
+            setShowDeathModal(false)
+            onRetreat()
+          }}
+        />
       )}
     </div>
   )

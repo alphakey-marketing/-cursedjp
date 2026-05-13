@@ -4,7 +4,7 @@ import { useInventoryStore } from '../store/useInventoryStore'
 import { useItemEquip } from '../hooks/useItemEquip'
 import { ItemCard } from '../components/ItemCard'
 import { getItemSellValue } from '../engine/items/dropResolver'
-import type { AnyItem, ItemSlot } from '../types/item'
+import type { AnyItem } from '../types/item'
 import type { BattleEndResult } from '../hooks/useCombatLoop'
 import type { DropResult } from '../engine/items/dropResolver'
 
