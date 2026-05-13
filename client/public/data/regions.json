@@ -1,0 +1,60 @@
+[
+  {
+    "id": "region_edo_streets",
+    "name": "Edo Streets",
+    "theme": "Feudal City",
+    "chapterId": "chapter_01",
+    "offlineRateMultiplier": 1.0,
+    "backgroundAssetId": "bg_edo_streets",
+    "ambientEnemyPool": ["enemy_ronin", "enemy_city_guard"],
+    "nodes": [
+      {
+        "id": "node_edo_01",
+        "regionId": "region_edo_streets",
+        "label": "Market Camp",
+        "type": "EnemyCamp",
+        "position": { "x": 200, "y": 300 },
+        "connectedNodeIds": ["node_edo_shrine_01", "node_edo_02"],
+        "enemyIds": ["enemy_ronin", "enemy_city_guard"],
+        "recommendedPower": 100,
+        "isDiscovered": true,
+        "isCleared": false
+      },
+      {
+        "id": "node_edo_shrine_01",
+        "regionId": "region_edo_streets",
+        "label": "River Shrine",
+        "type": "Shrine",
+        "position": { "x": 350, "y": 280 },
+        "connectedNodeIds": ["node_edo_01", "node_edo_boss_01"],
+        "recommendedPower": 0,
+        "isDiscovered": false,
+        "isCleared": false
+      },
+      {
+        "id": "node_edo_02",
+        "regionId": "region_edo_streets",
+        "label": "Back Alley",
+        "type": "EnemyCamp",
+        "position": { "x": 200, "y": 420 },
+        "connectedNodeIds": ["node_edo_01", "node_edo_miniboss_01"],
+        "enemyIds": ["enemy_ronin", "enemy_city_guard"],
+        "recommendedPower": 130,
+        "isDiscovered": false,
+        "isCleared": false
+      },
+      {
+        "id": "node_edo_boss_01",
+        "regionId": "region_edo_streets",
+        "label": "Oni Fortress",
+        "type": "BossArena",
+        "position": { "x": 500, "y": 280 },
+        "connectedNodeIds": ["node_edo_shrine_01"],
+        "bossId": "boss_oni_general",
+        "recommendedPower": 200,
+        "isDiscovered": false,
+        "isCleared": false
+      }
+    ]
+  }
+]

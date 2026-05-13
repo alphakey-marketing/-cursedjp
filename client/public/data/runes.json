@@ -1,0 +1,55 @@
+[
+  {
+    "id": "skill_rune_shadowslash",
+    "name": "Shadow Slash",
+    "category": "Skill",
+    "damageType": "Physical",
+    "deliveryMode": "Strike",
+    "skillCoef": 1.4,
+    "baseCooldown": 3,
+    "resourceCost": 20,
+    "maxSupportLinks": 3,
+    "weaponFamilyRestriction": ["Katana", "Tanto"],
+    "tags": ["Strike", "Melee", "SingleTarget"],
+    "description": "A swift slashing strike. Katana and Tanto only.",
+    "iconId": "icon_shadowslash",
+    "dropSourceIds": ["boss_oni_general", "region_dark_forest"]
+  },
+  {
+    "id": "skill_rune_stormstep",
+    "name": "Storm Step",
+    "category": "Skill",
+    "damageType": "Lightning",
+    "deliveryMode": "Strike",
+    "skillCoef": 1.2,
+    "baseCooldown": 4,
+    "resourceCost": 25,
+    "maxSupportLinks": 2,
+    "tags": ["Strike", "Melee", "AoE"],
+    "description": "Dash forward with lightning speed, striking all nearby enemies.",
+    "iconId": "icon_stormstep",
+    "dropSourceIds": ["region_edo_streets"]
+  },
+  {
+    "id": "link_rune_addedfire",
+    "name": "Infused Flame",
+    "category": "Link",
+    "effectType": "AddedDamage",
+    "modifiesTag": "Strike",
+    "params": { "addedFireDamageMin": 10, "addedFireDamageMax": 18 },
+    "dropSourceIds": ["boss_fire_kami", "region_volcano_pass"],
+    "iconId": "icon_infusedflame",
+    "description": "Adds fire damage to linked strike skills."
+  },
+  {
+    "id": "link_rune_bleed",
+    "name": "Crimson Edge",
+    "category": "Link",
+    "effectType": "AddedDoT",
+    "modifiesTag": "Strike",
+    "params": { "bleedChance": 0.25, "bleedDamagePerTick": 15, "bleedDuration": 4 },
+    "dropSourceIds": ["region_edo_streets"],
+    "iconId": "icon_crimsonedge",
+    "description": "Linked strike skills have a 25% chance to inflict Bleed."
+  }
+]

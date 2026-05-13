@@ -12,21 +12,21 @@
 **Goal:** Have a clean monorepo ready with React + Phaser + TS wired, plus base folder structure.
 
 ### Tasks
-- [ ] Create repo `cursed-japan-arpg` (or reuse existing monorepo structure).
-- [ ] Initialize Vite + React + TypeScript project in `client/`.
-- [ ] Install dependencies:
-  - [ ] `react`, `react-dom`, `zustand`
-  - [ ] `phaser`
-  - [ ] `typescript`, `vite`, `vitest` or `jest`
-- [ ] Add base folder structure from `data_model_architecture_v1.md` (engine/, phaser/, screens/, store/, types/, constants/, public/data/).
-- [ ] Add ESLint + Prettier config.
-- [ ] Set up simple `App.tsx` with one placeholder screen.
-- [ ] Commit as `milestone-0-setup`.
+- [x] Create repo `cursed-japan-arpg` (or reuse existing monorepo structure).
+- [x] Initialize Vite + React + TypeScript project in `client/`.
+- [x] Install dependencies:
+  - [x] `react`, `react-dom`, `zustand`
+  - [x] `phaser`
+  - [x] `typescript`, `vite`, `vitest` or `jest`
+- [x] Add base folder structure from `data_model_architecture_v1.md` (engine/, phaser/, screens/, store/, types/, constants/, public/data/).
+- [x] Add ESLint + Prettier config.
+- [x] Set up simple `App.tsx` with one placeholder screen.
+- [x] Commit as `milestone-0-setup`.
 
 ### Exit criteria
-- [ ] `npm run dev` shows a placeholder React page.
-- [ ] TypeScript builds without errors.
-- [ ] Folder structure matches spec at high level.
+- [x] `npm run dev` shows a placeholder React page.
+- [x] TypeScript builds without errors.
+- [x] Folder structure matches spec at high level.
 
 ---
 
@@ -35,24 +35,24 @@
 **Goal:** Implement the six-stage combat pipeline and core types with unit tests, no UI.
 
 ### Tasks
-- [ ] Create `types/` files: `combat.ts`, `item.ts`, `rune.ts`, `character.ts`, `enemy.ts`, `region.ts`, `boss.ts`, `saveState.ts` using the data model spec.
-- [ ] Implement `engine/utils/mathHelpers.ts` (clamp, sumOf, productOf).
-- [ ] Implement `constants/gameBalance.ts` with caps + TTK target constants.
-- [ ] Implement `engine/combat/damageCalc.ts` per pseudocode:
-  - [ ] Stage 1: `buildBase()`
-  - [ ] Stage 2: `convertDamage()`
-  - [ ] Stage 3: `scaleOffensive()`
-  - [ ] Stage 4: `resolveCrit()`
-  - [ ] Stage 5: `resolveHitOutcome()`
-  - [ ] Stage 6: `applyDefenses()` + `applyToResources()`
-- [ ] Implement `engine/combat/dotEngine.ts` with DoT stacking rules.
-- [ ] Implement `engine/combat/statusEffects.ts` stub (basic types + TODOs).
-- [ ] Write unit tests for 5 test vectors from combat spec.
+- [x] Create `types/` files: `combat.ts`, `item.ts`, `rune.ts`, `character.ts`, `enemy.ts`, `region.ts`, `boss.ts`, `saveState.ts` using the data model spec.
+- [x] Implement `engine/utils/mathHelpers.ts` (clamp, sumOf, productOf).
+- [x] Implement `constants/gameBalance.ts` with caps + TTK target constants.
+- [x] Implement `engine/combat/damageCalc.ts` per pseudocode:
+  - [x] Stage 1: `buildBase()`
+  - [x] Stage 2: `convertDamage()`
+  - [x] Stage 3: `scaleOffensive()`
+  - [x] Stage 4: `resolveCrit()`
+  - [x] Stage 5: `resolveHitOutcome()`
+  - [x] Stage 6: `applyDefenses()` + `applyToResources()`
+- [x] Implement `engine/combat/dotEngine.ts` with DoT stacking rules.
+- [x] Implement `engine/combat/statusEffects.ts` stub (basic types + TODOs).
+- [x] Write unit tests for 5 test vectors from combat spec.
 
 ### Exit criteria
-- [ ] All combat unit tests pass (Vectors 1–5).
-- [ ] No React or Phaser code yet depends on engine functions.
-- [ ] Damage pipeline functions are pure (no side effects).
+- [x] All combat unit tests pass (Vectors 1–5).
+- [x] No React or Phaser code yet depends on engine functions.
+- [x] Damage pipeline functions are pure (no side effects).
 
 ---
 
@@ -61,32 +61,32 @@
 **Goal:** Wire static JSON data for one region, one boss, a handful of runes and items; set up Zustand stores.
 
 ### Tasks
-- [ ] Create `public/data/` JSON files with minimal entries:
-  - [ ] `regions.json` → 1 region: `region_edo_streets` with 3–4 nodes (camp, shrine, boss).
-  - [ ] `enemies.json` → 2 enemies: `enemy_ronin`, `enemy_city_guard`.
-  - [ ] `bosses.json` → 1 boss: `boss_oni_general` with 2 phases and loot table.
-  - [ ] `runes.json` → 2 skill runes, 2 link runes.
-  - [ ] `weapons.json` → 2 starter katanas.
-  - [ ] `armors.json`, `accessories.json` → 2–3 items each.
-  - [ ] `passiveNodes.json` → small web of ~10 nodes.
-- [ ] Implement `store/usePlayerStore.ts`:
-  - [ ] Base character stats, level, EXP, resource, HP.
-  - [ ] Starting two skill runes and one katana equipped.
-- [ ] Implement `store/useInventoryStore.ts`:
-  - [ ] Equipped slots, bag items.
-- [ ] Implement `store/useRuneStore.ts`:
-  - [ ] Owned runes, 4 skill slots, equip/unequip actions.
-- [ ] Implement `store/useMapStore.ts`:
-  - [ ] Current region/node, discovered/cleared nodes, idle farming state.
-- [ ] Implement `store/useChapterStore.ts`:
-  - [ ] Completed chapters, killed bosses, dialogue flags.
-- [ ] Implement `store/useOfflineStore.ts`:
-  - [ ] Last online timestamp, pending EXP/materials.
+- [x] Create `public/data/` JSON files with minimal entries:
+  - [x] `regions.json` → 1 region: `region_edo_streets` with 3–4 nodes (camp, shrine, boss).
+  - [x] `enemies.json` → 2 enemies: `enemy_ronin`, `enemy_city_guard`.
+  - [x] `bosses.json` → 1 boss: `boss_oni_general` with 2 phases and loot table.
+  - [x] `runes.json` → 2 skill runes, 2 link runes.
+  - [x] `weapons.json` → 2 starter katanas.
+  - [x] `armors.json`, `accessories.json` → 2–3 items each.
+  - [x] `passiveNodes.json` → small web of ~10 nodes.
+- [x] Implement `store/usePlayerStore.ts`:
+  - [x] Base character stats, level, EXP, resource, HP.
+  - [x] Starting two skill runes and one katana equipped.
+- [x] Implement `store/useInventoryStore.ts`:
+  - [x] Equipped slots, bag items.
+- [x] Implement `store/useRuneStore.ts`:
+  - [x] Owned runes, 4 skill slots, equip/unequip actions.
+- [x] Implement `store/useMapStore.ts`:
+  - [x] Current region/node, discovered/cleared nodes, idle farming state.
+- [x] Implement `store/useChapterStore.ts`:
+  - [x] Completed chapters, killed bosses, dialogue flags.
+- [x] Implement `store/useOfflineStore.ts`:
+  - [x] Last online timestamp, pending EXP/materials.
 
 ### Exit criteria
-- [ ] JSON files load successfully at runtime (e.g. via simple debug screen).
-- [ ] Stores can be inspected via React DevTools / logs (no UI yet).
-- [ ] You can log out: "Current region: Edo Streets, Node: Market Camp, Player Lv.1 with Katana + 2 skill runes."
+- [x] JSON files load successfully at runtime (e.g. via simple debug screen).
+- [x] Stores can be inspected via React DevTools / logs (no UI yet).
+- [x] You can log out: "Current region: Edo Streets, Node: Market Camp, Player Lv.1 with Katana + 2 skill runes."
 
 ---
 
