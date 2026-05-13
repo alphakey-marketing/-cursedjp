@@ -1,0 +1,70 @@
+[
+  {
+    "id": "enemy_ronin",
+    "name": "Ronin",
+    "tier": "Common",
+    "regionIds": ["region_edo_streets"],
+    "level": 8,
+    "baseHP": 200,
+    "defenseProfile": {
+      "armor": 0.15,
+      "elementalResistances": {
+        "Physical": 0,
+        "Fire": 0,
+        "Cold": 0,
+        "Lightning": 0,
+        "Poison": 0,
+        "Bleed": 0,
+        "Holy": 0,
+        "Chaos": 0
+      },
+      "dodgeChance": 0.08,
+      "barrierMax": 0,
+      "hpMax": 200,
+      "damageTakenDecrease": [],
+      "dampening": []
+    },
+    "attackDamageMin": 18,
+    "attackDamageMax": 26,
+    "attackSpeed": 1.2,
+    "damageType": "Physical",
+    "statusProcChance": { "Bleed": 0.10 },
+    "expReward": 45,
+    "dropTableId": "drop_ronin",
+    "spriteId": "sprite_ronin"
+  },
+  {
+    "id": "enemy_city_guard",
+    "name": "City Guard",
+    "tier": "Common",
+    "regionIds": ["region_edo_streets"],
+    "level": 9,
+    "baseHP": 280,
+    "defenseProfile": {
+      "armor": 0.25,
+      "elementalResistances": {
+        "Physical": 0,
+        "Fire": 0,
+        "Cold": 0,
+        "Lightning": 0,
+        "Poison": 0,
+        "Bleed": 0,
+        "Holy": 0,
+        "Chaos": 0
+      },
+      "dodgeChance": 0.04,
+      "barrierMax": 80,
+      "hpMax": 280,
+      "damageTakenDecrease": [],
+      "dampening": []
+    },
+    "attackDamageMin": 22,
+    "attackDamageMax": 30,
+    "attackSpeed": 0.9,
+    "damageType": "Physical",
+    "statusProcChance": {},
+    "expReward": 58,
+    "dropTableId": "drop_city_guard",
+    "spriteId": "sprite_city_guard"
+  }
+]

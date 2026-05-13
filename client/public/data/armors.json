@@ -1,0 +1,55 @@
+[
+  {
+    "id": "armor_starter_chest",
+    "name": "Leather Chest",
+    "slot": "Chest",
+    "grade": "Normal",
+    "itemLevel": 1,
+    "primaryDefenseStat": "Armor",
+    "baseDefenseValue": 40,
+    "attributeRequirement": { "Strength": 10 },
+    "quality": 0,
+    "prefixes": [],
+    "suffixes": [],
+    "sockets": [],
+    "isIdentified": true,
+    "isCursed": false,
+    "isLocked": false
+  },
+  {
+    "id": "armor_studded_chest",
+    "name": "Studded Chest",
+    "slot": "Chest",
+    "grade": "Magic",
+    "itemLevel": 5,
+    "primaryDefenseStat": "Armor",
+    "baseDefenseValue": 65,
+    "attributeRequirement": { "Strength": 18 },
+    "quality": 15,
+    "prefixes": [
+      { "affixId": "affix_increased_armor", "value": 0.10, "tier": 1 }
+    ],
+    "suffixes": [],
+    "sockets": [],
+    "isIdentified": true,
+    "isCursed": false,
+    "isLocked": false
+  },
+  {
+    "id": "armor_quick_boots",
+    "name": "Nimble Boots",
+    "slot": "Boots",
+    "grade": "Normal",
+    "itemLevel": 1,
+    "primaryDefenseStat": "Dodge",
+    "baseDefenseValue": 10,
+    "attributeRequirement": { "Dexterity": 8 },
+    "quality": 0,
+    "prefixes": [],
+    "suffixes": [],
+    "sockets": [],
+    "isIdentified": true,
+    "isCursed": false,
+    "isLocked": false
+  }
+]

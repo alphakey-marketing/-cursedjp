@@ -1,0 +1,50 @@
+[
+  {
+    "id": "accessory_starter_ring",
+    "name": "Iron Ring",
+    "slot": "Ring1",
+    "grade": "Normal",
+    "itemLevel": 1,
+    "quality": 0,
+    "prefixes": [],
+    "suffixes": [],
+    "sockets": [],
+    "isIdentified": true,
+    "isCursed": false,
+    "isLocked": false
+  },
+  {
+    "id": "accessory_warriors_amulet",
+    "name": "Warrior's Amulet",
+    "slot": "Amulet",
+    "grade": "Magic",
+    "itemLevel": 5,
+    "quality": 10,
+    "prefixes": [
+      { "affixId": "affix_flat_strength", "value": 8, "tier": 1 }
+    ],
+    "suffixes": [
+      { "affixId": "affix_hp_bonus", "value": 50, "tier": 1 }
+    ],
+    "sockets": [],
+    "isIdentified": true,
+    "isCursed": false,
+    "isLocked": false
+  },
+  {
+    "id": "accessory_shadow_charm",
+    "name": "Shadow Charm",
+    "slot": "Charm",
+    "grade": "Magic",
+    "itemLevel": 4,
+    "quality": 5,
+    "prefixes": [
+      { "affixId": "affix_crit_chance", "value": 0.03, "tier": 1 }
+    ],
+    "suffixes": [],
+    "sockets": [],
+    "isIdentified": true,
+    "isCursed": false,
+    "isLocked": false
+  }
+]

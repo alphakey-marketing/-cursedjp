@@ -1,0 +1,70 @@
+[
+  {
+    "id": "boss_oni_general",
+    "name": "Oni War General",
+    "tier": "Boss",
+    "regionIds": ["region_edo_streets"],
+    "level": 15,
+    "baseHP": 8000,
+    "defenseProfile": {
+      "armor": 0.20,
+      "elementalResistances": {
+        "Physical": 0,
+        "Fire": 0.10,
+        "Cold": 0.10,
+        "Lightning": 0.10,
+        "Poison": 0.15,
+        "Bleed": 0.05,
+        "Holy": 0,
+        "Chaos": 0
+      },
+      "dodgeChance": 0.05,
+      "barrierMax": 0,
+      "hpMax": 8000,
+      "damageTakenDecrease": [],
+      "dampening": []
+    },
+    "attackDamageMin": 80,
+    "attackDamageMax": 120,
+    "attackSpeed": 1.2,
+    "damageType": "Physical",
+    "statusProcChance": { "Stun": 0.05 },
+    "expReward": 1200,
+    "dropTableId": "loot_oni_general",
+    "lootTableId": "loot_oni_general",
+    "spriteId": "sprite_oni_general",
+    "phases": [
+      {
+        "phaseIndex": 1,
+        "hpThreshold": 0.5,
+        "behaviorModifier": "Enrage: attack speed +40%, gains Bleed procs",
+        "statMultipliers": { "attackSpeed": 1.4 }
+      }
+    ],
+    "telegraphAttacks": [
+      {
+        "id": "smash_warning",
+        "name": "Ground Smash",
+        "warningDurationTicks": 4,
+        "damagePacket": {
+          "skillCoef": 2.5,
+          "damageType": "Physical",
+          "deliveryMode": "AoE"
+        },
+        "description": "Boss raises weapon — dodge or use guard skill."
+      }
+    ],
+    "signatureDrops": [
+      {
+        "runeId": "skill_rune_shadowslash",
+        "dropChance": 0.04,
+        "isGuaranteedFirstKill": false
+      },
+      {
+        "itemTemplateId": "unique_oni_mask",
+        "dropChance": 0.01,
+        "isGuaranteedFirstKill": false
+      }
+    ]
+  }
+]

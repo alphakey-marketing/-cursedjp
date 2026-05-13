@@ -1,0 +1,130 @@
+[
+  {
+    "id": "node_start",
+    "label": "Origin",
+    "type": "StatNode",
+    "position": { "x": 300, "y": 300 },
+    "connectedNodeIds": ["node_str_001", "node_dex_001", "node_int_001"],
+    "cost": 0,
+    "stats": {}
+  },
+  {
+    "id": "node_str_001",
+    "label": "+8 Strength",
+    "type": "StatNode",
+    "position": { "x": 200, "y": 240 },
+    "connectedNodeIds": ["node_start", "node_str_002", "node_armor_001"],
+    "cost": 1,
+    "stats": { "strength": 8 }
+  },
+  {
+    "id": "node_str_002",
+    "label": "+10 Strength",
+    "type": "StatNode",
+    "position": { "x": 150, "y": 180 },
+    "connectedNodeIds": ["node_str_001", "node_notable_iron_skin"],
+    "cost": 1,
+    "stats": { "strength": 10 }
+  },
+  {
+    "id": "node_armor_001",
+    "label": "+5% Armor",
+    "type": "StatNode",
+    "position": { "x": 160, "y": 280 },
+    "connectedNodeIds": ["node_str_001", "node_armor_002"],
+    "cost": 1,
+    "stats": { "armor": 0.05 }
+  },
+  {
+    "id": "node_armor_002",
+    "label": "+8% Armor",
+    "type": "StatNode",
+    "position": { "x": 120, "y": 340 },
+    "connectedNodeIds": ["node_armor_001"],
+    "cost": 1,
+    "stats": { "armor": 0.08 }
+  },
+  {
+    "id": "node_notable_iron_skin",
+    "label": "Iron Skin",
+    "type": "NotableNode",
+    "position": { "x": 100, "y": 150 },
+    "connectedNodeIds": ["node_str_002"],
+    "cost": 1,
+    "stats": { "armor": 0.15 },
+    "keystoneEffect": "Gain 15% additional Armor. Your Armor also reduces Bleed damage."
+  },
+  {
+    "id": "node_dex_001",
+    "label": "+8 Dexterity",
+    "type": "StatNode",
+    "position": { "x": 300, "y": 200 },
+    "connectedNodeIds": ["node_start", "node_dex_002", "node_dodge_001"],
+    "cost": 1,
+    "stats": { "dexterity": 8 }
+  },
+  {
+    "id": "node_dex_002",
+    "label": "+10 Dexterity",
+    "type": "StatNode",
+    "position": { "x": 300, "y": 140 },
+    "connectedNodeIds": ["node_dex_001"],
+    "cost": 1,
+    "stats": { "dexterity": 10 }
+  },
+  {
+    "id": "node_dodge_001",
+    "label": "+3% Dodge",
+    "type": "StatNode",
+    "position": { "x": 380, "y": 200 },
+    "connectedNodeIds": ["node_dex_001", "node_atk_crit_001"],
+    "cost": 1,
+    "stats": { "dodgeChance": 0.03 }
+  },
+  {
+    "id": "node_atk_crit_001",
+    "label": "+5% Crit Chance",
+    "type": "StatNode",
+    "position": { "x": 440, "y": 180 },
+    "connectedNodeIds": ["node_dodge_001", "node_atk_crit_002"],
+    "cost": 1,
+    "stats": { "critChance": 0.05 }
+  },
+  {
+    "id": "node_atk_crit_002",
+    "label": "+25% Crit Damage",
+    "type": "StatNode",
+    "position": { "x": 500, "y": 160 },
+    "connectedNodeIds": ["node_atk_crit_001", "keystone_blade_fury"],
+    "cost": 1,
+    "stats": { "critBonus": 0.25 }
+  },
+  {
+    "id": "keystone_blade_fury",
+    "label": "Blade Fury",
+    "type": "Keystone",
+    "position": { "x": 560, "y": 130 },
+    "connectedNodeIds": ["node_atk_crit_002"],
+    "cost": 1,
+    "keystoneEffect": "Your Strike skills hit twice but deal 30% less damage per hit. Total damage increases with attack speed.",
+    "requiredNodeIds": ["node_atk_crit_001"]
+  },
+  {
+    "id": "node_int_001",
+    "label": "+8 Intelligence",
+    "type": "StatNode",
+    "position": { "x": 400, "y": 300 },
+    "connectedNodeIds": ["node_start", "node_int_002"],
+    "cost": 1,
+    "stats": { "intelligence": 8 }
+  },
+  {
+    "id": "node_int_002",
+    "label": "+10 Intelligence",
+    "type": "StatNode",
+    "position": { "x": 450, "y": 360 },
+    "connectedNodeIds": ["node_int_001"],
+    "cost": 1,
+    "stats": { "intelligence": 10 }
+  }
+]

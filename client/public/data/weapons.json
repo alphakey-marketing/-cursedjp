@@ -1,0 +1,44 @@
+[
+  {
+    "id": "weapon_starter_katana",
+    "name": "Iron Katana",
+    "slot": "Weapon",
+    "weaponFamily": "Katana",
+    "grade": "Normal",
+    "itemLevel": 1,
+    "baseDamageMin": 30,
+    "baseDamageMax": 42,
+    "attackSpeed": 1.1,
+    "critBaseChance": 0.05,
+    "exclusiveRuneIds": [],
+    "quality": 0,
+    "prefixes": [],
+    "suffixes": [],
+    "sockets": [],
+    "isIdentified": true,
+    "isCursed": false,
+    "isLocked": false
+  },
+  {
+    "id": "weapon_balanced_katana",
+    "name": "Balanced Katana",
+    "slot": "Weapon",
+    "weaponFamily": "Katana",
+    "grade": "Magic",
+    "itemLevel": 5,
+    "baseDamageMin": 38,
+    "baseDamageMax": 52,
+    "attackSpeed": 1.2,
+    "critBaseChance": 0.07,
+    "exclusiveRuneIds": [],
+    "quality": 20,
+    "prefixes": [
+      { "affixId": "affix_increased_attack", "value": 0.12, "tier": 1 }
+    ],
+    "suffixes": [],
+    "sockets": [],
+    "isIdentified": true,
+    "isCursed": false,
+    "isLocked": false
+  }
+]
