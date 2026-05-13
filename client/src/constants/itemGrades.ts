@@ -1,4 +1,4 @@
-import { ItemGrade } from "../types/item";
+import type { ItemGrade } from "../types/item";
 
 export const ITEM_GRADES: ItemGrade[] = [
   "Normal",

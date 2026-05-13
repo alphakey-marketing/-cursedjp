@@ -1,4 +1,4 @@
-import { StatusEffect } from "../../types/combat";
+import type { StatusEffect } from "../../types/combat";
 
 // Duration of each status effect in combat ticks
 export const STATUS_DURATIONS: Record<StatusEffect, number> = {

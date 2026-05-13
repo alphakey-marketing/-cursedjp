@@ -1,4 +1,4 @@
-import { WeaponFamily } from "../types/item";
+import type { WeaponFamily } from "../types/item";
 
 export const WEAPON_FAMILIES: WeaponFamily[] = [
   "Katana",

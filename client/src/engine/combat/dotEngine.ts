@@ -1,4 +1,4 @@
-import { DoTInstance, DefenseProfile, CombatResult } from "../../types/combat";
+import type { DoTInstance, DefenseProfile, CombatResult } from "../../types/combat";
 import { resolveDamage } from "./damageCalc";
 
 export interface ActiveDoT extends DoTInstance {

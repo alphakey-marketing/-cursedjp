@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { resolveDamage } from "../damageCalc";
 import { tickDoT, applyDoT, ActiveDoT } from "../dotEngine";
-import { DamagePacket, DefenseProfile } from "../../../types/combat";
+import type { DamagePacket, DefenseProfile } from "../../../types/combat";
 
 // Deterministic random factories
 const makeRandom = (...vals: number[]) => {
