@@ -10,7 +10,7 @@ interface InventoryStore {
   addToBag: (item: AnyItem) => void;
   removeFromBag: (instanceId: string) => void;
   equipFromBag: (instanceId: string, slot: ItemSlot) => AnyItem | null;
-  unequipToBAg: (slot: ItemSlot) => void;
+  unequipToBag: (slot: ItemSlot) => void;
   sellItem: (instanceId: string, price: number) => boolean;
   addGold: (amount: number) => void;
 }
@@ -54,7 +54,7 @@ export const useInventoryStore = create<InventoryStore>()(
         return previouslyEquipped;
       },
 
-      unequipToBAg: (slot) => {
+      unequipToBag: (slot) => {
         const { equippedSlots, bag } = get();
         const item = equippedSlots[slot];
         if (!item) return;
