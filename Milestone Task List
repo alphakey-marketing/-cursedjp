@@ -1,0 +1,360 @@
+# Cursed Japan ARPG — Milestone Task List (MVP → Chapter 1 Playable)
+
+> Assumptions:
+> - Solo dev or very small team.
+> - 6–8 weeks part-time (or 3–4 weeks full-time) to reach Chapter 1 playable.
+> - Tech stack: React + Phaser + TypeScript, using the previously defined architecture.
+
+---
+
+## Milestone 0 — Project Setup (1–2 days)
+
+**Goal:** Have a clean monorepo ready with React + Phaser + TS wired, plus base folder structure.
+
+### Tasks
+- [ ] Create repo `cursed-japan-arpg` (or reuse existing monorepo structure).
+- [ ] Initialize Vite + React + TypeScript project in `client/`.
+- [ ] Install dependencies:
+  - [ ] `react`, `react-dom`, `zustand`
+  - [ ] `phaser`
+  - [ ] `typescript`, `vite`, `vitest` or `jest`
+- [ ] Add base folder structure from `data_model_architecture_v1.md` (engine/, phaser/, screens/, store/, types/, constants/, public/data/).
+- [ ] Add ESLint + Prettier config.
+- [ ] Set up simple `App.tsx` with one placeholder screen.
+- [ ] Commit as `milestone-0-setup`.
+
+### Exit criteria
+- [ ] `npm run dev` shows a placeholder React page.
+- [ ] TypeScript builds without errors.
+- [ ] Folder structure matches spec at high level.
+
+---
+
+## Milestone 1 — Core Engine Skeleton (Week 1)
+
+**Goal:** Implement the six-stage combat pipeline and core types with unit tests, no UI.
+
+### Tasks
+- [ ] Create `types/` files: `combat.ts`, `item.ts`, `rune.ts`, `character.ts`, `enemy.ts`, `region.ts`, `boss.ts`, `saveState.ts` using the data model spec.
+- [ ] Implement `engine/utils/mathHelpers.ts` (clamp, sumOf, productOf).
+- [ ] Implement `constants/gameBalance.ts` with caps + TTK target constants.
+- [ ] Implement `engine/combat/damageCalc.ts` per pseudocode:
+  - [ ] Stage 1: `buildBase()`
+  - [ ] Stage 2: `convertDamage()`
+  - [ ] Stage 3: `scaleOffensive()`
+  - [ ] Stage 4: `resolveCrit()`
+  - [ ] Stage 5: `resolveHitOutcome()`
+  - [ ] Stage 6: `applyDefenses()` + `applyToResources()`
+- [ ] Implement `engine/combat/dotEngine.ts` with DoT stacking rules.
+- [ ] Implement `engine/combat/statusEffects.ts` stub (basic types + TODOs).
+- [ ] Write unit tests for 5 test vectors from combat spec.
+
+### Exit criteria
+- [ ] All combat unit tests pass (Vectors 1–5).
+- [ ] No React or Phaser code yet depends on engine functions.
+- [ ] Damage pipeline functions are pure (no side effects).
+
+---
+
+## Milestone 2 — Data Bootstrapping & Stores (Week 1–2)
+
+**Goal:** Wire static JSON data for one region, one boss, a handful of runes and items; set up Zustand stores.
+
+### Tasks
+- [ ] Create `public/data/` JSON files with minimal entries:
+  - [ ] `regions.json` → 1 region: `region_edo_streets` with 3–4 nodes (camp, shrine, boss).
+  - [ ] `enemies.json` → 2 enemies: `enemy_ronin`, `enemy_city_guard`.
+  - [ ] `bosses.json` → 1 boss: `boss_oni_general` with 2 phases and loot table.
+  - [ ] `runes.json` → 2 skill runes, 2 link runes.
+  - [ ] `weapons.json` → 2 starter katanas.
+  - [ ] `armors.json`, `accessories.json` → 2–3 items each.
+  - [ ] `passiveNodes.json` → small web of ~10 nodes.
+- [ ] Implement `store/usePlayerStore.ts`:
+  - [ ] Base character stats, level, EXP, resource, HP.
+  - [ ] Starting two skill runes and one katana equipped.
+- [ ] Implement `store/useInventoryStore.ts`:
+  - [ ] Equipped slots, bag items.
+- [ ] Implement `store/useRuneStore.ts`:
+  - [ ] Owned runes, 4 skill slots, equip/unequip actions.
+- [ ] Implement `store/useMapStore.ts`:
+  - [ ] Current region/node, discovered/cleared nodes, idle farming state.
+- [ ] Implement `store/useChapterStore.ts`:
+  - [ ] Completed chapters, killed bosses, dialogue flags.
+- [ ] Implement `store/useOfflineStore.ts`:
+  - [ ] Last online timestamp, pending EXP/materials.
+
+### Exit criteria
+- [ ] JSON files load successfully at runtime (e.g. via simple debug screen).
+- [ ] Stores can be inspected via React DevTools / logs (no UI yet).
+- [ ] You can log out: "Current region: Edo Streets, Node: Market Camp, Player Lv.1 with Katana + 2 skill runes."
+
+---
+
+## Milestone 3 — Minimal Map & Navigation UI (Week 2)
+
+**Goal:** World Map screen with a simple node graph for one region, using real data.
+
+### Tasks
+- [ ] Implement `screens/WorldMapScreen.tsx` layout per UI spec:
+  - [ ] Top nav with current level, EXP, gold.
+  - [ ] Region title and chapter selector.
+  - [ ] SVG or canvas-based node map using `RegionNode` component.
+- [ ] Implement `<RegionNode />` component:
+  - [ ] States: undiscovered, discovered, cleared, idle, shrine, boss.
+- [ ] Connect `WorldMapScreen` to `useMapStore` and `regions.json`.
+- [ ] Implement node selection panel at bottom:
+  - [ ] Shows node type, enemies, recommended power.
+  - [ ] Buttons: [Fight (Auto)], [Idle Farm Here], [Boss Info].
+- [ ] Implement basic route structure in `App.tsx`:
+  - [ ] `/map` → WorldMapScreen
+  - [ ] `/battle` → BattleScreen (placeholder)
+  - [ ] `/boss/:bossId` → BossDetailScreen (placeholder)
+- [ ] Wire [Idle Farm Here] button to set idle flag in `useMapStore`.
+
+### Exit criteria
+- [ ] You can see Edo Streets with 3–4 nodes.
+- [ ] Clicking nodes updates the selected-node info panel.
+- [ ] Idle state toggles and persists in store, though no offline yet.
+
+---
+
+## Milestone 4 — First Battle Loop (Normal Camp) (Week 3)
+
+**Goal:** Implement a basic auto-combat loop vs. a small enemy pack, using engine pipeline.
+
+### Tasks
+- [ ] Implement `phaser/PhaserGame.tsx` wrapper to mount Phaser inside React.
+- [ ] Implement `phaser/scenes/PreloadScene.ts` to load a placeholder tileset + sprites.
+- [ ] Implement `phaser/scenes/BattleScene.ts`:
+  - [ ] Draw player sprite and 2–3 enemy sprites.
+  - [ ] Handle a simple tick loop (e.g. every 500ms) where:
+    - [ ] Player auto-attacks nearest enemy using `resolveDamage()`.
+    - [ ] Enemies auto-attack player at their own attackSpeed.
+  - [ ] On enemy death, emit `ENEMY_DIED` event with drop results from `dropResolver`.
+  - [ ] On player death, emit `PLAYER_DIED` event.
+- [ ] Implement `phaser/events/PhaserEventBus.ts` (simple EventEmitter bridge).
+- [ ] Implement `hooks/useCombatLoop.ts` to:
+  - [ ] Listen to Phaser events.
+  - [ ] Apply `hpDamage` to `usePlayerStore` and update enemy HP.
+  - [ ] Push lines to a local combat log state.
+- [ ] Implement `screens/BattleScreen.tsx` using UI spec:
+  - [ ] Player HUD (HP, resource, barrier).
+  - [ ] Embed `<PhaserGame />` canvas.
+  - [ ] Enemy HUD (HP bars for current enemies).
+  - [ ] Combat log (last 5 lines).
+  - [ ] [Retreat] button → back to `/map`.
+- [ ] On [Fight (Auto)] from World Map, navigate to `/battle` with selected node.
+
+### Exit criteria
+- [ ] You can click Market Camp → Fight → see player auto-attacking until all enemies die or player dies.
+- [ ] Combat log shows damage numbers from the real damage pipeline, not hard-coded.
+- [ ] Drops are emitted as plain JS objects (no UI yet).
+
+---
+
+## Milestone 5 — Result/Loot & Inventory Wiring (Week 3–4)
+
+**Goal:** Show loot, equip items, and persist gear changes.
+
+### Tasks
+- [ ] Implement `engine/items/dropResolver.ts` using `enemies.json` + `bosses.json`.
+- [ ] Implement `screens/ResultScreen.tsx` per UI spec:
+  - [ ] EXP gained (with bar animation).
+  - [ ] Materials list.
+  - [ ] Item cards (using `<ItemCard />`).
+  - [ ] Buttons: [Fight Again], [Back to Map], [Open Inventory].
+- [ ] Implement `<ItemCard />` component:
+  - [ ] Shows rarity color, base stats, 3–4 affixes.
+  - [ ] [Equip], [Stash], [Sell] buttons.
+- [ ] Implement `hooks/useItemEquip.ts`:
+  - [ ] Validate slot, level requirement, weapon family.
+  - [ ] Update `useInventoryStore` and `usePlayerStore` stats.
+- [ ] Implement `screens/InventoryScreen.tsx`:
+  - [ ] Equipped gear grid.
+  - [ ] Bag grid (6×6).
+  - [ ] Detail panel with equip/sell/salvage.
+- [ ] Wire: on battle end (all enemies dead) → show ResultScreen modal with loot from dropResolver.
+
+### Exit criteria
+- [ ] After winning Market Camp, you see a Result screen with EXP and at least one item.
+- [ ] You can equip a new weapon from the Result screen and see stats change in Inventory.
+- [ ] Selling an item increases gold.
+
+---
+
+## Milestone 6 — Runes & Skill Slots (Week 4)
+
+**Goal:** 4 active skill slots with link runes, using weapon compatibility rules.
+
+### Tasks
+- [ ] Implement `engine/runes/runeValidator.ts`:
+  - [ ] Check weapon family restriction.
+  - [ ] Enforce maxSupportLinks.
+- [ ] Implement `engine/runes/skillLinkResolver.ts`:
+  - [ ] Merge skill rune + link runes into effective DamagePacket modifiers.
+- [ ] Implement `screens/RuneScreen.tsx` per UI spec:
+  - [ ] 4 slots with skill + link sub-slots.
+  - [ ] Rune inventory list.
+  - [ ] Drag-to-equip or click-to-assign UX.
+- [ ] Implement `<RuneCard />` component.
+- [ ] Implement `hooks/useRuneEquip.ts`:
+  - [ ] Equip skill runes to slots.
+  - [ ] Equip link runes to sub-slots.
+  - [ ] Update `useRuneStore` state.
+- [ ] Hook combat pipeline to rune configuration:
+  - [ ] `useCombatLoop` fetches skill for each slot and passes rune modifiers into DamagePacket when firing skills.
+- [ ] Add minimal active skill selection UI in BattleScreen (1–4 slots, with cooldown display).
+
+### Exit criteria
+- [ ] Player can choose between at least 2 skill runes and 2 link runes.
+- [ ] Battle uses chosen skill rune + link runes instead of hard-coded damage.
+- [ ] Weapon-exclusive rune shows warning if incompatible, and cannot be equipped.
+
+---
+
+## Milestone 7 — Passive Web MVP (Week 5)
+
+**Goal:** Small passive web (~10–15 nodes) with point allocation and stat effects.
+
+### Tasks
+- [ ] Implement `engine/runes/passiveWebEngine.ts`:
+  - [ ] Validate allocation path (connected to start node).
+  - [ ] Sum stats from allocated nodes.
+- [ ] Implement `screens/PassiveWebScreen.tsx`:
+  - [ ] Render nodes via SVG based on `passiveNodes.json` positions.
+  - [ ] Click node → show info → [Allocate] / [Deallocate] buttons.
+  - [ ] Point counter at top.
+- [ ] Implement `<PassiveNode />` component with visual states (○, ◉, ◆, ◈, ●).
+- [ ] On level-up, grant 1 passive point into `usePassiveStore`.
+- [ ] When passive state changes, recalculate player stats in `usePlayerStore` using passive web engine.
+
+### Exit criteria
+- [ ] Allocating a +Strength node increases player armor/damage as per your stat mapping.
+- [ ] Keystone nodes can be unlocked and apply a clearly visible effect (e.g. double-hit with damage penalty).
+- [ ] Passive web can be zoomed/panned on desktop; mobile can at least scroll.
+
+---
+
+## Milestone 8 — Shrine, Death & Respawn Flow (Week 5)
+
+**Goal:** Fully functional death → shrine → back to map/battle flow.
+
+### Tasks
+- [ ] Implement `screens/ShrineScreen.tsx` modal per UI spec.
+- [ ] On `PLAYER_DIED` event from BattleScene:
+  - [ ] Open ShrineScreen modal.
+  - [ ] Reset HP, barrier, resources in `usePlayerStore`.
+  - [ ] Set current node to nearest shrine in `useMapStore`.
+- [ ] Allow manual shrine visit from map node (Shrine type).
+- [ ] Implement fast travel list from `useMapStore` discovered shrines.
+- [ ] Ensure no XP/loot is granted on death.
+
+### Exit criteria
+- [ ] Dying in battle never hard-crashes; ShrineScreen always appears.
+- [ ] Clicking [Return to Map] takes you back to `/map` with shrine selected.
+- [ ] Fast travel between shrines works for already discovered shrines.
+
+---
+
+## Milestone 9 — Offline Progression & Idle Summary (Week 6)
+
+**Goal:** Idle farming + offline accrual with Offline Summary screen.
+
+### Tasks
+- [ ] Implement `engine/progression/offlineAccrual.ts` following spec:
+  - [ ] Use lastOnlineTimestamp, currentRegionId, player level, region offlineRateMultiplier.
+  - [ ] Cap at MAX_OFFLINE_SECONDS.
+- [ ] Implement `hooks/useOfflineAccrual.ts`:
+  - [ ] On app load, read saved state.
+  - [ ] Calculate offline gains; store in `useOfflineStore`.
+  - [ ] Show OfflineSummaryScreen modal if gains > 0.
+- [ ] Implement `screens/OfflineSummaryScreen.tsx` per UI spec.
+- [ ] On [Collect & Continue], apply EXP + materials to `usePlayerStore` and `useInventoryStore`.
+- [ ] Enforce rule: no rare runes / uniques in offline accrual.
+- [ ] Save idle farming node when player presses [Idle Farm Here] on map.
+
+### Exit criteria
+- [ ] Closing the game for a few minutes and reopening shows Offline Summary.
+- [ ] EXP and materials from offline accrual are correctly applied.
+- [ ] Player can set/change idle farming node from World Map.
+
+---
+
+## Milestone 10 — Boss Detail & Boss Battle (Week 6–7)
+
+**Goal:** Dedicated boss encounters with telegraphs, multi-phase behavior, and a Boss Detail page.
+
+### Tasks
+- [ ] Implement `screens/BossDetailScreen.tsx` using UI spec:
+  - [ ] Boss stats, phases, abilities, recommended power.
+  - [ ] Full loot table (signature + shared drops) with rates.
+  - [ ] Personal kill count and observed drops.
+- [ ] Implement `phaser/scenes/BossScene.ts`:
+  - [ ] Use boss sprite and HP bar at top.
+  - [ ] Implement telegraph attacks (warning overlay + delay).
+  - [ ] Implement phase transitions using HP thresholds from `bosses.json`.
+- [ ] Wire [Fight (Manual)] button to `/battle?bossId=...` using BossScene.
+- [ ] Hook up boss-specific drop table in `dropResolver.ts` with signature runes/uniques.
+- [ ] Update ResultScreen to show special highlight when signature rune drops.
+
+### Exit criteria
+- [ ] You can open Boss Detail from the boss node on map.
+- [ ] Boss fight uses real telegraphs and phases.
+- [ ] Boss kill rewards match loot table probabilities.
+
+---
+
+## Milestone 11 — Chapter 1 Story & Polishing (Week 7–8)
+
+**Goal:** Tie everything together into a coherent Chapter 1 experience.
+
+### Tasks
+- [ ] Define `chapters.json` with at least Chapter 1:
+  - [ ] Title, list of region IDs, chapter boss ID, unlock conditions.
+  - [ ] A few `ChapterDialogue` entries for intro + boss kill.
+- [ ] Implement `screens/StoryScreen.tsx` to show dialogue scenes:
+  - [ ] Speaker portrait, name, text lines.
+  - [ ] Advance on click or tap.
+- [ ] Trigger story sequences at:
+  - [ ] Chapter 1 start (first time enter Edo Streets).
+  - [ ] First time boss_oni_general killed.
+- [ ] Polish UI elements:
+  - [ ] Apply color and typography tokens (near-PoE style) across screens.
+  - [ ] Add basic SFX (attack, hit, death, drop) via Phaser.
+- [ ] Add Settings panel (BGM/SFX volume, auto-farm toggle, battle speed).
+- [ ] Fix any UX blockers discovered during playtests.
+
+### Exit criteria
+- [ ] A fresh profile can:
+  - [ ] Start game → see intro story.
+  - [ ] Farm Market Camp → gain EXP, loot, and level up.
+  - [ ] Equip new gear and adjust runes.
+  - [ ] Allocate passive points.
+  - [ ] Die and respawn at shrine.
+  - [ ] Set idle farming and collect offline gains.
+  - [ ] See Boss Detail, fight and defeat boss, see outro story.
+- [ ] Chapter 1 can be fully completed end-to-end.
+
+---
+
+## Milestone 12 — Post-Chapter 1 Hardening (Optional)
+
+**Goal:** Make the prototype stable and ready for external testers.
+
+### Tasks
+- [ ] Add error handling and fallback for missing JSON data.
+- [ ] Add simple analytics logging (e.g. console or localStats) for:
+  - [ ] Time to first kill, time to first boss kill.
+  - [ ] Average TTK on Market Camp and boss.
+  - [ ] Most-used skill runes.
+- [ ] Add in-game debug panel (toggle by key) to show:
+  - [ ] Current DPS estimate.
+  - [ ] Current TTK vs target ranges.
+  - [ ] Current additive and multiplicative buckets.
+- [ ] Profile performance on mobile browser (FPS during BattleScene).
+- [ ] Tag issues in GitHub with labels: `combat`, `UI`, `data`, `performance`, `polish`.
+
+### Exit criteria
+- [ ] Build can be shared with a small group of testers.
+- [ ] No known blocking bugs in core loop.
+- [ ] FPS is acceptable on mid-range mobile devices in battle.
