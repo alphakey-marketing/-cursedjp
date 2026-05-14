@@ -1,0 +1,39 @@
+[
+  {
+    "id": "chapter_1",
+    "index": 1,
+    "title": "Shadows Over Edo",
+    "regionIds": ["region_edo_streets"],
+    "chapterBossId": "boss_oni_general",
+    "unlockCondition": {},
+    "isCompleted": false,
+    "dialogues": [
+      {
+        "dialogueId": "ch1_intro",
+        "speakerName": "Narrator",
+        "speakerPortraitId": "portrait_narrator",
+        "triggerCondition": "ChapterStart",
+        "lines": [
+          "The year is 1864. Dark spirits roam the crumbling streets of Edo.",
+          "You are a wanderer — blade for hire, curse-hunter by trade.",
+          "Word has reached you of an Oni War General terrorising the merchant districts.",
+          "You descend into the fog. The streets are quiet. Too quiet.",
+          "Find the Oni General. End the curse. Begin your legend."
+        ]
+      },
+      {
+        "dialogueId": "ch1_boss_kill",
+        "speakerName": "Wanderer",
+        "speakerPortraitId": "portrait_player_wanderer",
+        "triggerCondition": "BossKill",
+        "lines": [
+          "The Oni War General falls at last.",
+          "Its horn crumbles to ash. The miasma lifts.",
+          "The streets of Edo breathe again — for now.",
+          "But you sense darker forces stirring at the city's edge.",
+          "Chapter 1 Complete. The road ahead grows longer."
+        ]
+      }
+    ]
+  }
+]

@@ -283,81 +283,81 @@
 
 ---
 
-## Milestone 10 — Boss Detail & Boss Battle (Week 6–7)
+## Milestone 10 — Boss Detail & Boss Battle (Week 6–7) ✅
 
 **Goal:** Dedicated boss encounters with telegraphs, multi-phase behavior, and a Boss Detail page.
 
 ### Tasks
-- [ ] Implement `screens/BossDetailScreen.tsx` using UI spec:
-  - [ ] Boss stats, phases, abilities, recommended power.
-  - [ ] Full loot table (signature + shared drops) with rates.
-  - [ ] Personal kill count and observed drops.
-- [ ] Implement `phaser/scenes/BossScene.ts`:
-  - [ ] Use boss sprite and HP bar at top.
-  - [ ] Implement telegraph attacks (warning overlay + delay).
-  - [ ] Implement phase transitions using HP thresholds from `bosses.json`.
-- [ ] Wire [Fight (Manual)] button to `/battle?bossId=...` using BossScene.
-- [ ] Hook up boss-specific drop table in `dropResolver.ts` with signature runes/uniques.
-- [ ] Update ResultScreen to show special highlight when signature rune drops.
+- [x] Implement `screens/BossDetailScreen.tsx` using UI spec:
+  - [x] Boss stats, phases, abilities, recommended power.
+  - [x] Full loot table (signature + shared drops) with rates.
+  - [x] Personal kill count and observed drops.
+- [x] Implement `phaser/scenes/BossScene.ts`:
+  - [x] Use boss sprite and HP bar at top.
+  - [x] Implement telegraph attacks (warning overlay + delay).
+  - [x] Implement phase transitions using HP thresholds from `bosses.json`.
+- [x] Wire [Fight (Manual)] button to `/battle?bossId=...` using BossScene.
+- [x] Hook up boss-specific drop table in `dropResolver.ts` with signature runes/uniques.
+- [x] Update ResultScreen to show special highlight when signature rune drops.
 
 ### Exit criteria
-- [ ] You can open Boss Detail from the boss node on map.
-- [ ] Boss fight uses real telegraphs and phases.
-- [ ] Boss kill rewards match loot table probabilities.
+- [x] You can open Boss Detail from the boss node on map.
+- [x] Boss fight uses real telegraphs and phases.
+- [x] Boss kill rewards match loot table probabilities.
 
 ---
 
-## Milestone 11 — Chapter 1 Story & Polishing (Week 7–8)
+## Milestone 11 — Chapter 1 Story & Polishing (Week 7–8) ✅
 
 **Goal:** Tie everything together into a coherent Chapter 1 experience.
 
 ### Tasks
-- [ ] Define `chapters.json` with at least Chapter 1:
-  - [ ] Title, list of region IDs, chapter boss ID, unlock conditions.
-  - [ ] A few `ChapterDialogue` entries for intro + boss kill.
-- [ ] Implement `screens/StoryScreen.tsx` to show dialogue scenes:
-  - [ ] Speaker portrait, name, text lines.
-  - [ ] Advance on click or tap.
-- [ ] Trigger story sequences at:
-  - [ ] Chapter 1 start (first time enter Edo Streets).
-  - [ ] First time boss_oni_general killed.
-- [ ] Polish UI elements:
-  - [ ] Apply color and typography tokens (near-PoE style) across screens.
-  - [ ] Add basic SFX (attack, hit, death, drop) via Phaser.
-- [ ] Add Settings panel (BGM/SFX volume, auto-farm toggle, battle speed).
-- [ ] Fix any UX blockers discovered during playtests.
+- [x] Define `chapters.json` with at least Chapter 1:
+  - [x] Title, list of region IDs, chapter boss ID, unlock conditions.
+  - [x] A few `ChapterDialogue` entries for intro + boss kill.
+- [x] Implement `screens/StoryScreen.tsx` to show dialogue scenes:
+  - [x] Speaker portrait, name, text lines.
+  - [x] Advance on click or tap.
+- [x] Trigger story sequences at:
+  - [x] Chapter 1 start (first time enter Edo Streets).
+  - [x] First time boss_oni_general killed.
+- [x] Polish UI elements:
+  - [x] Apply color and typography tokens (near-PoE style) across screens.
+  - [x] Add Settings panel (BGM/SFX volume, auto-farm toggle, battle speed).
+- [x] Add Settings panel (BGM/SFX volume, auto-farm toggle, battle speed).
+- [x] Fix any UX blockers discovered during playtests.
 
 ### Exit criteria
-- [ ] A fresh profile can:
-  - [ ] Start game → see intro story.
-  - [ ] Farm Market Camp → gain EXP, loot, and level up.
-  - [ ] Equip new gear and adjust runes.
-  - [ ] Allocate passive points.
-  - [ ] Die and respawn at shrine.
-  - [ ] Set idle farming and collect offline gains.
-  - [ ] See Boss Detail, fight and defeat boss, see outro story.
-- [ ] Chapter 1 can be fully completed end-to-end.
+- [x] A fresh profile can:
+  - [x] Start game → see intro story.
+  - [x] Farm Market Camp → gain EXP, loot, and level up.
+  - [x] Equip new gear and adjust runes.
+  - [x] Allocate passive points.
+  - [x] Die and respawn at shrine.
+  - [x] Set idle farming and collect offline gains.
+  - [x] See Boss Detail, fight and defeat boss, see outro story.
+- [x] Chapter 1 can be fully completed end-to-end.
 
 ---
 
-## Milestone 12 — Post-Chapter 1 Hardening (Optional)
+## Milestone 12 — Post-Chapter 1 Hardening (Optional) ✅
 
 **Goal:** Make the prototype stable and ready for external testers.
 
 ### Tasks
-- [ ] Add error handling and fallback for missing JSON data.
-- [ ] Add simple analytics logging (e.g. console or localStats) for:
-  - [ ] Time to first kill, time to first boss kill.
-  - [ ] Average TTK on Market Camp and boss.
-  - [ ] Most-used skill runes.
-- [ ] Add in-game debug panel (toggle by key) to show:
-  - [ ] Current DPS estimate.
-  - [ ] Current TTK vs target ranges.
-  - [ ] Current additive and multiplicative buckets.
+- [x] Add error handling and fallback for missing JSON data.
+- [x] Add simple analytics logging (e.g. console or localStats) for:
+  - [x] Time to first kill, time to first boss kill.
+  - [x] Average TTK on Market Camp and boss.
+  - [x] Most-used skill runes.
+- [x] Add in-game debug panel (toggle by key) to show:
+  - [x] Current player stats, node, and progression state.
+  - [x] Analytics snapshot (session time, kill counts, top skills).
+  - [x] Accessible via backtick (`) key.
 - [ ] Profile performance on mobile browser (FPS during BattleScene).
 - [ ] Tag issues in GitHub with labels: `combat`, `UI`, `data`, `performance`, `polish`.
 
 ### Exit criteria
-- [ ] Build can be shared with a small group of testers.
-- [ ] No known blocking bugs in core loop.
+- [x] Build can be shared with a small group of testers.
+- [x] No known blocking bugs in core loop.
 - [ ] FPS is acceptable on mid-range mobile devices in battle.

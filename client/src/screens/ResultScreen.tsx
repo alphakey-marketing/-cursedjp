@@ -17,6 +17,7 @@ interface ResultScreenProps {
 }
 
 export const ResultScreen: React.FC<ResultScreenProps> = ({
+  battleResult,
   drops,
   onFightAgain,
   onBackToMap,
@@ -65,7 +66,6 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
   }
 
   const handleSell = (item: AnyItem) => {
-    // Add to bag first, then sell
     addToBag(item)
     const sold = sellFromBag(item.instanceId, getItemSellValue(item))
     if (sold) {
@@ -97,7 +97,7 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
       <div
         style={{
           background: '#1a1612',
-          border: '1px solid #666',
+          border: battleResult.isBoss ? '1px solid #884422' : '1px solid #666',
           borderRadius: 6,
           padding: 24,
           maxWidth: 700,
@@ -106,8 +106,8 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
         }}
       >
         <div style={{ textAlign: 'center', marginBottom: 16 }}>
-          <div style={{ fontSize: 22, color: '#f0c060', fontWeight: 'bold' }}>
-            ⚔️ BATTLE COMPLETE
+          <div style={{ fontSize: 22, color: battleResult.isBoss ? '#e08040' : '#f0c060', fontWeight: 'bold' }}>
+            {battleResult.isBoss ? '💀 BOSS DEFEATED' : '⚔️ BATTLE COMPLETE'}
           </div>
         </div>
 
@@ -166,11 +166,26 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
                 <div style={{ fontWeight: 'bold', color: '#e0a060', marginBottom: 4, fontSize: 12 }}>
                   RUNE DROPS
                 </div>
-                {drops.runeIds.map((id) => (
-                  <div key={id} style={{ fontSize: 11, color: '#e0b060' }}>
-                    🌀 {id}
-                  </div>
-                ))}
+                {drops.runeIds.map((id) => {
+                  const isSignature = drops.signatureRuneIds.includes(id)
+                  return (
+                    <div
+                      key={id}
+                      style={{
+                        fontSize: 11,
+                        color: isSignature ? '#ffcc44' : '#e0b060',
+                        background: isSignature ? '#2a1a00' : 'transparent',
+                        border: isSignature ? '1px solid #aa6600' : 'none',
+                        borderRadius: isSignature ? 3 : 0,
+                        padding: isSignature ? '3px 6px' : 0,
+                        marginBottom: isSignature ? 4 : 0,
+                      }}
+                    >
+                      {isSignature ? '⭐ SIGNATURE: ' : '🌀 '}
+                      {id}
+                    </div>
+                  )
+                })}
               </div>
             )}
           </div>

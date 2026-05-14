@@ -2,7 +2,8 @@ import React, { useEffect, useRef } from 'react'
 import Phaser from 'phaser'
 import { PreloadScene } from './scenes/PreloadScene'
 import { BattleScene } from './scenes/BattleScene'
-import type { EnemyTemplate } from '../types/enemy'
+import { BossScene } from './scenes/BossScene'
+import type { EnemyTemplate, BossTemplate } from '../types/enemy'
 
 interface PhaserGameProps {
   enemies: EnemyTemplate[]
@@ -27,6 +28,8 @@ interface PhaserGameProps {
   battleSpeed?: number
   width?: number
   height?: number
+  /** When set, uses BossScene instead of BattleScene */
+  bossTemplate?: BossTemplate
 }
 
 export const PhaserGame: React.FC<PhaserGameProps> = ({
@@ -36,6 +39,7 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({
   battleSpeed = 1,
   width = 540,
   height = 280,
+  bossTemplate,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
@@ -43,13 +47,17 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({
   useEffect(() => {
     if (!containerRef.current) return
 
+    const scenes = bossTemplate
+      ? [PreloadScene, BossScene]
+      : [PreloadScene, BattleScene]
+
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
       width,
       height,
       backgroundColor: '#0d0b08',
       parent: containerRef.current,
-      scene: [PreloadScene, BattleScene],
+      scene: scenes,
       scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
@@ -60,16 +68,27 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({
     const game = new Phaser.Game(config)
     gameRef.current = game
 
-    // Pass data once BattleScene is started from PreloadScene
     game.events.on('ready', () => {
-      const battleScene = game.scene.getScene('BattleScene') as BattleScene | null
-      if (battleScene) {
-        battleScene.scene.restart({
-          enemies,
-          playerStats,
-          skillSlots,
-          battleSpeed,
-        })
+      if (bossTemplate) {
+        const bossScene = game.scene.getScene('BossScene') as BossScene | null
+        if (bossScene) {
+          bossScene.scene.restart({
+            boss: bossTemplate,
+            playerStats,
+            skillSlots,
+            battleSpeed,
+          })
+        }
+      } else {
+        const battleScene = game.scene.getScene('BattleScene') as BattleScene | null
+        if (battleScene) {
+          battleScene.scene.restart({
+            enemies,
+            playerStats,
+            skillSlots,
+            battleSpeed,
+          })
+        }
       }
     })
 
@@ -82,11 +101,12 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({
   // Update battle speed when prop changes
   useEffect(() => {
     if (!gameRef.current) return
-    const scene = gameRef.current.scene.getScene('BattleScene') as BattleScene | null
+    const sceneKey = bossTemplate ? 'BossScene' : 'BattleScene'
+    const scene = gameRef.current.scene.getScene(sceneKey) as unknown as { battleSpeed: number } | null
     if (scene) {
-      ;(scene as unknown as { battleSpeed: number }).battleSpeed = battleSpeed
+      scene.battleSpeed = battleSpeed
     }
-  }, [battleSpeed])
+  }, [battleSpeed, bossTemplate])
 
   return (
     <div

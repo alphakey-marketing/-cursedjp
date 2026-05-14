@@ -18,10 +18,14 @@ export interface DropInfo {
   templateId: string
   dropTableId: string
   expReward: number
+  isBoss?: boolean
+  signatureDrops?: Array<{ runeId?: string; itemTemplateId?: string; dropChance: number; isGuaranteedFirstKill: boolean }>
 }
 
 export interface BattleEndResult {
   victory: boolean
+  isBoss?: boolean
+  bossId?: string
   enemies: DropInfo[]
 }
 
