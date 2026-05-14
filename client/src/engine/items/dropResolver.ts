@@ -56,6 +56,54 @@ const DROP_TABLE: Record<
     goldMax: 400,
     materials: ['Oni Horn', 'Dark Ore', 'Fire Essence'],
   },
+  drop_ronin_captain: {
+    itemChance: 0.50,
+    goldMin: 40,
+    goldMax: 90,
+    materials: ['Iron Shard', 'Hardened Leather', 'Spirit Dust'],
+  },
+  drop_forest_specter: {
+    itemChance: 0.20,
+    goldMin: 25,
+    goldMax: 70,
+    materials: ['Spirit Wisp', 'Shadow Silk'],
+  },
+  drop_kodama_wraith: {
+    itemChance: 0.25,
+    goldMin: 30,
+    goldMax: 80,
+    materials: ['Ancient Wood', 'Spirit Wisp'],
+  },
+  drop_cursed_archer: {
+    itemChance: 0.25,
+    goldMin: 28,
+    goldMax: 75,
+    materials: ['Cursed Arrow', 'Venom Sac', 'Shadow Silk'],
+  },
+  drop_silk_spinner: {
+    itemChance: 0.28,
+    goldMin: 32,
+    goldMax: 85,
+    materials: ['Spider Silk', 'Venom Sac'],
+  },
+  drop_venom_spawn: {
+    itemChance: 0.22,
+    goldMin: 20,
+    goldMax: 60,
+    materials: ['Venom Sac', 'Chitin Fragment'],
+  },
+  drop_elder_spider: {
+    itemChance: 0.70,
+    goldMin: 100,
+    goldMax: 280,
+    materials: ['Elder Spider Fang', 'Venom Sac', 'Spider Silk', 'Forest Essence'],
+  },
+  loot_jorogumo: {
+    itemChance: 1.0,
+    goldMin: 350,
+    goldMax: 900,
+    materials: ['Jorogumo Silk Thread', 'Queen Venom Gland', 'Forest Essence', 'Ancient Wood'],
+  },
 }
 
 // Minimal item pool used to generate drops

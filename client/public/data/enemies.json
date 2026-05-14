@@ -9,14 +9,8 @@
     "defenseProfile": {
       "armor": 0.15,
       "elementalResistances": {
-        "Physical": 0,
-        "Fire": 0,
-        "Cold": 0,
-        "Lightning": 0,
-        "Poison": 0,
-        "Bleed": 0,
-        "Holy": 0,
-        "Chaos": 0
+        "Physical": 0, "Fire": 0, "Cold": 0, "Lightning": 0,
+        "Poison": 0, "Bleed": 0, "Holy": 0, "Chaos": 0
       },
       "dodgeChance": 0.08,
       "barrierMax": 0,
@@ -43,14 +37,8 @@
     "defenseProfile": {
       "armor": 0.25,
       "elementalResistances": {
-        "Physical": 0,
-        "Fire": 0,
-        "Cold": 0,
-        "Lightning": 0,
-        "Poison": 0,
-        "Bleed": 0,
-        "Holy": 0,
-        "Chaos": 0
+        "Physical": 0, "Fire": 0, "Cold": 0, "Lightning": 0,
+        "Poison": 0, "Bleed": 0, "Holy": 0, "Chaos": 0
       },
       "dodgeChance": 0.04,
       "barrierMax": 80,
@@ -66,5 +54,201 @@
     "expReward": 58,
     "dropTableId": "drop_city_guard",
     "spriteId": "sprite_city_guard"
+  },
+  {
+    "id": "enemy_ronin_captain",
+    "name": "Ronin Captain",
+    "tier": "Elite",
+    "regionIds": ["region_edo_streets"],
+    "level": 12,
+    "baseHP": 520,
+    "defenseProfile": {
+      "armor": 0.20,
+      "elementalResistances": {
+        "Physical": 0.05, "Fire": 0, "Cold": 0, "Lightning": 0,
+        "Poison": 0, "Bleed": 0.10, "Holy": 0, "Chaos": 0
+      },
+      "dodgeChance": 0.10,
+      "barrierMax": 0,
+      "hpMax": 520,
+      "damageTakenDecrease": [],
+      "dampening": []
+    },
+    "attackDamageMin": 38,
+    "attackDamageMax": 52,
+    "attackSpeed": 1.4,
+    "damageType": "Physical",
+    "statusProcChance": { "Bleed": 0.20 },
+    "expReward": 180,
+    "dropTableId": "drop_ronin_captain",
+    "spriteId": "sprite_ronin_captain"
+  },
+  {
+    "id": "enemy_forest_specter",
+    "name": "Forest Specter",
+    "tier": "Common",
+    "regionIds": ["region_haunted_forest"],
+    "level": 18,
+    "baseHP": 280,
+    "defenseProfile": {
+      "armor": 0.05,
+      "elementalResistances": {
+        "Physical": 0.20, "Fire": 0, "Cold": 0.10, "Lightning": 0,
+        "Poison": 0.15, "Bleed": 0.30, "Holy": -0.20, "Chaos": 0
+      },
+      "dodgeChance": 0.18,
+      "barrierMax": 0,
+      "hpMax": 280,
+      "damageTakenDecrease": [],
+      "dampening": []
+    },
+    "attackDamageMin": 48,
+    "attackDamageMax": 68,
+    "attackSpeed": 1.8,
+    "damageType": "Chaos",
+    "statusProcChance": { "Slow": 0.15 },
+    "expReward": 110,
+    "dropTableId": "drop_forest_specter",
+    "spriteId": "sprite_forest_specter"
+  },
+  {
+    "id": "enemy_kodama_wraith",
+    "name": "Kodama Wraith",
+    "tier": "Common",
+    "regionIds": ["region_haunted_forest"],
+    "level": 19,
+    "baseHP": 520,
+    "defenseProfile": {
+      "armor": 0.30,
+      "elementalResistances": {
+        "Physical": 0.10, "Fire": -0.15, "Cold": 0.10, "Lightning": 0,
+        "Poison": 0.05, "Bleed": 0.05, "Holy": -0.10, "Chaos": 0.10
+      },
+      "dodgeChance": 0.05,
+      "barrierMax": 150,
+      "hpMax": 520,
+      "damageTakenDecrease": [],
+      "dampening": []
+    },
+    "attackDamageMin": 42,
+    "attackDamageMax": 58,
+    "attackSpeed": 0.8,
+    "damageType": "Physical",
+    "statusProcChance": { "Weaken": 0.12 },
+    "expReward": 130,
+    "dropTableId": "drop_kodama_wraith",
+    "spriteId": "sprite_kodama_wraith"
+  },
+  {
+    "id": "enemy_cursed_archer",
+    "name": "Cursed Archer",
+    "tier": "Common",
+    "regionIds": ["region_haunted_forest"],
+    "level": 20,
+    "baseHP": 340,
+    "defenseProfile": {
+      "armor": 0.08,
+      "elementalResistances": {
+        "Physical": 0, "Fire": 0.10, "Cold": 0, "Lightning": 0,
+        "Poison": 0.10, "Bleed": 0, "Holy": 0, "Chaos": 0
+      },
+      "dodgeChance": 0.14,
+      "barrierMax": 0,
+      "hpMax": 340,
+      "damageTakenDecrease": [],
+      "dampening": []
+    },
+    "attackDamageMin": 55,
+    "attackDamageMax": 78,
+    "attackSpeed": 1.0,
+    "damageType": "Poison",
+    "statusProcChance": { "Poison": 0.25 },
+    "expReward": 140,
+    "dropTableId": "drop_cursed_archer",
+    "spriteId": "sprite_cursed_archer"
+  },
+  {
+    "id": "enemy_silk_spinner",
+    "name": "Silk Spinner",
+    "tier": "Common",
+    "regionIds": ["region_haunted_forest"],
+    "level": 21,
+    "baseHP": 380,
+    "defenseProfile": {
+      "armor": 0.12,
+      "elementalResistances": {
+        "Physical": 0, "Fire": -0.20, "Cold": 0.15, "Lightning": 0,
+        "Poison": 0.20, "Bleed": 0.10, "Holy": 0, "Chaos": 0
+      },
+      "dodgeChance": 0.08,
+      "barrierMax": 0,
+      "hpMax": 380,
+      "damageTakenDecrease": [],
+      "dampening": []
+    },
+    "attackDamageMin": 52,
+    "attackDamageMax": 70,
+    "attackSpeed": 1.1,
+    "damageType": "Poison",
+    "statusProcChance": { "Slow": 0.20, "Poison": 0.15 },
+    "expReward": 155,
+    "dropTableId": "drop_silk_spinner",
+    "spriteId": "sprite_silk_spinner"
+  },
+  {
+    "id": "enemy_venom_spawn",
+    "name": "Venom Spawn",
+    "tier": "Common",
+    "regionIds": ["region_haunted_forest"],
+    "level": 22,
+    "baseHP": 220,
+    "defenseProfile": {
+      "armor": 0.05,
+      "elementalResistances": {
+        "Physical": 0, "Fire": -0.10, "Cold": 0, "Lightning": 0,
+        "Poison": 0.35, "Bleed": 0, "Holy": 0, "Chaos": 0
+      },
+      "dodgeChance": 0.20,
+      "barrierMax": 0,
+      "hpMax": 220,
+      "damageTakenDecrease": [],
+      "dampening": []
+    },
+    "attackDamageMin": 68,
+    "attackDamageMax": 90,
+    "attackSpeed": 1.6,
+    "damageType": "Poison",
+    "statusProcChance": { "Poison": 0.35 },
+    "expReward": 120,
+    "dropTableId": "drop_venom_spawn",
+    "spriteId": "sprite_venom_spawn"
+  },
+  {
+    "id": "enemy_elder_spider",
+    "name": "Elder Forest Spider",
+    "tier": "Elite",
+    "regionIds": ["region_haunted_forest"],
+    "level": 25,
+    "baseHP": 2200,
+    "defenseProfile": {
+      "armor": 0.18,
+      "elementalResistances": {
+        "Physical": 0.05, "Fire": -0.25, "Cold": 0.15, "Lightning": 0,
+        "Poison": 0.40, "Bleed": 0.05, "Holy": -0.10, "Chaos": 0
+      },
+      "dodgeChance": 0.10,
+      "barrierMax": 300,
+      "hpMax": 2200,
+      "damageTakenDecrease": [],
+      "dampening": []
+    },
+    "attackDamageMin": 85,
+    "attackDamageMax": 115,
+    "attackSpeed": 1.0,
+    "damageType": "Poison",
+    "statusProcChance": { "Poison": 0.30, "Slow": 0.20 },
+    "expReward": 480,
+    "dropTableId": "drop_elder_spider",
+    "spriteId": "sprite_elder_spider"
   }
 ]
