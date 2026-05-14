@@ -361,3 +361,364 @@
 - [x] Build can be shared with a small group of testers.
 - [x] No known blocking bugs in core loop.
 - [ ] FPS is acceptable on mid-range mobile devices in battle.
+
+# Cursed Japan ARPG — Post-Milestone 12 Roadmap (GDD Expansion) + Weekly Milestone Task List
+
+> This document continues the roadmap **after Milestone 12** and extends the plan from **Chapter 1 playable** into a fuller production roadmap based on the GDD direction: deeper content, stronger buildcraft, longer retention, more polish, and eventual external release readiness.
+>
+> Assumptions:
+> - Milestone 0–12 already delivered a stable Chapter 1 vertical slice.
+> - Tech stack remains React + Phaser + TypeScript.
+> - Team size is still solo dev or a very small team.
+> - Timeline below is written as weekly blocks, but several weeks can be compressed or expanded depending on available time.
+
+---
+
+## Roadmap framing
+
+After Milestone 12, the project moves from **vertical slice validation** into **content scaling + systems hardening + retention design**. The work shifts away from proving the loop and toward making the loop broad enough, deep enough, and stable enough for repeat play.
+
+The post-M12 roadmap should generally follow this order:
+- **Chapter 2 production** — new region, new boss, new enemies, more loot, more passives.
+- **System depth pass** — crafting, item chase, expanded rune ecosystem, economy tuning.
+- **Retention pass** — quests/objectives, better progression pacing, long-tail goals.
+- **Production hardening** — performance, save migration, content pipelines, telemetry, QA.
+- **External beta / soft launch prep** — onboarding, balancing, bug triage, packaging.
+
+---
+
+## Milestone 13 — Chapter 2 Pre-Production (Week 9)
+
+**Goal:** Define and scaffold the next major content arc so the project does not stall after the first playable chapter.
+
+### Tasks
+- [ ] Finalize Chapter 2 theme, region identity, enemy families, and boss fantasy in a short design brief.
+- [ ] Create/update `chapters.json` to include Chapter 2 metadata:
+  - [ ] chapter title
+  - [ ] unlock condition from Chapter 1 completion
+  - [ ] region IDs
+  - [ ] boss ID
+  - [ ] story intro / mid / outro trigger IDs
+- [ ] Define Chapter 2 content scope:
+  - [ ] 1 main region
+  - [ ] 1 shrine
+  - [ ] 3–5 combat nodes
+  - [ ] 1 miniboss or elite gate node
+  - [ ] 1 chapter boss
+- [ ] Create placeholder entries for:
+  - [ ] `regions.json`
+  - [ ] `enemies.json`
+  - [ ] `bosses.json`
+  - [ ] `lootTables.json`
+  - [ ] `runes.json`
+  - [ ] `passiveNodes.json`
+- [ ] Write balance targets for Chapter 2:
+  - [ ] expected player level entering chapter
+  - [ ] target TTK for common / elite / boss
+  - [ ] expected upgrade frequency
+- [ ] Add locked Chapter 2 region card to World Map.
+
+### Exit criteria
+- [ ] Chapter 2 exists as data scaffolding in JSON and route-level placeholders.
+- [ ] Unlock path from Chapter 1 to Chapter 2 is defined clearly.
+- [ ] No major system work blocks content creation for the next chapter.
+
+---
+
+## Milestone 14 — Chapter 2 Content Production (Week 10–11)
+
+**Goal:** Build the playable content for Chapter 2 using existing systems with minimal new engine risk.
+
+### Tasks
+- [ ] Add Chapter 2 map layout and node connectivity.
+- [ ] Create 3–5 new enemy archetypes with different pressure profiles:
+  - [ ] fast low-HP enemy
+  - [ ] tank/high-armor enemy
+  - [ ] ranged caster enemy
+  - [ ] status-inflicting enemy
+- [ ] Add 1 miniboss encounter and 1 chapter boss.
+- [ ] Add 4–6 new item bases for the chapter.
+- [ ] Add 2–3 new skill runes and 2–4 new link runes.
+- [ ] Add 8–12 new passive nodes in the web expansion branch.
+- [ ] Create Chapter 2 story scenes:
+  - [ ] entry scene
+  - [ ] midpoint scene
+  - [ ] boss intro / defeat scene
+- [ ] Tune drops for Chapter 2 so clear upgrade path exists from Chapter 1 gear.
+- [ ] Extend Result, Inventory, Rune, and Boss screens to support new content gracefully.
+
+### Exit criteria
+- [ ] Chapter 2 is completable from start to boss kill.
+- [ ] Player progression from Chapter 1 into Chapter 2 feels continuous, not reset-like.
+- [ ] New runes/items/passives create at least one new viable build direction.
+
+---
+
+## Milestone 15 — Crafting & Upgrade Systems (Week 12)
+
+**Goal:** Add deterministic progression tools so the game is not purely loot-RNG dependent.
+
+### Tasks
+- [ ] Finalize crafting design from GDD direction:
+  - [ ] salvage materials
+  - [ ] rune dust / essences
+  - [ ] item upgrade currency tiers
+- [ ] Implement `engine/items/craftingEngine.ts`:
+  - [ ] salvage item → resources
+  - [ ] reroll affix group within rules
+  - [ ] upgrade base item tier (limited)
+- [ ] Implement `screens/CraftingScreen.tsx`:
+  - [ ] salvage tab
+  - [ ] reroll tab
+  - [ ] enhance / upgrade tab
+- [ ] Add material source mapping to drop tables.
+- [ ] Add tutorial/help text for crafting outcomes and risk.
+- [ ] Ensure crafted outcomes still respect item family and balance constraints.
+
+### Exit criteria
+- [ ] Player can improve mediocre gear into usable gear.
+- [ ] Salvage loop gives value to unwanted drops.
+- [ ] Crafting does not trivialize boss-exclusive chase items.
+
+---
+
+## Milestone 16 — Buildcraft Expansion Pass (Week 13)
+
+**Goal:** Deepen build identity so different rune/passive/item combinations feel meaningfully different.
+
+### Tasks
+- [ ] Add new support/link rune categories:
+  - [ ] projectile modifiers
+  - [ ] chaining / fork behavior
+  - [ ] barrier/guard interaction
+  - [ ] status specialization
+- [ ] Add 2–3 new keystones in passive web.
+- [ ] Add 3–5 notable passives that strongly shift scaling priorities.
+- [ ] Add item affixes that support archetypes:
+  - [ ] crit build
+  - [ ] bleed build
+  - [ ] elemental conversion build
+  - [ ] tank/guard build
+- [ ] Update `skillLinkResolver.ts` to support more modifier tags.
+- [ ] Add build validation tests so unsupported combinations fail clearly.
+- [ ] Create 3 sample “recommended builds” internally for balancing reference.
+
+### Exit criteria
+- [ ] At least 3 distinct builds can clear Chapter 1–2 content.
+- [ ] Build identity is visible in combat behavior, not only in stats.
+- [ ] The passive web and rune system now support replay value.
+
+---
+
+## Milestone 17 — Quest / Objective Layer (Week 14)
+
+**Goal:** Add structure beyond free farming so players have short-term goals and cleaner progression guidance.
+
+### Tasks
+- [ ] Design a lightweight quest/objective system:
+  - [ ] chapter objectives
+  - [ ] side objectives
+  - [ ] daily/weekly style tasks (optional)
+- [ ] Implement `types/quest.ts` and `public/data/quests.json`.
+- [ ] Implement `store/useQuestStore.ts`.
+- [ ] Implement quest progress hooks:
+  - [ ] kill counts
+  - [ ] boss kill triggers
+  - [ ] item acquisition
+  - [ ] rune equip milestones
+- [ ] Implement `screens/QuestScreen.tsx` or side panel.
+- [ ] Add quest rewards:
+  - [ ] gold
+  - [ ] crafting mats
+  - [ ] guaranteed rune unlocks
+  - [ ] passive respec currency
+- [ ] Add UI reminders on map and result screens for tracked objectives.
+
+### Exit criteria
+- [ ] New players always know what to do next.
+- [ ] Objectives create direction without replacing freeform farming.
+- [ ] Quest rewards help smooth progression walls.
+
+---
+
+## Milestone 18 — Economy & Progression Rebalance (Week 15)
+
+**Goal:** Re-tune EXP, gold, drops, crafting yields, and difficulty curves after Chapter 2 and new systems are in place.
+
+### Tasks
+- [ ] Gather balancing sheet for:
+  - [ ] EXP per node
+  - [ ] gold per node
+  - [ ] crafting mat drop rates
+  - [ ] gear upgrade frequency
+  - [ ] rune acquisition pacing
+- [ ] Recalculate expected player power at major gates:
+  - [ ] Chapter 1 midpoint
+  - [ ] Chapter 1 boss
+  - [ ] Chapter 2 entry
+  - [ ] Chapter 2 boss
+- [ ] Review TTK for common, elite, boss, and idle nodes.
+- [ ] Adjust enemy HP/armor/resistance first before touching player damage formulas.
+- [ ] Tune offline gains to remain helpful but not dominant.
+- [ ] Add anti-frustration protection where needed:
+  - [ ] pity counter for key rune chase
+  - [ ] guaranteed upgrade reward after major boss
+  - [ ] more stable early-game weapon drops
+
+### Exit criteria
+- [ ] No severe dead zone where player must grind too long with no visible progress.
+- [ ] Boss difficulty spikes feel intentional, not random.
+- [ ] Offline play supports but does not replace active play.
+
+---
+
+## Milestone 19 — Content Pipeline & Tools (Week 16)
+
+**Goal:** Make content creation faster and safer so adding future chapters becomes less painful.
+
+### Tasks
+- [ ] Create JSON schema validation scripts for:
+  - [ ] items
+  - [ ] runes
+  - [ ] nodes/regions
+  - [ ] bosses
+  - [ ] quests
+- [ ] Add content linting command (`npm run validate:data`).
+- [ ] Create small internal content authoring docs:
+  - [ ] how to add a new rune
+  - [ ] how to add a new boss
+  - [ ] how to define a loot table
+- [ ] Add sample generator templates for new chapter data files.
+- [ ] Add dev-only browser panel or page that previews loaded JSON data in tables.
+- [ ] Add automated tests for schema validity in CI.
+
+### Exit criteria
+- [ ] Broken data files fail fast before runtime.
+- [ ] Adding a new chapter is more repeatable and less error-prone.
+- [ ] Solo content production speed improves noticeably.
+
+---
+
+## Milestone 20 — Performance & Save-System Hardening (Week 17)
+
+**Goal:** Make the game robust for longer sessions and future public testing.
+
+### Tasks
+- [ ] Profile BattleScene and BossScene for FPS/memory issues.
+- [ ] Reduce unnecessary React re-renders in HUD and inventory-heavy screens.
+- [ ] Optimize Phaser particle / hit FX budget for mobile browsers.
+- [ ] Implement save versioning and migration support:
+  - [ ] add `saveVersion`
+  - [ ] migration functions for old save data
+- [ ] Add corruption handling / fallback for malformed saves.
+- [ ] Add autosave throttling and manual save checkpoints.
+- [ ] Test long-session play (30–60 min continuous) for leaks or state drift.
+
+### Exit criteria
+- [ ] Mid-range mobile/browser devices run acceptably.
+- [ ] Save files survive schema changes between versions.
+- [ ] Long sessions do not degrade into instability.
+
+---
+
+## Milestone 21 — Audio / Visual Polish Pass (Week 18)
+
+**Goal:** Make the game feel more emotionally cohesive and less prototype-like.
+
+### Tasks
+- [ ] Add regional BGM tracks and boss music cue switching.
+- [ ] Improve combat juice:
+  - [ ] crit hit flash
+  - [ ] boss telegraph ground warning FX
+  - [ ] loot drop sparkle by rarity
+  - [ ] stronger death feedback
+- [ ] Add UI polish animations:
+  - [ ] panel transitions
+  - [ ] EXP bar fill polish
+  - [ ] hover states / tap feedback
+- [ ] Improve typography hierarchy and icon consistency.
+- [ ] Add portrait art or strong placeholder art for major story screens.
+- [ ] Review readability on mobile and low-brightness displays.
+
+### Exit criteria
+- [ ] The game feels like a cohesive prototype, not a raw dev build.
+- [ ] Important combat information is easier to read under pressure.
+- [ ] Boss fights feel more memorable.
+
+---
+
+## Milestone 22 — External Playtest Alpha (Week 19)
+
+**Goal:** Put the build in front of a small outside audience and collect structured feedback.
+
+### Tasks
+- [ ] Prepare web build package for testers.
+- [ ] Add a tester feedback form or issue template.
+- [ ] Add simple telemetry hooks for:
+  - [ ] session length
+  - [ ] chapter completion rate
+  - [ ] first boss kill rate
+  - [ ] death hotspots
+  - [ ] most-used skills/runes
+- [ ] Recruit 5–20 external testers.
+- [ ] Create a test checklist for them:
+  - [ ] new player onboarding
+  - [ ] chapter completion
+  - [ ] battle clarity
+  - [ ] loot satisfaction
+  - [ ] build customization clarity
+- [ ] Triage findings into severity buckets:
+  - [ ] blocker
+  - [ ] major
+  - [ ] minor
+  - [ ] polish
+
+### Exit criteria
+- [ ] External testers can complete the core flow without direct hand-holding.
+- [ ] The top 10 pain points are documented clearly.
+- [ ] Major confusion areas are known before wider release.
+
+---
+
+## Milestone 23 — Alpha Response Sprint (Week 20)
+
+**Goal:** Address the most important findings from external playtest before scaling scope again.
+
+### Tasks
+- [ ] Fix all blocker bugs from alpha.
+- [ ] Fix onboarding pain points causing early drop-off.
+- [ ] Improve unclear UI labels, tooltips, and flow friction.
+- [ ] Rebalance the three biggest difficulty spikes.
+- [ ] Review telemetry and compare intended vs actual progression path.
+- [ ] Update roadmap based on tester behavior, not only original assumptions.
+
+### Exit criteria
+- [ ] Blockers are cleared.
+- [ ] New player first-session experience is materially better.
+- [ ] The game is ready for either Chapter 3 production or a broader beta.
+
+---
+
+## Milestone 24 — Chapter 3 / Beta Branch Decision Point (Week 21)
+
+**Goal:** Decide whether to expand content breadth or stabilize for a broader audience.
+
+### Two possible directions
+
+#### Option A — Content-first
+- [ ] Start Chapter 3 production using the improved content pipeline.
+- [ ] Add new biome, enemies, boss, and late-branch passives.
+- [ ] Extend story arc and build chase.
+
+#### Option B — Beta-first
+- [ ] Improve onboarding and retention layers further.
+- [ ] Package a broader beta build.
+- [ ] Prepare store page / landing page / trailer draft / community updates.
+
+### Exit criteria
+- [ ] A conscious product decision is made: more content first, or broader testing first.
+- [ ] Scope remains controlled rather than expanding in every direction at once.
+
+---
+
+
