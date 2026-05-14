@@ -3,8 +3,15 @@
     "id": "node_start",
     "label": "Origin",
     "type": "StatNode",
-    "position": { "x": 300, "y": 300 },
-    "connectedNodeIds": ["node_str_001", "node_dex_001", "node_int_001"],
+    "position": {
+      "x": 300,
+      "y": 300
+    },
+    "connectedNodeIds": [
+      "node_str_001",
+      "node_dex_001",
+      "node_int_001"
+    ],
     "cost": 0,
     "stats": {}
   },
@@ -12,154 +19,284 @@
     "id": "node_str_001",
     "label": "+8 Strength",
     "type": "StatNode",
-    "position": { "x": 200, "y": 240 },
-    "connectedNodeIds": ["node_start", "node_str_002", "node_armor_001"],
+    "position": {
+      "x": 200,
+      "y": 240
+    },
+    "connectedNodeIds": [
+      "node_start",
+      "node_str_002",
+      "node_armor_001"
+    ],
     "cost": 1,
-    "stats": { "strength": 8 }
+    "stats": {
+      "strength": 8
+    }
   },
   {
     "id": "node_str_002",
     "label": "+10 Strength",
     "type": "StatNode",
-    "position": { "x": 150, "y": 180 },
-    "connectedNodeIds": ["node_str_001", "node_notable_iron_skin"],
+    "position": {
+      "x": 150,
+      "y": 180
+    },
+    "connectedNodeIds": [
+      "node_str_001",
+      "node_notable_iron_skin"
+    ],
     "cost": 1,
-    "stats": { "strength": 10 }
+    "stats": {
+      "strength": 10
+    }
   },
   {
     "id": "node_armor_001",
     "label": "+5% Armor",
     "type": "StatNode",
-    "position": { "x": 160, "y": 280 },
-    "connectedNodeIds": ["node_str_001", "node_armor_002"],
+    "position": {
+      "x": 160,
+      "y": 280
+    },
+    "connectedNodeIds": [
+      "node_str_001",
+      "node_armor_002"
+    ],
     "cost": 1,
-    "stats": { "armor": 0.05 }
+    "stats": {
+      "armor": 0.05
+    }
   },
   {
     "id": "node_armor_002",
     "label": "+8% Armor",
     "type": "StatNode",
-    "position": { "x": 120, "y": 340 },
-    "connectedNodeIds": ["node_armor_001"],
+    "position": {
+      "x": 120,
+      "y": 340
+    },
+    "connectedNodeIds": [
+      "node_armor_001"
+    ],
     "cost": 1,
-    "stats": { "armor": 0.08 }
+    "stats": {
+      "armor": 0.08
+    }
   },
   {
     "id": "node_notable_iron_skin",
     "label": "Iron Skin",
     "type": "NotableNode",
-    "position": { "x": 100, "y": 150 },
-    "connectedNodeIds": ["node_str_002"],
+    "position": {
+      "x": 100,
+      "y": 150
+    },
+    "connectedNodeIds": [
+      "node_str_002"
+    ],
     "cost": 1,
-    "stats": { "armor": 0.15 },
+    "stats": {
+      "armor": 0.15
+    },
     "keystoneEffect": "Gain 15% additional Armor. Your Armor also reduces Bleed damage."
   },
   {
     "id": "node_dex_001",
     "label": "+8 Dexterity",
     "type": "StatNode",
-    "position": { "x": 300, "y": 200 },
-    "connectedNodeIds": ["node_start", "node_dex_002", "node_dodge_001"],
+    "position": {
+      "x": 300,
+      "y": 200
+    },
+    "connectedNodeIds": [
+      "node_start",
+      "node_dex_002",
+      "node_dodge_001"
+    ],
     "cost": 1,
-    "stats": { "dexterity": 8 }
+    "stats": {
+      "dexterity": 8
+    }
   },
   {
     "id": "node_dex_002",
     "label": "+10 Dexterity",
     "type": "StatNode",
-    "position": { "x": 300, "y": 140 },
-    "connectedNodeIds": ["node_dex_001"],
+    "position": {
+      "x": 300,
+      "y": 140
+    },
+    "connectedNodeIds": [
+      "node_dex_001"
+    ],
     "cost": 1,
-    "stats": { "dexterity": 10 }
+    "stats": {
+      "dexterity": 10
+    }
   },
   {
     "id": "node_dodge_001",
     "label": "+3% Dodge",
     "type": "StatNode",
-    "position": { "x": 380, "y": 200 },
-    "connectedNodeIds": ["node_dex_001", "node_atk_crit_001"],
+    "position": {
+      "x": 380,
+      "y": 200
+    },
+    "connectedNodeIds": [
+      "node_dex_001",
+      "node_atk_crit_001"
+    ],
     "cost": 1,
-    "stats": { "dodgeChance": 0.03 }
+    "stats": {
+      "dodgeChance": 0.03
+    }
   },
   {
     "id": "node_atk_crit_001",
     "label": "+5% Crit Chance",
     "type": "StatNode",
-    "position": { "x": 440, "y": 180 },
-    "connectedNodeIds": ["node_dodge_001", "node_atk_crit_002"],
+    "position": {
+      "x": 440,
+      "y": 180
+    },
+    "connectedNodeIds": [
+      "node_dodge_001",
+      "node_atk_crit_002"
+    ],
     "cost": 1,
-    "stats": { "critChance": 0.05 }
+    "stats": {
+      "critChance": 0.05
+    }
   },
   {
     "id": "node_atk_crit_002",
     "label": "+25% Crit Damage",
     "type": "StatNode",
-    "position": { "x": 500, "y": 160 },
-    "connectedNodeIds": ["node_atk_crit_001", "keystone_blade_fury"],
+    "position": {
+      "x": 500,
+      "y": 160
+    },
+    "connectedNodeIds": [
+      "node_atk_crit_001",
+      "keystone_blade_fury"
+    ],
     "cost": 1,
-    "stats": { "critBonus": 0.25 }
+    "stats": {
+      "critBonus": 0.25
+    }
   },
   {
     "id": "keystone_blade_fury",
     "label": "Blade Fury",
     "type": "Keystone",
-    "position": { "x": 560, "y": 130 },
-    "connectedNodeIds": ["node_atk_crit_002"],
+    "position": {
+      "x": 560,
+      "y": 130
+    },
+    "connectedNodeIds": [
+      "node_atk_crit_002"
+    ],
     "cost": 1,
     "keystoneEffect": "Your Strike skills hit twice but deal 30% less damage per hit. Total damage increases with attack speed.",
-    "requiredNodeIds": ["node_atk_crit_001"]
+    "requiredNodeIds": [
+      "node_atk_crit_001"
+    ]
   },
   {
     "id": "node_int_001",
     "label": "+8 Intelligence",
     "type": "StatNode",
-    "position": { "x": 400, "y": 300 },
-    "connectedNodeIds": ["node_start", "node_int_002"],
+    "position": {
+      "x": 400,
+      "y": 300
+    },
+    "connectedNodeIds": [
+      "node_start",
+      "node_int_002"
+    ],
     "cost": 1,
-    "stats": { "intelligence": 8 }
+    "stats": {
+      "intelligence": 8
+    }
   },
   {
     "id": "node_int_002",
     "label": "+10 Intelligence",
     "type": "StatNode",
-    "position": { "x": 450, "y": 360 },
-    "connectedNodeIds": ["node_int_001"],
+    "position": {
+      "x": 450,
+      "y": 360
+    },
+    "connectedNodeIds": [
+      "node_int_001"
+    ],
     "cost": 1,
-    "stats": { "intelligence": 10 }
+    "stats": {
+      "intelligence": 10
+    }
   },
   {
     "id": "node_poison_001",
     "label": "+8% Poison Damage",
     "type": "StatNode",
-    "position": { "x": 400, "y": 420 },
-    "connectedNodeIds": ["node_int_002", "node_poison_002"],
+    "position": {
+      "x": 400,
+      "y": 420
+    },
+    "connectedNodeIds": [
+      "node_int_002",
+      "node_poison_002"
+    ],
     "cost": 1,
-    "stats": { "poisonDamage": 0.08 }
+    "stats": {
+      "poisonDamage": 0.08
+    }
   },
   {
     "id": "node_poison_002",
     "label": "+12% Poison Duration",
     "type": "StatNode",
-    "position": { "x": 450, "y": 470 },
-    "connectedNodeIds": ["node_poison_001", "node_poison_003"],
+    "position": {
+      "x": 450,
+      "y": 470
+    },
+    "connectedNodeIds": [
+      "node_poison_001",
+      "node_poison_003"
+    ],
     "cost": 1,
-    "stats": { "poisonDuration": 0.12 }
+    "stats": {
+      "poisonDuration": 0.12
+    }
   },
   {
     "id": "node_poison_003",
     "label": "+10% Chaos Resistance",
     "type": "StatNode",
-    "position": { "x": 390, "y": 510 },
-    "connectedNodeIds": ["node_poison_002", "keystone_toxic_bloom"],
+    "position": {
+      "x": 390,
+      "y": 510
+    },
+    "connectedNodeIds": [
+      "node_poison_002",
+      "keystone_toxic_bloom"
+    ],
     "cost": 1,
-    "stats": { "chaosResistance": 0.10 }
+    "stats": {
+      "chaosResistance": 0.1
+    }
   },
   {
     "id": "keystone_toxic_bloom",
     "label": "Toxic Bloom",
     "type": "Keystone",
-    "position": { "x": 330, "y": 540 },
-    "connectedNodeIds": ["node_poison_003"],
+    "position": {
+      "x": 330,
+      "y": 540
+    },
+    "connectedNodeIds": [
+      "node_poison_003"
+    ],
     "cost": 1,
     "stats": {},
     "keystoneEffect": "Your Poison stacks explode on enemy death, dealing 50% remaining DoT damage to nearby enemies."
@@ -168,44 +305,81 @@
     "id": "node_resist_001",
     "label": "+6% All Resistances",
     "type": "StatNode",
-    "position": { "x": 480, "y": 300 },
-    "connectedNodeIds": ["node_int_001", "node_resist_002"],
+    "position": {
+      "x": 480,
+      "y": 300
+    },
+    "connectedNodeIds": [
+      "node_int_001",
+      "node_resist_002"
+    ],
     "cost": 1,
-    "stats": { "allResistances": 0.06 }
+    "stats": {
+      "allResistances": 0.06
+    }
   },
   {
     "id": "node_resist_002",
     "label": "+8% Elemental Resist",
     "type": "StatNode",
-    "position": { "x": 540, "y": 340 },
-    "connectedNodeIds": ["node_resist_001", "node_barrier_001"],
+    "position": {
+      "x": 540,
+      "y": 340
+    },
+    "connectedNodeIds": [
+      "node_resist_001",
+      "node_barrier_001"
+    ],
     "cost": 1,
-    "stats": { "elementalResistance": 0.08 }
+    "stats": {
+      "elementalResistance": 0.08
+    }
   },
   {
     "id": "node_barrier_001",
     "label": "+60 Max Barrier",
     "type": "StatNode",
-    "position": { "x": 570, "y": 400 },
-    "connectedNodeIds": ["node_resist_002", "node_barrier_002"],
+    "position": {
+      "x": 570,
+      "y": 400
+    },
+    "connectedNodeIds": [
+      "node_resist_002",
+      "node_barrier_002"
+    ],
     "cost": 1,
-    "stats": { "maxBarrier": 60 }
+    "stats": {
+      "maxBarrier": 60
+    }
   },
   {
     "id": "node_barrier_002",
     "label": "+80 Max Barrier",
     "type": "StatNode",
-    "position": { "x": 560, "y": 460 },
-    "connectedNodeIds": ["node_barrier_001", "keystone_spirit_shield"],
+    "position": {
+      "x": 560,
+      "y": 460
+    },
+    "connectedNodeIds": [
+      "node_barrier_001",
+      "keystone_spirit_shield"
+    ],
     "cost": 1,
-    "stats": { "maxBarrier": 80 }
+    "stats": {
+      "maxBarrier": 80
+    }
   },
   {
     "id": "keystone_spirit_shield",
     "label": "Spirit Shield",
     "type": "Keystone",
-    "position": { "x": 540, "y": 520 },
-    "connectedNodeIds": ["node_barrier_002"],
+    "position": {
+      "x": 540,
+      "y": 520
+    },
+    "connectedNodeIds": [
+      "node_barrier_002"
+    ],
     "cost": 1,
     "stats": {},
     "keystoneEffect": "Your Barrier regenerates 2% of max value per second out of combat. Barrier absorbs 25% more damage."
@@ -214,28 +388,206 @@
     "id": "node_hp_forest_001",
     "label": "+80 Max HP",
     "type": "StatNode",
-    "position": { "x": 230, "y": 430 },
-    "connectedNodeIds": ["node_armor_002", "node_hp_forest_002"],
+    "position": {
+      "x": 230,
+      "y": 430
+    },
+    "connectedNodeIds": [
+      "node_armor_002",
+      "node_hp_forest_002"
+    ],
     "cost": 1,
-    "stats": { "maxHp": 80 }
+    "stats": {
+      "maxHp": 80
+    }
   },
   {
     "id": "node_hp_forest_002",
     "label": "+100 Max HP",
     "type": "StatNode",
-    "position": { "x": 200, "y": 490 },
-    "connectedNodeIds": ["node_hp_forest_001", "node_notable_forest_ward"],
+    "position": {
+      "x": 200,
+      "y": 490
+    },
+    "connectedNodeIds": [
+      "node_hp_forest_001",
+      "node_notable_forest_ward"
+    ],
     "cost": 1,
-    "stats": { "maxHp": 100 }
+    "stats": {
+      "maxHp": 100
+    }
   },
   {
     "id": "node_notable_forest_ward",
     "label": "Forest Ward",
     "type": "NotableNode",
-    "position": { "x": 250, "y": 550 },
-    "connectedNodeIds": ["node_hp_forest_002"],
+    "position": {
+      "x": 250,
+      "y": 550
+    },
+    "connectedNodeIds": [
+      "node_hp_forest_002"
+    ],
     "cost": 1,
-    "stats": { "maxHp": 150, "poisonResistance": 0.10 },
+    "stats": {
+      "maxHp": 150,
+      "poisonResistance": 0.1
+    },
     "keystoneEffect": "Gain 150 Max HP and 10% Poison Resistance. Nature curse durations reduced by 20%."
+  },
+  {
+    "id": "node_crit_build_001",
+    "label": "+8% Crit Chance",
+    "type": "StatNode",
+    "position": {
+      "x": 540,
+      "y": 220
+    },
+    "connectedNodeIds": [
+      "node_atk_crit_002",
+      "node_crit_build_002"
+    ],
+    "cost": 1,
+    "stats": {
+      "critChance": 0.08
+    }
+  },
+  {
+    "id": "node_crit_build_002",
+    "label": "+40% Crit Damage",
+    "type": "StatNode",
+    "position": {
+      "x": 580,
+      "y": 200
+    },
+    "connectedNodeIds": [
+      "node_crit_build_001",
+      "keystone_assassin_mark"
+    ],
+    "cost": 1,
+    "stats": {
+      "critBonus": 0.4
+    }
+  },
+  {
+    "id": "keystone_assassin_mark",
+    "label": "Assassin's Mark",
+    "type": "Keystone",
+    "position": {
+      "x": 620,
+      "y": 170
+    },
+    "connectedNodeIds": [
+      "node_crit_build_002"
+    ],
+    "cost": 1,
+    "stats": {},
+    "keystoneEffect": "Your critical strikes deal 200% of normal crit damage, but your base crit chance is halved. Build around guaranteed crits."
+  },
+  {
+    "id": "node_bleed_001",
+    "label": "+12% Bleed Damage",
+    "type": "StatNode",
+    "position": {
+      "x": 160,
+      "y": 360
+    },
+    "connectedNodeIds": [
+      "node_armor_002",
+      "node_bleed_002"
+    ],
+    "cost": 1,
+    "stats": {
+      "bleedDamage": 0.12
+    }
+  },
+  {
+    "id": "node_bleed_002",
+    "label": "+15% Bleed Duration",
+    "type": "StatNode",
+    "position": {
+      "x": 130,
+      "y": 420
+    },
+    "connectedNodeIds": [
+      "node_bleed_001",
+      "keystone_blood_frenzy"
+    ],
+    "cost": 1,
+    "stats": {
+      "bleedDuration": 0.15
+    }
+  },
+  {
+    "id": "keystone_blood_frenzy",
+    "label": "Blood Frenzy",
+    "type": "Keystone",
+    "position": {
+      "x": 110,
+      "y": 490
+    },
+    "connectedNodeIds": [
+      "node_bleed_002"
+    ],
+    "cost": 1,
+    "stats": {},
+    "keystoneEffect": "Each Bleed stack on an enemy increases your attack speed by 5% (up to 25%). Bleed deals 50% more damage but expires 30% faster."
+  },
+  {
+    "id": "notable_elemental_attunement",
+    "label": "Elemental Attunement",
+    "type": "NotableNode",
+    "position": {
+      "x": 480,
+      "y": 420
+    },
+    "connectedNodeIds": [
+      "node_resist_002",
+      "node_int_002"
+    ],
+    "cost": 1,
+    "stats": {
+      "allResistances": 0.08
+    },
+    "keystoneEffect": "Gain +8% to all Elemental Resistances and +10% Elemental Damage."
+  },
+  {
+    "id": "notable_iron_will",
+    "label": "Iron Will",
+    "type": "NotableNode",
+    "position": {
+      "x": 130,
+      "y": 310
+    },
+    "connectedNodeIds": [
+      "node_str_001",
+      "node_armor_001"
+    ],
+    "cost": 1,
+    "stats": {
+      "armor": 0.1,
+      "maxHP": 50
+    },
+    "keystoneEffect": "Gain +10% Armor and +50 Max HP. Taking a hit that would kill you instead leaves you at 1 HP (once per fight)."
+  },
+  {
+    "id": "notable_swift_reflexes",
+    "label": "Swift Reflexes",
+    "type": "NotableNode",
+    "position": {
+      "x": 360,
+      "y": 160
+    },
+    "connectedNodeIds": [
+      "node_dex_001",
+      "node_dodge_001"
+    ],
+    "cost": 1,
+    "stats": {
+      "dodgeChance": 0.05,
+      "attackSpeed": 0.08
+    },
+    "keystoneEffect": "Gain +5% Dodge Chance and +8% Attack Speed. Dodging an attack grants you a burst of 10% attack speed for 2s."
   }
 ]

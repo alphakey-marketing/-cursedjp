@@ -9,11 +9,21 @@
     "baseCooldown": 3,
     "resourceCost": 20,
     "maxSupportLinks": 3,
-    "weaponFamilyRestriction": ["Katana", "Tanto"],
-    "tags": ["Strike", "Melee", "SingleTarget"],
+    "weaponFamilyRestriction": [
+      "Katana",
+      "Tanto"
+    ],
+    "tags": [
+      "Strike",
+      "Melee",
+      "SingleTarget"
+    ],
     "description": "A swift slashing strike. Katana and Tanto only.",
     "iconId": "icon_shadowslash",
-    "dropSourceIds": ["boss_oni_general", "region_dark_forest"]
+    "dropSourceIds": [
+      "boss_oni_general",
+      "region_dark_forest"
+    ]
   },
   {
     "id": "skill_rune_stormstep",
@@ -25,10 +35,16 @@
     "baseCooldown": 4,
     "resourceCost": 25,
     "maxSupportLinks": 2,
-    "tags": ["Strike", "Melee", "AoE"],
+    "tags": [
+      "Strike",
+      "Melee",
+      "AoE"
+    ],
     "description": "Dash forward with lightning speed, striking all nearby enemies.",
     "iconId": "icon_stormstep",
-    "dropSourceIds": ["region_edo_streets"]
+    "dropSourceIds": [
+      "region_edo_streets"
+    ]
   },
   {
     "id": "link_rune_addedfire",
@@ -36,8 +52,14 @@
     "category": "Link",
     "effectType": "AddedDamage",
     "modifiesTag": "Strike",
-    "params": { "addedFireDamageMin": 10, "addedFireDamageMax": 18 },
-    "dropSourceIds": ["boss_fire_kami", "region_volcano_pass"],
+    "params": {
+      "addedFireDamageMin": 10,
+      "addedFireDamageMax": 18
+    },
+    "dropSourceIds": [
+      "boss_fire_kami",
+      "region_volcano_pass"
+    ],
     "iconId": "icon_infusedflame",
     "description": "Adds fire damage to linked strike skills."
   },
@@ -47,8 +69,14 @@
     "category": "Link",
     "effectType": "AddedDoT",
     "modifiesTag": "Strike",
-    "params": { "bleedChance": 0.25, "bleedDamagePerTick": 15, "bleedDuration": 4 },
-    "dropSourceIds": ["region_edo_streets"],
+    "params": {
+      "bleedChance": 0.25,
+      "bleedDamagePerTick": 15,
+      "bleedDuration": 4
+    },
+    "dropSourceIds": [
+      "region_edo_streets"
+    ],
     "iconId": "icon_crimsonedge",
     "description": "Linked strike skills have a 25% chance to inflict Bleed."
   },
@@ -62,10 +90,18 @@
     "baseCooldown": 3,
     "resourceCost": 22,
     "maxSupportLinks": 3,
-    "tags": ["Strike", "Melee", "SingleTarget", "Poison"],
+    "tags": [
+      "Strike",
+      "Melee",
+      "SingleTarget",
+      "Poison"
+    ],
     "description": "A venomous stab that injects potent poison on hit. Stacks Poison twice.",
     "iconId": "icon_venom_strike",
-    "dropSourceIds": ["boss_jorogumo", "region_haunted_forest"]
+    "dropSourceIds": [
+      "boss_jorogumo",
+      "region_haunted_forest"
+    ]
   },
   {
     "id": "skill_rune_silk_nova",
@@ -77,10 +113,16 @@
     "baseCooldown": 6,
     "resourceCost": 35,
     "maxSupportLinks": 3,
-    "tags": ["AoE", "Projectile", "Chaos"],
+    "tags": [
+      "AoE",
+      "Projectile",
+      "Chaos"
+    ],
     "description": "Releases a burst of spirit silk threads, dealing chaos damage to all nearby enemies.",
     "iconId": "icon_silk_nova",
-    "dropSourceIds": ["boss_jorogumo"]
+    "dropSourceIds": [
+      "boss_jorogumo"
+    ]
   },
   {
     "id": "skill_rune_spirit_arrow",
@@ -92,11 +134,20 @@
     "baseCooldown": 2,
     "resourceCost": 18,
     "maxSupportLinks": 3,
-    "weaponFamilyRestriction": ["Yumi"],
-    "tags": ["Projectile", "Ranged", "SingleTarget", "Holy"],
+    "weaponFamilyRestriction": [
+      "Yumi"
+    ],
+    "tags": [
+      "Projectile",
+      "Ranged",
+      "SingleTarget",
+      "Holy"
+    ],
     "description": "Fires a spirit-infused arrow that deals holy damage. Yumi only.",
     "iconId": "icon_spirit_arrow",
-    "dropSourceIds": ["region_haunted_forest"]
+    "dropSourceIds": [
+      "region_haunted_forest"
+    ]
   },
   {
     "id": "link_rune_poison_infusion",
@@ -104,8 +155,16 @@
     "category": "Link",
     "effectType": "AddedDoT",
     "modifiesTag": "Strike",
-    "params": { "poisonChance": 0.30, "poisonDamagePerTick": 20, "poisonDuration": 5, "poisonStacks": 2 },
-    "dropSourceIds": ["region_haunted_forest", "boss_jorogumo"],
+    "params": {
+      "poisonChance": 0.3,
+      "poisonDamagePerTick": 20,
+      "poisonDuration": 5,
+      "poisonStacks": 2
+    },
+    "dropSourceIds": [
+      "region_haunted_forest",
+      "boss_jorogumo"
+    ],
     "iconId": "icon_poison_infusion",
     "description": "Linked skills have a 30% chance to apply Poison (stacks twice)."
   },
@@ -115,8 +174,13 @@
     "category": "Link",
     "effectType": "ChainModifier",
     "modifiesTag": "Strike",
-    "params": { "chainCount": 2, "damageReductionPerChain": 0.15 },
-    "dropSourceIds": ["region_haunted_forest"],
+    "params": {
+      "chainCount": 2,
+      "damageReductionPerChain": 0.15
+    },
+    "dropSourceIds": [
+      "region_haunted_forest"
+    ],
     "iconId": "icon_chain_hit",
     "description": "Linked strike skills chain to 2 additional nearby enemies for reduced damage."
   },
@@ -126,8 +190,13 @@
     "category": "Link",
     "effectType": "AddedDamage",
     "modifiesTag": "Strike",
-    "params": { "addedColdDamageMin": 14, "addedColdDamageMax": 24 },
-    "dropSourceIds": ["region_haunted_forest"],
+    "params": {
+      "addedColdDamageMin": 14,
+      "addedColdDamageMax": 24
+    },
+    "dropSourceIds": [
+      "region_haunted_forest"
+    ],
     "iconId": "icon_frost_edge",
     "description": "Adds cold damage to linked strike skills. Enemies may be Chilled."
   },
@@ -137,9 +206,96 @@
     "category": "Link",
     "effectType": "ProjectileModifier",
     "modifiesTag": "Projectile",
-    "params": { "pierceCount": 2 },
-    "dropSourceIds": ["region_haunted_forest"],
+    "params": {
+      "pierceCount": 2
+    },
+    "dropSourceIds": [
+      "region_haunted_forest"
+    ],
     "iconId": "icon_piercing_shot",
     "description": "Linked projectile skills pierce through up to 2 additional enemies."
+  },
+  {
+    "id": "link_rune_extra_projectile",
+    "name": "Spread Shot",
+    "category": "Link",
+    "effectType": "ExtraProjectile",
+    "modifiesTag": "Projectile",
+    "params": {
+      "extraProjectiles": 1
+    },
+    "dropSourceIds": [
+      "region_edo_streets"
+    ],
+    "iconId": "icon_spread_shot",
+    "description": "Linked projectile skills fire 1 additional projectile."
+  },
+  {
+    "id": "link_rune_barrier_drain",
+    "name": "Barrier Drain",
+    "category": "Link",
+    "effectType": "BarrierInteraction",
+    "modifiesTag": "Strike",
+    "params": {
+      "barrierDrainPercent": 0.1
+    },
+    "dropSourceIds": [
+      "region_haunted_forest"
+    ],
+    "iconId": "icon_barrier_drain",
+    "description": "Linked skills drain 10% of enemy barrier before dealing HP damage."
+  },
+  {
+    "id": "link_rune_ignite_chance",
+    "name": "Flame Curse",
+    "category": "Link",
+    "effectType": "StatusSpecialization",
+    "modifiesTag": "Strike",
+    "params": {
+      "statusType": "Ignite",
+      "statusChance": 0.2,
+      "statusDamagePerTick": 18,
+      "statusDuration": 3
+    },
+    "dropSourceIds": [
+      "region_edo_streets",
+      "boss_oni_general"
+    ],
+    "iconId": "icon_flame_curse",
+    "description": "Linked strike skills have a 20% chance to Ignite enemies (18 Fire DoT/tick for 3s)."
+  },
+  {
+    "id": "link_rune_crit_amplify",
+    "name": "Keen Edge",
+    "category": "Link",
+    "effectType": "BurstMultiplier",
+    "modifiesTag": "Strike",
+    "params": {
+      "burstMultiplier": 0.3,
+      "critBonusAdditive": 0.25
+    },
+    "dropSourceIds": [
+      "region_edo_streets"
+    ],
+    "iconId": "icon_keen_edge",
+    "description": "Linked skills gain +30% increased damage and +25% critical strike bonus."
+  },
+  {
+    "id": "link_rune_bleed_on_crit",
+    "name": "Crimson Fury",
+    "category": "Link",
+    "effectType": "OnHitEffect",
+    "modifiesTag": "Strike",
+    "params": {
+      "triggerOn": "crit",
+      "statusType": "Bleed",
+      "bleedDamagePerTick": 25,
+      "bleedDuration": 5
+    },
+    "dropSourceIds": [
+      "boss_oni_general"
+    ],
+    "iconId": "icon_crimson_fury",
+    "description": "Critical hits with linked skills also apply Bleed (25/tick for 5s)."
   }
 ]

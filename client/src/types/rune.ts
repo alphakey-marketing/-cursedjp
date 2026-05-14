@@ -34,7 +34,11 @@ export interface LinkRune {
     | "CooldownReduction"
     | "ResourceLeech"
     | "ExtraProjectile"
-    | "BurstMultiplier";
+    | "BurstMultiplier"
+    | "ChainModifier"
+    | "ProjectileModifier"
+    | "BarrierInteraction"
+    | "StatusSpecialization";
   params: Record<string, number | string>;
   dropSourceIds: string[];
   iconId: string;

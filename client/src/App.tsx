@@ -3,6 +3,7 @@ import { usePlayerStore } from './store/usePlayerStore'
 import { useOfflineStore } from './store/useOfflineStore'
 import { useChapterStore } from './store/useChapterStore'
 import { useSettingsStore } from './store/useSettingsStore'
+import { useQuestStore } from './store/useQuestStore'
 import { WorldMapScreen } from './screens/WorldMapScreen'
 import { BattleScreen } from './screens/BattleScreen'
 import { ResultScreen } from './screens/ResultScreen'
@@ -14,6 +15,8 @@ import { ShrineScreen } from './screens/ShrineScreen'
 import { OfflineSummaryScreen } from './screens/OfflineSummaryScreen'
 import { BossDetailScreen } from './screens/BossDetailScreen'
 import { StoryScreen } from './screens/StoryScreen'
+import { QuestScreen } from './screens/QuestScreen'
+import { DataPreviewScreen } from './screens/DataPreviewScreen'
 import { SettingsPanel } from './components/SettingsPanel'
 import { DebugPanel } from './components/DebugPanel'
 import { useOfflineAccrual } from './hooks/useOfflineAccrual'
@@ -24,9 +27,10 @@ import type { BattleEndResult } from './hooks/useCombatLoop'
 import type { DropResult } from './engine/items/dropResolver'
 import type { BossTemplate } from './types/enemy'
 import type { ChapterDialogue } from './types/chapter'
+import type { Quest } from './types/quest'
 import './App.css'
 
-type Screen = 'map' | 'battle' | 'result' | 'inventory' | 'runes' | 'passive' | 'crafting'
+type Screen = 'map' | 'battle' | 'result' | 'inventory' | 'runes' | 'passive' | 'crafting' | 'quest'
 
 function App() {
   const [screen, setScreen] = useState<Screen>('map')
@@ -39,11 +43,21 @@ function App() {
   const [bossBattleTemplate, setBossBattleTemplate] = useState<BossTemplate | null>(null)
   const [pendingDialogue, setPendingDialogue] = useState<ChapterDialogue | null>(null)
   const [showSettings, setShowSettings] = useState(false)
+  const [showDataPreview, setShowDataPreview] = useState(false)
 
   const character = usePlayerStore((s) => s.character)
   const { hasPendingGains } = useOfflineStore()
   const { isBossKilled, isChapterCompleted, recordBossKill, completeChapter } = useChapterStore()
   const { showDebugPanel, toggleDebugPanel } = useSettingsStore()
+  const { loadQuests, updateKillCount, updateBossKill, updateItemAcquired, unlockQuestsForCondition } = useQuestStore()
+
+  // Load quests from JSON on mount
+  useEffect(() => {
+    fetch('/data/quests.json')
+      .then((r) => r.json())
+      .then((quests: Quest[]) => loadQuests(quests))
+      .catch(() => {})
+  }, [loadQuests])
 
   // Run offline accrual check on mount
   useOfflineAccrual()
@@ -105,10 +119,14 @@ function App() {
       const addMat = useCraftingStore.getState().addMaterial
       drops.materials.forEach(({ name, qty }) => addMat(name, qty))
 
+      // Update quest item acquisition
+      drops.materials.forEach(({ name, qty }) => updateItemAcquired(name, qty))
+
       // Analytics
       if (result.isBoss && result.bossId) {
         localStats.recordBossKill(result.bossId)
         recordBossKill(result.bossId)
+        updateBossKill(result.bossId)
 
         // Trigger boss-kill dialogue
         fetch('/data/chapters.json')
@@ -118,17 +136,22 @@ function App() {
             if (ch) {
               const killDialogue = ch.dialogues.find((d) => d.triggerCondition === 'BossKill')
               if (killDialogue) setPendingDialogue(killDialogue)
-              if (!isChapterCompleted(ch.id)) completeChapter(ch.id)
+              if (!isChapterCompleted(ch.id)) {
+                completeChapter(ch.id)
+                unlockQuestsForCondition(`${ch.id}_complete`)
+              }
             }
           })
           .catch(() => {})
       } else {
         localStats.recordCampKill(battleNodeId)
+        // Update kill counts for each enemy in the battle
+        result.enemies.forEach((e) => updateKillCount(e.templateId))
       }
 
       setScreen('result')
     }
-  }, [battleNodeId, isChapterCompleted, recordBossKill, completeChapter]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [battleNodeId, isChapterCompleted, recordBossKill, completeChapter, updateKillCount, updateBossKill, updateItemAcquired, unlockQuestsForCondition]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleBossInfo = useCallback((bossId: string) => {
     setActiveBossId(bossId)
@@ -185,12 +208,23 @@ function App() {
           <button style={navBtnStyle(screen === 'crafting')} onClick={() => setScreen('crafting')}>
             ⚒️ Craft
           </button>
+          <button style={navBtnStyle(screen === 'quest')} onClick={() => setScreen('quest')}>
+            📜 Quests
+          </button>
           <button
             style={{ ...navBtnStyle(false), marginLeft: 'auto' }}
             onClick={() => setShowSettings(true)}
           >
             ⚙️
           </button>
+          {import.meta.env.DEV && (
+            <button
+              style={navBtnStyle(false)}
+              onClick={() => setShowDataPreview(true)}
+            >
+              🔬 Data
+            </button>
+          )}
         </nav>
       )}
 
@@ -253,6 +287,10 @@ function App() {
         <CraftingScreen onClose={() => setScreen('map')} />
       )}
 
+      {screen === 'quest' && (
+        <QuestScreen onClose={() => setScreen('map')} />
+      )}
+
       {/* Shrine modal overlay */}
       {showShrine && (
         <ShrineScreen
@@ -290,6 +328,11 @@ function App() {
 
       {/* Debug panel — toggle with backtick key */}
       {showDebugPanel && <DebugPanel />}
+
+      {/* Dev-only data preview */}
+      {import.meta.env.DEV && showDataPreview && (
+        <DataPreviewScreen onClose={() => setShowDataPreview(false)} />
+      )}
     </div>
   )
 }

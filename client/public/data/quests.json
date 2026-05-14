@@ -1,0 +1,215 @@
+[
+  {
+    "id": "quest_chapter_1_main",
+    "title": "Chapter 1: Streets of Edo",
+    "description": "Cut through the corrupted ronin haunting Edo's back alleys and confront the Oni General.",
+    "type": "chapter",
+    "chapterId": "chapter_1",
+    "status": "active",
+    "objectives": [
+      {
+        "id": "obj_kill_ronin",
+        "type": "kill_enemy",
+        "description": "Defeat 10 Ronin",
+        "targetId": "enemy_ronin",
+        "targetCount": 10,
+        "currentCount": 0
+      },
+      {
+        "id": "obj_kill_oni_general",
+        "type": "kill_boss",
+        "description": "Defeat the Oni General",
+        "targetId": "boss_oni_general",
+        "targetCount": 1,
+        "currentCount": 0
+      },
+      {
+        "id": "obj_reach_level_5",
+        "type": "reach_level",
+        "description": "Reach Level 5",
+        "targetCount": 5,
+        "currentCount": 1
+      }
+    ],
+    "reward": {
+      "gold": 500,
+      "craftingMaterials": [
+        { "name": "Oni Horn", "qty": 2 },
+        { "name": "Dark Ore", "qty": 3 }
+      ],
+      "passiveRespecPoints": 1
+    }
+  },
+  {
+    "id": "quest_side_magic_weapon",
+    "title": "A Warrior's Edge",
+    "description": "Seek out an enchanted blade to gain an advantage in battle.",
+    "type": "side",
+    "status": "active",
+    "objectives": [
+      {
+        "id": "obj_equip_magic_weapon",
+        "type": "equip_rune",
+        "description": "Equip a Magic-grade or better weapon",
+        "targetId": "grade_magic_weapon",
+        "targetCount": 1,
+        "currentCount": 0
+      }
+    ],
+    "reward": {
+      "gold": 200,
+      "craftingMaterials": [
+        { "name": "Spirit Dust", "qty": 5 }
+      ]
+    }
+  },
+  {
+    "id": "quest_side_back_alley",
+    "title": "Clear the Back Alleys",
+    "description": "The merchants of Edo request that the back alleys be cleared of bandits.",
+    "type": "side",
+    "status": "active",
+    "objectives": [
+      {
+        "id": "obj_clear_back_alley",
+        "type": "clear_node",
+        "description": "Clear the Back Alley node",
+        "targetId": "region_edo_streets",
+        "targetCount": 1,
+        "currentCount": 0
+      }
+    ],
+    "reward": {
+      "gold": 300,
+      "craftingMaterials": [
+        { "name": "Coarse Cloth", "qty": 4 },
+        { "name": "Iron Shard", "qty": 3 }
+      ]
+    }
+  },
+  {
+    "id": "quest_side_rune_collector",
+    "title": "Rune Seeker",
+    "description": "Gather three different runes to understand the power of the cursed arts.",
+    "type": "side",
+    "status": "active",
+    "objectives": [
+      {
+        "id": "obj_acquire_3_runes",
+        "type": "equip_rune",
+        "description": "Acquire 3 different runes",
+        "targetCount": 3,
+        "currentCount": 0
+      }
+    ],
+    "reward": {
+      "gold": 150,
+      "runeId": "link_rune_addedfire"
+    }
+  },
+  {
+    "id": "quest_chapter_2_entry",
+    "title": "Chapter 2: The Haunted Forest",
+    "description": "Venture into the cursed forest beyond Edo's walls and face its supernatural guardians.",
+    "type": "chapter",
+    "chapterId": "chapter_2",
+    "status": "locked",
+    "unlockCondition": "chapter_1_complete",
+    "objectives": [
+      {
+        "id": "obj_survive_forest_edge",
+        "type": "clear_node",
+        "description": "Survive the Forest Edge",
+        "targetId": "region_haunted_forest",
+        "targetCount": 1,
+        "currentCount": 0
+      },
+      {
+        "id": "obj_defeat_jorogumo",
+        "type": "kill_boss",
+        "description": "Defeat Jorogumo the Spider Queen",
+        "targetId": "boss_jorogumo",
+        "targetCount": 1,
+        "currentCount": 0
+      }
+    ],
+    "reward": {
+      "gold": 800,
+      "craftingMaterials": [
+        { "name": "Jorogumo Silk Thread", "qty": 2 },
+        { "name": "Forest Essence", "qty": 3 }
+      ],
+      "passiveRespecPoints": 2
+    }
+  },
+  {
+    "id": "quest_side_forest_materials",
+    "title": "Herbalist's Request",
+    "description": "Gather spirit wisps from the forest specters for the local herbalist.",
+    "type": "side",
+    "status": "locked",
+    "unlockCondition": "chapter_1_complete",
+    "objectives": [
+      {
+        "id": "obj_acquire_spirit_wisp",
+        "type": "acquire_item",
+        "description": "Gather 5 Spirit Wisps",
+        "targetId": "Spirit Wisp",
+        "targetCount": 5,
+        "currentCount": 0
+      }
+    ],
+    "reward": {
+      "gold": 250,
+      "craftingMaterials": [
+        { "name": "Ancient Wood", "qty": 3 }
+      ]
+    }
+  },
+  {
+    "id": "quest_daily_bounty_ronin",
+    "title": "Daily Bounty: Ronin Hunt",
+    "description": "The local magistrate puts out a daily bounty on ronin plaguing the streets.",
+    "type": "daily",
+    "status": "active",
+    "objectives": [
+      {
+        "id": "obj_daily_kill_ronin",
+        "type": "kill_enemy",
+        "description": "Defeat 5 Ronin",
+        "targetId": "enemy_ronin",
+        "targetCount": 5,
+        "currentCount": 0
+      }
+    ],
+    "reward": {
+      "gold": 100,
+      "craftingMaterials": [
+        { "name": "Iron Shard", "qty": 2 }
+      ]
+    }
+  },
+  {
+    "id": "quest_daily_bounty_guard",
+    "title": "Daily Bounty: Guard Detail",
+    "description": "Corrupt city guards have abandoned their posts and turned to banditry.",
+    "type": "daily",
+    "status": "active",
+    "objectives": [
+      {
+        "id": "obj_daily_kill_guard",
+        "type": "kill_enemy",
+        "description": "Defeat 5 City Guards",
+        "targetId": "enemy_city_guard",
+        "targetCount": 5,
+        "currentCount": 0
+      }
+    ],
+    "reward": {
+      "gold": 120,
+      "craftingMaterials": [
+        { "name": "Leather Strip", "qty": 2 }
+      ]
+    }
+  }
+]

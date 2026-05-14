@@ -45,6 +45,7 @@ const DEFAULT_SKILL_SLOTS: EquippedSkillSlot[] = [
 
 interface PlayerStore {
   character: PlayerCharacter;
+  killsSinceLastRareDrop: number;
   setCharacter: (character: PlayerCharacter) => void;
   updateStats: (partial: Partial<CharacterStats>) => void;
   takeDamage: (hpDamage: number, barrierDamage: number) => void;
@@ -58,6 +59,8 @@ interface PlayerStore {
   addGold: (amount: number) => void;
   spendGold: (amount: number) => boolean;
   resetToShrine: () => void;
+  incrementKillsSinceRareDrop: () => void;
+  resetKillsSinceRareDrop: () => void;
 }
 
 export const usePlayerStore = create<PlayerStore>()(
@@ -101,6 +104,8 @@ export const usePlayerStore = create<PlayerStore>()(
         runeInventory: [],
         currency: { gold: 0, runeDust: 0, essences: {} },
       },
+
+      killsSinceLastRareDrop: 0,
 
       setCharacter: (character) => set({ character }),
 
@@ -254,6 +259,11 @@ export const usePlayerStore = create<PlayerStore>()(
             },
           },
         })),
+
+      incrementKillsSinceRareDrop: () =>
+        set((state) => ({ killsSinceLastRareDrop: state.killsSinceLastRareDrop + 1 })),
+
+      resetKillsSinceRareDrop: () => set({ killsSinceLastRareDrop: 0 }),
     }),
     { name: "cursed-japan-player" }
   )

@@ -34,4 +34,27 @@ export const BALANCE = {
     Unique: 0,
     Holy: 6,
   },
+
+  // Economy balance
+  EXP_PER_NODE: {
+    EnemyCamp: 45,
+    Miniboss: 120,
+    BossArena: 400,
+  },
+  GOLD_PER_ENEMY: {
+    Common: { min: 10, max: 40 },
+    Elite: { min: 40, max: 100 },
+    Boss: { min: 200, max: 500 },
+  },
+  PITY_COUNTER_THRESHOLD: 15,  // guaranteed drop after N kills without rare drop
+  OFFLINE_EXP_CAP_RATIO: 0.7,  // offline EXP max = 70% of active rate
+  GUARANTEED_BOSS_UPGRADE: true,  // boss first kill gives upgrade material
+
+  // Power gate levels
+  CHAPTER_POWER_GATES: {
+    chapter_1_mid: 130,
+    chapter_1_boss: 200,
+    chapter_2_entry: 280,
+    chapter_2_boss: 450,
+  },
 } as const;

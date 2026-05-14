@@ -65,3 +65,78 @@ export function doesLinkApplyToSkill(linkRune: LinkRune, skillRune: SkillRune): 
   if (!linkRune.modifiesTag) return true // no tag restriction → always applies
   return skillRune.tags.includes(linkRune.modifiesTag)
 }
+
+export interface BuildValidationResult {
+  valid: boolean
+  errors: string[]
+  warnings: string[]
+}
+
+/**
+ * Validate a complete set of skill slots for build-level consistency.
+ * Checks for duplicate skill runes, over-stacking the same link effect, and empty skill slots with links.
+ */
+export function validateBuildCombination(
+  slots: EquippedSkillSlot[],
+  ownedRunes: AnyRune[]
+): BuildValidationResult {
+  const errors: string[] = []
+  const warnings: string[] = []
+
+  const usedSkillRuneIds = new Set<string>()
+
+  for (const slot of slots) {
+    if (!slot.skillRuneId && slot.linkRuneIds.length > 0) {
+      errors.push(`Slot ${slot.slotIndex} has link runes but no skill rune`)
+      continue
+    }
+
+    if (!slot.skillRuneId) continue
+
+    if (usedSkillRuneIds.has(slot.skillRuneId)) {
+      errors.push(`Skill rune "${slot.skillRuneId}" is equipped in multiple slots`)
+    } else {
+      usedSkillRuneIds.add(slot.skillRuneId)
+    }
+
+    const skillRune = ownedRunes.find(
+      (r) => r.id === slot.skillRuneId && r.category === 'Skill'
+    ) as SkillRune | undefined
+
+    if (!skillRune) {
+      errors.push(`Slot ${slot.slotIndex}: skill rune "${slot.skillRuneId}" not found in owned runes`)
+      continue
+    }
+
+    if (slot.linkRuneIds.length > skillRune.maxSupportLinks) {
+      errors.push(
+        `Slot ${slot.slotIndex}: ${skillRune.name} supports at most ${skillRune.maxSupportLinks} link rune(s), but ${slot.linkRuneIds.length} are equipped`
+      )
+    }
+
+    // Warn about duplicate link rune IDs in the same slot
+    const seenLinks = new Set<string>()
+    for (const linkId of slot.linkRuneIds) {
+      if (seenLinks.has(linkId)) {
+        warnings.push(`Slot ${slot.slotIndex}: link rune "${linkId}" is equipped more than once`)
+      }
+      seenLinks.add(linkId)
+    }
+
+    // Warn about link runes that don't apply to the skill
+    for (const linkId of slot.linkRuneIds) {
+      const linkRune = ownedRunes.find((r) => r.id === linkId) as LinkRune | undefined
+      if (!linkRune) {
+        warnings.push(`Slot ${slot.slotIndex}: link rune "${linkId}" not found in owned runes`)
+        continue
+      }
+      if (!doesLinkApplyToSkill(linkRune, skillRune)) {
+        warnings.push(
+          `Slot ${slot.slotIndex}: "${linkRune.name}" (tag: ${linkRune.modifiesTag}) does not apply to "${skillRune.name}" (tags: ${skillRune.tags.join(', ')})`
+        )
+      }
+    }
+  }
+
+  return { valid: errors.length === 0, errors, warnings }
+}

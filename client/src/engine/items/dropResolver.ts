@@ -1,4 +1,6 @@
 import type { AnyItem, WeaponItem, ArmorItem, ItemGrade } from '../../types/item'
+import { BALANCE } from '../../constants/gameBalance'
+import { usePlayerStore } from '../../store/usePlayerStore'
 
 let _instanceCounter = Date.now()
 function genId(prefix: string): string {
@@ -220,14 +222,29 @@ export function resolveDrops(enemies: EnemyDropTable[]): DropResult {
   const materialsMap: Record<string, number> = {}
   const signatureRuneIds: string[] = []
 
+  const playerStore = usePlayerStore.getState()
+  let droppedRareOrBetter = false
+
   for (const enemy of enemies) {
     const table = DROP_TABLE[enemy.dropTableId]
     if (!table) continue
 
     gold += table.goldMin + Math.floor(Math.random() * (table.goldMax - table.goldMin + 1))
 
-    if (Math.random() < table.itemChance) {
-      items.push(pickRandomItem())
+    // Pity counter: guarantee a Magic+ item if threshold reached
+    const pityTriggered =
+      playerStore.killsSinceLastRareDrop >= BALANCE.PITY_COUNTER_THRESHOLD
+
+    if (pityTriggered || Math.random() < table.itemChance) {
+      const item = pickRandomItem()
+      items.push(item)
+      if (pityTriggered && item.grade === 'Normal') {
+        // Override to at least Magic grade for pity drop
+        (item as AnyItem & { grade: ItemGrade }).grade = 'Magic'
+      }
+      if (item.grade !== 'Normal') {
+        droppedRareOrBetter = true
+      }
     }
 
     const mats = rollMaterials(table.materials)
@@ -252,6 +269,13 @@ export function resolveDrops(enemies: EnemyDropTable[]): DropResult {
         }
       }
     }
+  }
+
+  // Update pity counter
+  if (droppedRareOrBetter) {
+    playerStore.resetKillsSinceRareDrop()
+  } else {
+    playerStore.incrementKillsSinceRareDrop()
   }
 
   const materials = Object.entries(materialsMap).map(([name, qty]) => ({ name, qty }))

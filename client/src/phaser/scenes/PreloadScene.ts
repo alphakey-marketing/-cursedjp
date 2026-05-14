@@ -31,7 +31,12 @@ export class PreloadScene extends Phaser.Scene {
     this._makeRect('enemy_city_guard', 0xe0a040, 26, 38)
     this._makeRect('enemy_boss', 0xc030c0, 40, 50)
 
-    this.scene.start('BattleScene')
+    // Start whichever combat scene was registered
+    if (this.scene.get('BattleScene')) {
+      this.scene.start('BattleScene')
+    } else {
+      this.scene.start('BossScene')
+    }
   }
 
   private _makeRect(key: string, color: number, w: number, h: number) {
