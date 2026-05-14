@@ -30,9 +30,11 @@ export const WorldMapScreen: React.FC<WorldMapScreenProps> = ({ onFight, onBossI
   const character = usePlayerStore((s) => s.character)
   const { isChapterCompleted } = useChapterStore()
   const ch1Complete = isChapterCompleted('chapter_1')
-  const activeQuests = useQuestStore((s) => s.quests.filter((q) => q.status === 'active'))
-  const completedUnclaimedQuests = useQuestStore((s) =>
-    s.quests.filter((q) => q.status === 'completed' && !s.claimedQuestIds.includes(q.id))
+  const quests = useQuestStore((s) => s.quests)
+  const claimedQuestIds = useQuestStore((s) => s.claimedQuestIds)
+  const activeQuests = quests.filter((q) => q.status === 'active')
+  const completedUnclaimedQuests = quests.filter(
+    (q) => q.status === 'completed' && !claimedQuestIds.includes(q.id)
   )
 
   const [selectedNodeId, setSelectedNodeId] = useState<string>(currentNodeId)
