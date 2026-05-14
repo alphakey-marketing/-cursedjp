@@ -146,6 +146,32 @@ try {
   error('lootTables.json', `Failed to read: ${e.message}`)
 }
 
+// ── affixes.json ──────────────────────────────────────────────────────────────
+console.log('Validating affixes.json…')
+try {
+  const affixes = readJSON('affixes.json')
+  const VALID_BUCKETS = ['Additive', 'Multiplicative', 'Utility', 'Exclusive']
+  const VALID_SLOTS = ['Weapon', 'OffHand', 'Helmet', 'Chest', 'Gloves', 'Boots', 'Ring1', 'Ring2', 'Amulet', 'Charm']
+  const affixIds = new Set()
+  for (const [i, a] of affixes.entries()) {
+    requireFields('affixes.json', a, i, ['id', 'label', 'bucket', 'statKey', 'minValue', 'maxValue', 'allowedGrades'])
+    if (a.id) {
+      if (affixIds.has(a.id)) error('affixes.json', `Duplicate id: "${a.id}"`)
+      affixIds.add(a.id)
+    }
+    if (a.bucket && !VALID_BUCKETS.includes(a.bucket)) error('affixes.json', `Entry[${i}] invalid bucket: "${a.bucket}"`)
+    if (typeof a.minValue === 'number' && typeof a.maxValue === 'number' && a.minValue > a.maxValue) {
+      error('affixes.json', `Entry[${i}] "${a.id}": minValue (${a.minValue}) > maxValue (${a.maxValue})`)
+    }
+    for (const slot of (a.allowedSlots ?? [])) {
+      if (!VALID_SLOTS.includes(slot)) error('affixes.json', `Entry[${i}] "${a.id}": invalid slot "${slot}"`)
+    }
+  }
+  console.log(`  ✓ ${affixes.length} affixes`)
+} catch (e) {
+  error('affixes.json', `Failed to read: ${e.message}`)
+}
+
 // ── Summary ───────────────────────────────────────────────────────────────────
 console.log('')
 if (totalErrors > 0) {

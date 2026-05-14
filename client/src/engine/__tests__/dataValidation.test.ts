@@ -3,6 +3,8 @@ import { describe, it, expect, beforeAll } from 'vitest'
 import { readFileSync } from 'fs'
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
+import { validateBuildCombination } from '../runes/runeValidator'
+import type { AnyRune, EquippedSkillSlot } from '../../types/rune'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const dataDir = resolve(__dirname, '../../../public/data')
@@ -19,6 +21,7 @@ let bossesData: unknown[]
 let runesData: unknown[]
 let passiveNodesData: unknown[]
 let questsData: unknown[]
+let affixesData: unknown[]
 
 beforeAll(() => {
   regionsData = loadJSON('regions.json')
@@ -27,6 +30,7 @@ beforeAll(() => {
   runesData = loadJSON('runes.json')
   passiveNodesData = loadJSON('passiveNodes.json')
   questsData = loadJSON('quests.json')
+  affixesData = loadJSON('affixes.json')
 })
 
 const VALID_RUNE_CATEGORIES = ['Skill', 'Link', 'Support'] as const
@@ -205,5 +209,178 @@ describe('quests.json', () => {
   it('quest IDs are unique', () => {
     const ids = (questsData as Array<{ id: string }>).map((q) => q.id)
     expect(new Set(ids).size).toBe(ids.length)
+  })
+})
+
+const VALID_AFFIX_BUCKETS = ['Additive', 'Multiplicative', 'Utility', 'Exclusive'] as const
+const VALID_ITEM_SLOTS = [
+  'Weapon', 'OffHand', 'Helmet', 'Chest', 'Gloves', 'Boots',
+  'Ring1', 'Ring2', 'Amulet', 'Charm',
+] as const
+
+describe('affixes.json', () => {
+  it('is a non-empty array', () => {
+    expect(Array.isArray(affixesData)).toBe(true)
+    expect(affixesData.length).toBeGreaterThan(0)
+  })
+
+  it('every affix has required fields', () => {
+    for (const affix of affixesData as Array<Record<string, unknown>>) {
+      expect(affix.id, 'affix.id missing').toBeTruthy()
+      expect(affix.label, `affix ${String(affix.id)} missing label`).toBeTruthy()
+      expect(affix.bucket, `affix ${String(affix.id)} missing bucket`).toBeTruthy()
+      expect(affix.statKey, `affix ${String(affix.id)} missing statKey`).toBeTruthy()
+      expect(typeof affix.minValue, `affix ${String(affix.id)} minValue not number`).toBe('number')
+      expect(typeof affix.maxValue, `affix ${String(affix.id)} maxValue not number`).toBe('number')
+      expect(Array.isArray(affix.allowedGrades), `affix ${String(affix.id)} allowedGrades not array`).toBe(true)
+    }
+  })
+
+  it('every affix has a valid bucket', () => {
+    for (const affix of affixesData as Array<{ id: string; bucket: string }>) {
+      expect(VALID_AFFIX_BUCKETS).toContain(affix.bucket)
+    }
+  })
+
+  it('affix minValue <= maxValue', () => {
+    for (const affix of affixesData as Array<{ id: string; minValue: number; maxValue: number }>) {
+      expect(affix.minValue, `affix ${affix.id}: minValue > maxValue`).toBeLessThanOrEqual(affix.maxValue)
+    }
+  })
+
+  it('allowed slots are valid if present', () => {
+    for (const affix of affixesData as Array<{ id: string; allowedSlots?: string[] }>) {
+      for (const slot of affix.allowedSlots ?? []) {
+        expect(VALID_ITEM_SLOTS).toContain(slot)
+      }
+    }
+  })
+
+  it('affix IDs are unique', () => {
+    const ids = (affixesData as Array<{ id: string }>).map((a) => a.id)
+    expect(new Set(ids).size).toBe(ids.length)
+  })
+})
+
+describe('build validation — validateBuildCombination', () => {
+  const ownedRunes: AnyRune[] = [
+    {
+      id: 'skill_rune_shadowslash',
+      name: 'Shadow Slash',
+      category: 'Skill',
+      damageType: 'Physical',
+      deliveryMode: 'Strike',
+      skillCoef: 1.4,
+      baseCooldown: 3,
+      resourceCost: 20,
+      maxSupportLinks: 3,
+      weaponFamilyRestriction: ['Katana', 'Tanto'],
+      tags: ['Strike', 'Melee', 'SingleTarget'],
+      description: 'A swift slash.',
+      iconId: 'icon_shadowslash',
+      dropSourceIds: [],
+    },
+    {
+      id: 'link_rune_addedfire',
+      name: 'Infused Flame',
+      category: 'Link',
+      effectType: 'AddedDamage',
+      modifiesTag: 'Strike',
+      params: { addedFireDamageMin: 10, addedFireDamageMax: 18 },
+      dropSourceIds: [],
+      iconId: 'icon_infusedflame',
+      description: 'Adds fire damage.',
+    },
+    {
+      id: 'link_rune_bleed',
+      name: 'Crimson Edge',
+      category: 'Link',
+      effectType: 'AddedDoT',
+      modifiesTag: 'Strike',
+      params: { bleedChance: 0.25, bleedDamagePerTick: 15, bleedDuration: 4 },
+      dropSourceIds: [],
+      iconId: 'icon_crimsonedge',
+      description: 'Applies Bleed on hit.',
+    },
+  ]
+
+  it('valid single-skill slot passes', () => {
+    const slots: EquippedSkillSlot[] = [
+      { slotIndex: 0, skillRuneId: 'skill_rune_shadowslash', linkRuneIds: ['link_rune_addedfire'] },
+    ]
+    const result = validateBuildCombination(slots, ownedRunes)
+    expect(result.valid).toBe(true)
+    expect(result.errors).toHaveLength(0)
+  })
+
+  it('empty slots with no links are valid', () => {
+    const slots: EquippedSkillSlot[] = [
+      { slotIndex: 0, skillRuneId: 'skill_rune_shadowslash', linkRuneIds: [] },
+      { slotIndex: 1, skillRuneId: null, linkRuneIds: [] },
+    ]
+    const result = validateBuildCombination(slots, ownedRunes)
+    expect(result.valid).toBe(true)
+  })
+
+  it('link rune without a skill rune in the slot is an error', () => {
+    const slots: EquippedSkillSlot[] = [
+      { slotIndex: 0, skillRuneId: null, linkRuneIds: ['link_rune_addedfire'] },
+    ]
+    const result = validateBuildCombination(slots, ownedRunes)
+    expect(result.valid).toBe(false)
+    expect(result.errors.length).toBeGreaterThan(0)
+  })
+
+  it('duplicate skill rune across slots is an error', () => {
+    const slots: EquippedSkillSlot[] = [
+      { slotIndex: 0, skillRuneId: 'skill_rune_shadowslash', linkRuneIds: [] },
+      { slotIndex: 1, skillRuneId: 'skill_rune_shadowslash', linkRuneIds: [] },
+    ]
+    const result = validateBuildCombination(slots, ownedRunes)
+    expect(result.valid).toBe(false)
+    expect(result.errors.some((e) => e.includes('multiple slots'))).toBe(true)
+  })
+
+  it('exceeding maxSupportLinks is an error', () => {
+    const slots: EquippedSkillSlot[] = [
+      {
+        slotIndex: 0,
+        skillRuneId: 'skill_rune_shadowslash',
+        // shadowslash has maxSupportLinks=3; provide 4 links
+        linkRuneIds: [
+          'link_rune_addedfire',
+          'link_rune_bleed',
+          'link_rune_addedfire',
+          'link_rune_bleed',
+        ],
+      },
+    ]
+    const result = validateBuildCombination(slots, ownedRunes)
+    expect(result.valid).toBe(false)
+    expect(result.errors.some((e) => e.includes('at most'))).toBe(true)
+  })
+
+  it('incompatible link rune tag generates a warning, not an error', () => {
+    const projectileLink: AnyRune = {
+      id: 'link_rune_pierce',
+      name: 'Piercing Shot',
+      category: 'Link',
+      effectType: 'ProjectileModifier',
+      modifiesTag: 'Projectile',
+      params: { pierceCount: 2 },
+      dropSourceIds: [],
+      iconId: 'icon_pierce',
+      description: 'Projectile pierces.',
+    }
+    const slots: EquippedSkillSlot[] = [
+      {
+        slotIndex: 0,
+        skillRuneId: 'skill_rune_shadowslash',
+        linkRuneIds: ['link_rune_pierce'],
+      },
+    ]
+    const result = validateBuildCombination(slots, [...ownedRunes, projectileLink])
+    expect(result.valid).toBe(true) // tag mismatch is a warning, not an error
+    expect(result.warnings.some((w) => w.includes('does not apply'))).toBe(true)
   })
 })

@@ -11,6 +11,8 @@ interface QuestStore {
   updateBossKill: (bossId: string) => void
   updateItemAcquired: (targetId: string, qty?: number) => void
   updateRuneEquipped: (runeId: string) => void
+  updateNodeCleared: (nodeId: string) => void
+  updateLevelReached: (level: number) => void
   completeQuest: (questId: string) => void
   claimReward: (questId: string) => Quest | null
   unlockQuestsForCondition: (condition: string) => void
@@ -80,6 +82,27 @@ export const useQuestStore = create<QuestStore>()(
           updated = advanceObjective(updated, 'equip_rune', undefined, 1)
           return { quests: updated }
         }),
+
+      updateNodeCleared: (nodeId) =>
+        set((state) => ({
+          quests: advanceObjective(state.quests, 'clear_node', nodeId, 1),
+        })),
+
+      updateLevelReached: (level) =>
+        set((state) => ({
+          quests: state.quests.map((quest) => {
+            if (quest.status !== 'active') return quest
+            const updatedObjectives = quest.objectives.map((obj) => {
+              if (obj.type !== 'reach_level') return obj
+              // reach_level objectives complete when currentCount reaches targetCount
+              const target = obj.targetCount
+              const newCount = Math.max(obj.currentCount, level >= target ? target : level)
+              return { ...obj, currentCount: newCount }
+            })
+            const allDone = updatedObjectives.every((o) => o.currentCount >= o.targetCount)
+            return { ...quest, objectives: updatedObjectives, status: allDone ? ('completed' as const) : quest.status }
+          }),
+        })),
 
       completeQuest: (questId) =>
         set((state) => ({

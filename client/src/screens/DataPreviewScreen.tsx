@@ -20,6 +20,7 @@ const FILES = [
   'enemies.json',
   'bosses.json',
   'runes.json',
+  'affixes.json',
   'passiveNodes.json',
   'quests.json',
   'lootTables.json',

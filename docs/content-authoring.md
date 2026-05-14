@@ -157,3 +157,53 @@ Quests are defined in `client/public/data/quests.json`.
 | `quests.json` | `id`, `title`, `description`, `type`, `status`, `objectives`, `reward` |
 
 Run `npm run validate:data` from the `client/` directory to check all files.
+
+---
+
+## How to Add Item Affixes
+
+Affixes are defined in `client/public/data/affixes.json`. They describe stat bonuses that can roll on gear.
+
+```json
+{
+  "id": "affix_my_stat",
+  "label": "+% My Stat",
+  "bucket": "Additive",
+  "statKey": "myStat",
+  "minValue": 0.05,
+  "maxValue": 0.30,
+  "allowedGrades": ["Magic", "Rare", "Legendary", "Holy"],
+  "allowedSlots": ["Weapon", "Amulet"],
+  "archetype": "crit"
+}
+```
+
+**`bucket`:** `Additive` | `Multiplicative` | `Utility` | `Exclusive`  
+**`archetype`:** optional tag used for build-diversity hints (`crit`, `bleed`, `elemental_conversion`, `tank`)
+
+---
+
+## Generating a New Chapter Skeleton
+
+Use the chapter generator script to scaffold all data files for a new chapter at once:
+
+```bash
+cd client
+npm run generate:chapter -- --id chapter_3 --name "Chapter 3: Mountain of Spirits" --number 3
+```
+
+Generated files appear in `public/data/generated/`. Review each file, fill in all `TODO` placeholders, then merge the entries into the main JSON files (`regions.json`, `enemies.json`, `bosses.json`, `runes.json`, `lootTables.json`, `chapters.json`).
+
+After merging, run:
+```bash
+npm run validate:data
+```
+
+---
+
+## Save Versioning
+
+If you change the structure of the player save state, bump `CURRENT_SAVE_VERSION` in  
+`client/src/engine/save/saveMigration.ts` and add a migration function to the `MIGRATIONS` map.
+
+This ensures players with old saves are migrated gracefully on next load.

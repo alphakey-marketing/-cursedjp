@@ -5,6 +5,7 @@ import type { ItemSlot, AnyItem } from "../types/item";
 import type { EquippedSkillSlot } from "../types/rune";
 import { DEFAULT_ELEMENTAL_RESISTANCES } from "../constants/damageTypes";
 import { usePassiveStore } from "./usePassiveStore";
+import { migrateState, CURRENT_SAVE_VERSION } from "../engine/save/saveMigration";
 
 const DEFAULT_STATS: CharacterStats = {
   strength: 10,
@@ -265,6 +266,16 @@ export const usePlayerStore = create<PlayerStore>()(
 
       resetKillsSinceRareDrop: () => set({ killsSinceLastRareDrop: 0 }),
     }),
-    { name: "cursed-japan-player" }
+    {
+      name: "cursed-japan-player",
+      version: CURRENT_SAVE_VERSION,
+      migrate: (persistedState, version) => {
+        const { state } = migrateState(
+          persistedState as Record<string, unknown>,
+          version
+        )
+        return state
+      },
+    }
   )
 );

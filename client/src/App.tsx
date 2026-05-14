@@ -20,6 +20,7 @@ import { DataPreviewScreen } from './screens/DataPreviewScreen'
 import { SettingsPanel } from './components/SettingsPanel'
 import { DebugPanel } from './components/DebugPanel'
 import { useOfflineAccrual } from './hooks/useOfflineAccrual'
+import { useAutosave } from './hooks/useAutosave'
 import { resolveDrops } from './engine/items/dropResolver'
 import { localStats } from './engine/analytics/localStats'
 import { useCraftingStore } from './store/useCraftingStore'
@@ -49,7 +50,7 @@ function App() {
   const { hasPendingGains } = useOfflineStore()
   const { isBossKilled, isChapterCompleted, recordBossKill, completeChapter } = useChapterStore()
   const { showDebugPanel, toggleDebugPanel } = useSettingsStore()
-  const { loadQuests, updateKillCount, updateBossKill, updateItemAcquired, unlockQuestsForCondition } = useQuestStore()
+  const { loadQuests, updateKillCount, updateBossKill, updateItemAcquired, updateNodeCleared, updateLevelReached, unlockQuestsForCondition } = useQuestStore()
 
   // Load quests from JSON on mount
   useEffect(() => {
@@ -61,6 +62,9 @@ function App() {
 
   // Run offline accrual check on mount
   useOfflineAccrual()
+
+  // Periodic autosave checkpoint
+  useAutosave()
 
   // Show chapter intro on first load if chapter 1 not seen
   useEffect(() => {
@@ -147,11 +151,16 @@ function App() {
         localStats.recordCampKill(battleNodeId)
         // Update kill counts for each enemy in the battle
         result.enemies.forEach((e) => updateKillCount(e.templateId))
+        // Track node clear for quest objectives
+        updateNodeCleared(battleNodeId)
       }
+
+      // Track level-up for reach_level quest objectives
+      updateLevelReached(usePlayerStore.getState().character.stats.level)
 
       setScreen('result')
     }
-  }, [battleNodeId, isChapterCompleted, recordBossKill, completeChapter, updateKillCount, updateBossKill, updateItemAcquired, unlockQuestsForCondition]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [battleNodeId, isChapterCompleted, recordBossKill, completeChapter, updateKillCount, updateBossKill, updateItemAcquired, updateNodeCleared, updateLevelReached, unlockQuestsForCondition]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleBossInfo = useCallback((bossId: string) => {
     setActiveBossId(bossId)
@@ -231,11 +240,13 @@ function App() {
       {/* ── Screen Router ── */}
 
       {screen === 'map' && (
-        <WorldMapScreen
-          onFight={handleFight}
-          onBossInfo={handleBossInfo}
-          onShrineVisit={() => setShowShrine(true)}
-        />
+        <div key="map" className="cj-screen-enter">
+          <WorldMapScreen
+            onFight={handleFight}
+            onBossInfo={handleBossInfo}
+            onShrineVisit={() => setShowShrine(true)}
+          />
+        </div>
       )}
 
       {screen === 'battle' && (battleNodeId || bossBattleTemplate) && (
@@ -272,23 +283,33 @@ function App() {
       )}
 
       {screen === 'inventory' && (
-        <InventoryScreen onClose={() => setScreen('map')} />
+        <div key="inventory" className="cj-screen-enter">
+          <InventoryScreen onClose={() => setScreen('map')} />
+        </div>
       )}
 
       {screen === 'runes' && (
-        <RuneScreen onClose={() => setScreen('map')} />
+        <div key="runes" className="cj-screen-enter">
+          <RuneScreen onClose={() => setScreen('map')} />
+        </div>
       )}
 
       {screen === 'passive' && (
-        <PassiveWebScreen onClose={() => setScreen('map')} />
+        <div key="passive" className="cj-screen-enter">
+          <PassiveWebScreen onClose={() => setScreen('map')} />
+        </div>
       )}
 
       {screen === 'crafting' && (
-        <CraftingScreen onClose={() => setScreen('map')} />
+        <div key="crafting" className="cj-screen-enter">
+          <CraftingScreen onClose={() => setScreen('map')} />
+        </div>
       )}
 
       {screen === 'quest' && (
-        <QuestScreen onClose={() => setScreen('map')} />
+        <div key="quest" className="cj-screen-enter">
+          <QuestScreen onClose={() => setScreen('map')} />
+        </div>
       )}
 
       {/* Shrine modal overlay */}

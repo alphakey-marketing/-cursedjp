@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useMapStore } from '../store/useMapStore'
 import { usePlayerStore } from '../store/usePlayerStore'
 import { useChapterStore } from '../store/useChapterStore'
+import { useQuestStore } from '../store/useQuestStore'
 import { RegionNode } from '../components/RegionNode'
 import type { Region, MapNode } from '../types/region'
 
@@ -29,6 +30,10 @@ export const WorldMapScreen: React.FC<WorldMapScreenProps> = ({ onFight, onBossI
   const character = usePlayerStore((s) => s.character)
   const { isChapterCompleted } = useChapterStore()
   const ch1Complete = isChapterCompleted('chapter_1')
+  const activeQuests = useQuestStore((s) => s.quests.filter((q) => q.status === 'active'))
+  const completedUnclaimedQuests = useQuestStore((s) =>
+    s.quests.filter((q) => q.status === 'completed' && !s.claimedQuestIds.includes(q.id))
+  )
 
   const [selectedNodeId, setSelectedNodeId] = useState<string>(currentNodeId)
   const [activeRegionId, setActiveRegionId] = useState<string>(currentRegionId)
@@ -131,6 +136,36 @@ export const WorldMapScreen: React.FC<WorldMapScreenProps> = ({ onFight, onBossI
           />
         </div>
       </div>
+
+      {/* Quest reminder banner */}
+      {(completedUnclaimedQuests.length > 0 || activeQuests.length > 0) && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '6px 10px',
+            marginBottom: 10,
+            background: completedUnclaimedQuests.length > 0 ? '#2a2010' : '#1a1e14',
+            border: `1px solid ${completedUnclaimedQuests.length > 0 ? '#c09030' : '#405030'}`,
+            borderRadius: 4,
+            fontSize: 11,
+          }}
+        >
+          {completedUnclaimedQuests.length > 0 ? (
+            <span style={{ color: '#f0c060' }}>
+              🎁 {completedUnclaimedQuests.length} quest{completedUnclaimedQuests.length > 1 ? 's' : ''} ready to claim!
+            </span>
+          ) : (
+            <span style={{ color: '#90c070' }}>
+              📜 {activeQuests.length} active quest{activeQuests.length > 1 ? 's' : ''}
+            </span>
+          )}
+          <span style={{ color: '#706050', marginLeft: 4 }}>
+            (open Quests tab to view)
+          </span>
+        </div>
+      )}
 
       {/* Chapter selector */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
