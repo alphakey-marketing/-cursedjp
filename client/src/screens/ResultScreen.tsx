@@ -28,9 +28,11 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
   const addGold = usePlayerStore((s) => s.addGold)
   const addToBag = useInventoryStore((s) => s.addToBag)
   const { equipDirectly, sellFromBag } = useItemEquip()
-  const activeQuests = useQuestStore((s) => s.quests.filter((q) => q.status === 'active'))
-  const justCompletedQuests = useQuestStore((s) =>
-    s.quests.filter((q) => q.status === 'completed' && !s.claimedQuestIds.includes(q.id))
+  const allQuests = useQuestStore((s) => s.quests)
+  const claimedQuestIds = useQuestStore((s) => s.claimedQuestIds)
+  const activeQuests = allQuests.filter((q) => q.status === 'active')
+  const justCompletedQuests = allQuests.filter(
+    (q) => q.status === 'completed' && !claimedQuestIds.includes(q.id)
   )
 
   const [collectedGold, setCollectedGold] = React.useState(false)
