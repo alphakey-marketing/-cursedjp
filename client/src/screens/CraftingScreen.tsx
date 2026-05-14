@@ -155,7 +155,7 @@ export const CraftingScreen: React.FC<CraftingScreenProps> = ({ onClose }) => {
               activeTab === 'salvage'
                 ? item.grade !== 'Unique' && item.grade !== 'Holy' && !item.isLocked
                 : activeTab === 'reroll'
-                ? item.grade !== 'Normal' || (item as BaseItem).prefixes.length > 0
+                ? item.grade !== 'Normal' || (item as BaseItem).prefixes.length > 0 || (item as BaseItem).suffixes.length > 0
                 : item.grade !== 'Legendary' && item.grade !== 'Unique' && item.grade !== 'Holy'
             return (
               <div
