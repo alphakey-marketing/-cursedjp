@@ -4,6 +4,9 @@ import { usePlayerStore } from '../store/usePlayerStore'
 import { useMapStore } from '../store/useMapStore'
 import type { CombatResult } from '../types/combat'
 
+// G6 fix: read currentNodeId via ref to avoid resetting the combat loop when
+// the map store changes mid-battle.
+
 export interface EnemyHPState {
   instanceId: string
   templateId: string
@@ -36,6 +39,12 @@ export function useCombatLoop() {
   const gainExp = usePlayerStore((s) => s.gainExp)
   const clearNode = useMapStore((s) => s.clearNode)
   const currentNodeId = useMapStore((s) => s.currentNodeId)
+
+  // G6 fix: keep a ref so the effect can read currentNodeId without listing it
+  // as a dependency (which would reset all combat state whenever the map store
+  // updates currentNodeId mid-battle).
+  const currentNodeIdRef = useRef(currentNodeId)
+  currentNodeIdRef.current = currentNodeId
 
   const [combatLog, setCombatLog] = useState<string[]>([])
   const [enemyHPMap, setEnemyHPMap] = useState<Record<string, EnemyHPState>>({})
@@ -79,8 +88,9 @@ export function useCombatLoop() {
     const onBattleEnd = (data: unknown) => {
       const d = data as BattleEndResult
       setBattleResult(d)
-      if (d.victory && currentNodeId) {
-        clearNode(currentNodeId)
+      // G6 fix: read nodeId from ref, not from the closed-over snapshot
+      if (d.victory && currentNodeIdRef.current) {
+        clearNode(currentNodeIdRef.current)
       }
     }
 
@@ -106,6 +116,15 @@ export function useCombatLoop() {
       const d = data as { enemyId: string; result: CombatResult }
       if (!d.result.missed && !d.result.dodged) {
         takeDamage(d.result.hpDamage, d.result.barrierDamage)
+
+        // G2 fix: detect player death after applying damage.  Zustand's set() is
+        // synchronous so getState() returns the updated HP immediately.
+        const newHP = usePlayerStore.getState().character.stats.currentHP
+        if (newHP <= 0) {
+          setPlayerDied(true)
+          // Also record the defeat so BattleScreen's effect can react to it.
+          setBattleResult({ victory: false, enemies: [] })
+        }
       }
     }
 
@@ -134,7 +153,7 @@ export function useCombatLoop() {
       PhaserEventBus.off(PHASER_EVENTS.COMBAT_LOG, onCombatLog)
       PhaserEventBus.off(PHASER_EVENTS.SCENE_READY, onSceneReady)
     }
-  }, [takeDamage, gainExp, clearNode, currentNodeId])
+  }, [takeDamage, gainExp, clearNode]) // G6: removed currentNodeId from deps
 
   const initEnemies = (enemies: EnemyHPState[]) => {
     const map: Record<string, EnemyHPState> = {}

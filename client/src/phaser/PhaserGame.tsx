@@ -44,6 +44,11 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({
   const containerRef = useRef<HTMLDivElement>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
 
+  // G5 fix: keep a ref for all props so the 'ready' callback always reads the
+  // latest values instead of a stale closure from mount time.
+  const propsRef = useRef({ enemies, playerStats, skillSlots, battleSpeed, bossTemplate })
+  propsRef.current = { enemies, playerStats, skillSlots, battleSpeed, bossTemplate }
+
   useEffect(() => {
     if (!containerRef.current) return
 
@@ -69,24 +74,26 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({
     gameRef.current = game
 
     game.events.on('ready', () => {
-      if (bossTemplate) {
+      // G5 fix: read from ref so we always have the latest prop values.
+      const { bossTemplate: bt, playerStats: ps, skillSlots: ss, battleSpeed: spd, enemies: en } = propsRef.current
+      if (bt) {
         const bossScene = game.scene.getScene('BossScene') as BossScene | null
         if (bossScene) {
           bossScene.scene.restart({
-            boss: bossTemplate,
-            playerStats,
-            skillSlots,
-            battleSpeed,
+            boss: bt,
+            playerStats: ps,
+            skillSlots: ss,
+            battleSpeed: spd,
           })
         }
       } else {
         const battleScene = game.scene.getScene('BattleScene') as BattleScene | null
         if (battleScene) {
           battleScene.scene.restart({
-            enemies,
-            playerStats,
-            skillSlots,
-            battleSpeed,
+            enemies: en,
+            playerStats: ps,
+            skillSlots: ss,
+            battleSpeed: spd,
           })
         }
       }

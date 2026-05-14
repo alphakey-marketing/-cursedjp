@@ -23,6 +23,9 @@ export function canAllocateNode(
   if (node.requiredNodeIds && node.requiredNodeIds.length > 0) {
     const hasRequired = node.requiredNodeIds.every((req) => allocatedNodeIds.includes(req))
     if (!hasRequired) return false
+    // E6 fix: when a node's prerequisites are satisfied it is allocatable
+    // regardless of graph adjacency (keystones / gated nodes).
+    return true
   }
 
   // Must be adjacent to at least one allocated node
@@ -46,10 +49,12 @@ export function canDeallocateNode(
   const remaining = allocatedNodeIds.filter((id) => id !== nodeId)
 
   // BFS from node_start through remaining allocated nodes
+  // E5 fix: use an index pointer instead of shift() to keep BFS at O(n).
   const reachable = new Set<string>()
-  const queue = ['node_start']
-  while (queue.length > 0) {
-    const current = queue.shift()!
+  const queue: string[] = ['node_start']
+  let qi = 0
+  while (qi < queue.length) {
+    const current = queue[qi++]
     if (reachable.has(current)) continue
     reachable.add(current)
 

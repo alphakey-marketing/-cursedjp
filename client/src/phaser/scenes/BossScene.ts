@@ -57,6 +57,10 @@ export class BossScene extends Phaser.Scene {
   }
 
   init(data: BossSceneData) {
+    // G5 fix: PreloadScene starts this scene without data on first boot.
+    // Guard here so the first empty pass doesn't crash or corrupt state.
+    if (!data?.boss) return
+
     this.sceneData = data
     this.battleEnded = false
     this.skillCooldowns.clear()
@@ -74,6 +78,10 @@ export class BossScene extends Phaser.Scene {
   }
 
   create() {
+    // G5 fix: if init() was called without data (first PreloadScene boot),
+    // sceneData is not set yet — wait for the restart with real data.
+    if (!this.sceneData?.boss) return
+
     const { width, height } = this.scale
 
     // Background — darker for boss
@@ -366,6 +374,14 @@ export class BossScene extends Phaser.Scene {
 
   private _fireTelegraphAttack() {
     if (!this.activeTelegraph) return
+    // G3 fix: if the battle ended (boss died or player died) while the telegraph
+    // was counting down, cancel the attack silently instead of firing & chaining.
+    if (this.battleEnded) {
+      this.telegraphActive = false
+      this.activeTelegraph = null
+      PhaserEventBus.emit(PHASER_EVENTS.TELEGRAPH_WARNING, null)
+      return
+    }
     const t = this.activeTelegraph
     this.telegraphActive = false
     this.activeTelegraph = null
@@ -375,7 +391,10 @@ export class BossScene extends Phaser.Scene {
 
     const boss = this.sceneData.boss
     const ps = this.sceneData.playerStats
-    const baseDmg = (boss.attackDamageMin + boss.attackDamageMax) / 2
+    // E7 fix: roll a random value in the damage range instead of using the average.
+    const baseDmg =
+      boss.attackDamageMin +
+      Math.random() * (boss.attackDamageMax - boss.attackDamageMin)
 
     const packet: DamagePacket = {
       skillId: t.id,
@@ -441,6 +460,7 @@ export class BossScene extends Phaser.Scene {
       const phase = phases[i]
       if (hpRatio <= phase.hpThreshold && this.currentPhaseIndex < phase.phaseIndex) {
         this._enterPhase(phase)
+        break // G4 fix: only enter the first triggered phase per attack
       }
     }
   }

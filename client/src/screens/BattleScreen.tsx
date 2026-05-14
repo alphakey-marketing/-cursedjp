@@ -112,11 +112,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
   }, [playerDied, resetToShrine])
 
   // Handle battle end (victory)
+  // E8 fix: include onBattleEnd in deps so stale closure is never used.
   useEffect(() => {
     if (battleResult?.victory) {
       onBattleEnd(battleResult)
     }
-  }, [battleResult]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [battleResult, onBattleEnd])
 
   // Build skill slot data for Phaser
   const phaserSkillSlots = skillSlots

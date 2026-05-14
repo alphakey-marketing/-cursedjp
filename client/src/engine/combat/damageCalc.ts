@@ -19,7 +19,6 @@ export function resolveDamage(
   if (packet.isDoT) {
     return resolveDoTDamage(packet, defense);
   }
-
   // Stage 1 — Base Construction
   const base = buildBase(packet);
 
@@ -31,6 +30,22 @@ export function resolveDamage(
   const scaledConverted = convertedDmg > 0 ? scaleOffensive(convertedDmg, packet) : 0;
 
   const scaledTotal = scaledPrimary + scaledConverted;
+
+  // E2 fix: guard against zero total (e.g. 0-damage packet) to prevent NaN
+  // propagating through the rest of the pipeline.
+  if (scaledTotal <= 0) {
+    return {
+      missed: false,
+      dodged: false,
+      isCrit: false,
+      rawDamage: 0,
+      mitigatedDamage: 0,
+      barrierDamage: 0,
+      hpDamage: 0,
+      statusProcs: resolveStatusProcs(packet, random),
+      lifeStealAmount: 0,
+    };
+  }
 
   // Stage 4 — Crit Resolution
   const { afterCrit, isCrit } = resolveCrit(scaledTotal, packet, random);
@@ -218,8 +233,12 @@ function resolveDoTDamage(
 ): CombatResult {
   // DoT skips: Stage 4 (crit), Stage 5 (hit/dodge)
   const base = buildBase(packet);
-  const { primaryDmg } = convertDamage(base, packet);
-  const scaled = scaleOffensive(primaryDmg, packet);
+  // E1 fix: include the converted portion so it is not silently dropped.
+  // DoTs are single-delivery so we merge primary + converted before scaling;
+  // the converted type's resistance is intentionally not applied separately
+  // (acceptable trade-off vs. losing the damage entirely).
+  const { primaryDmg, convertedDmg } = convertDamage(base, packet);
+  const scaled = scaleOffensive(primaryDmg + convertedDmg, packet);
 
   // DoT-specific defense (Bleed bypasses armor; Poison bypasses armor partially)
   let mitigated = scaled;

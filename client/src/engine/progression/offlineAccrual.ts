@@ -33,6 +33,13 @@ export function calculateOfflineGains(
     return { exp: 0, materials: {}, elapsedSeconds }
   }
 
+  // E9 fix: validate that the idle farm node actually belongs to this region.
+  // Stale save data could reference a node from a different (or removed) region.
+  const farmNode = region.nodes.find((n) => n.id === idleFarmNodeId)
+  if (!farmNode) {
+    return { exp: 0, materials: {}, elapsedSeconds }
+  }
+
   const rateMultiplier = region.offlineRateMultiplier ?? 1.0
 
   // EXP calculation: playerLevel × BASE_EXP_RATE × regionMultiplier per second

@@ -283,7 +283,10 @@ export const WorldMapScreen: React.FC<WorldMapScreenProps> = ({ onFight, onBossI
             )}
             {selectedNode.type === 'BossArena' && (
               <>
-                <button onClick={handleFight} style={btnStyle('#803020')}>
+                {/* Boss-fight route: open BossDetailScreen where the boss template
+                    is fetched and passed to handleFightBoss — calling handleFight
+                    here would clear bossBattleTemplate and load no enemies. */}
+                <button onClick={handleBossInfo} style={btnStyle('#803020')}>
                   ⚔️ Fight Boss
                 </button>
                 <button onClick={handleBossInfo} style={btnStyle('#402060')}>
