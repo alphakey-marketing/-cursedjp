@@ -1,0 +1,450 @@
+# Rune System Reference — Inspired by Undecember
+> Reference database for skill runes and link (support) runes for game design.
+> All rune entries include: name, attribute type, compatible weapons, tags, and effect summary.
+
+---
+
+## Table of Contents
+1. [System Overview](#system-overview)
+2. [Rune Types](#rune-types)
+3. [Skill Runes — Strength (Red)](#skill-runes--strength-red)
+4. [Skill Runes — Dexterity (Green)](#skill-runes--dexterity-green)
+5. [Skill Runes — Intelligence (Blue)](#skill-runes--intelligence-blue)
+6. [Link Runes — Strength (Red)](#link-runes--strength-red)
+7. [Link Runes — Dexterity (Green)](#link-runes--dexterity-green)
+8. [Link Runes — Intelligence (Blue)](#link-runes--intelligence-blue)
+9. [Skill Tags Reference](#skill-tags-reference)
+10. [Rune Color & Slot Rules](#rune-color--slot-rules)
+
+---
+
+## System Overview
+
+Runes are the core customization system replacing a traditional class structure. Each character is built entirely by equipping **Skill Runes** (active abilities) and **Link Runes** (modifiers/supports) without class restrictions.
+
+| Property | Detail |
+|---|---|
+| Skill Rune shape | Hexagonal; up to 6 link slots around the perimeter |
+| Link Rune slot colors | Red, Green, Blue |
+| Rune rarities | Normal → Magic → Rare → Legendary |
+| Max Link Runes per Skill | Up to 6 (limited by slot count and color match) |
+| Runestones | Passive enchantments; up to 3 active at once |
+| Link rule | Link Rune color must match the target Skill Rune slot color |
+| Channel link | Special Link Runes with a channel tag can bridge two Skill Runes |
+
+---
+
+## Rune Types
+
+| Type | Function | Shape |
+|---|---|---|
+| **Skill Rune** | Active skill / ability | Hexagonal |
+| **Link Rune** | Modifies the linked Skill Rune | Any non-hexagonal |
+| **Runestone** | Passive enhancement applied to a Skill Rune in the Rune Cast | Special |
+
+---
+
+## Skill Runes — Strength (Red)
+
+> Primarily physical, fire, lightning melee-oriented skills. Common weapons: Sword, Axe, Blunt, Shield, Staff.
+
+| Rune Name | Weapons | Tags | Effect Summary |
+|---|---|---|---|
+| Shout of Terror | All | Attack · Melee · AoE · Shout · Strike · Physical · Duration | Deals damage around caster, dampens enemy armor. Chance to stun. Mana 15.8, CD 20s |
+| Frost Wave | Sword/Axe/Blunt/Staff | Attack · Melee · AoE · Strike · Cold | Emits cold energy forward. Mana 5 |
+| Shield Charge | Shield | Attack · Melee · AoE · Strike · Physical · Movement | Charge forward dealing physical damage. Mana 4, CD 5s |
+| Combo | Sword/Axe | Attack · Melee · Weapon Range · Strike · Physical | Swings twice; Frenzy on hit increases speed. Mana 3 |
+| Illusion Axe | All | Attack · Melee · AoE · Strike · Physical · Toggle | Summons circling axes. Resource 20% Amp, CD 3s |
+| Lightning Strike | Axe/Blunt/Staff | Attack · AoE · Strike · Lightning · Projectile | Calls down lightning around caster. Mana 5 |
+| Explosive Slash | Sword/Axe | Attack · Melee · AoE · Strike · Fire | Applies debuff on hit; killing debuffed enemy triggers explosion. Mana 5 |
+| Earth Blow | Axe/Blunt/Staff | Attack · Melee · AoE · Strike · Physical | Slams ground, deals physical and increases crit rate (no move). Mana 4 |
+| Leap Attack | Dagger/Sword/Axe/Blunt/Staff | Attack · Melee · AoE · Strike · Physical · Movement | Leaps forward, knocks back on landing. Mana 4, CD 4s |
+| Whirlwind | Dagger/Sword/Axe/Blunt/Staff | Attack · Melee · Weapon Range · Channel · Strike · Physical | Spin-channel through enemies. Mana 3 |
+| Crescent Slash | Sword/Axe | Attack · Melee · Weapon Range · Strike · Physical | Wide swing hits multiple enemies. Mana 4 |
+| Lightning Vortex | Sword/Axe/Blunt/Staff | Attack · Melee · AoE · Strike · Lightning | Swings + creates vortex dealing additional lightning. Mana 5 |
+| Illusion Hook | All | Spell · Melee · AoE · Strike · Physical | Throws hook, pulls enemies to caster. Mana 9 |
+| Shield Strike | Shield | Attack · Melee · AoE · Strike · Physical | Knock back with shield. Mana 4 |
+| Quick Slash | Sword/Axe | Attack · Melee · Weapon Range · Strike · Physical | Hits single enemy with splash to nearby. Mana 5 |
+| Fissure | Axe/Blunt/Staff | Attack · Melee · AoE · Strike · Physical | Ground slam creates wide fissure; falloff damage at distance. Mana 4 |
+| Bloodshed | Sword/Axe | Attack · Melee · AoE · Weapon Range · Strike · Physical | Chance to inflict Bleed; creates Domain of Blood on Bleed. Mana 4 |
+| Frost Strike | Axe/Blunt/Staff | Attack · Melee · AoE · Strike · Cold | Creates Frost Pillar from ground slam. Mana 5 |
+| Fighter's Wrath | All | Spell · Attack · Enhance · Duration | Amplifies Melee DMG and Attack Speed. Mana 20.8, CD 25s |
+| Bulwark of Protection | All | Spell · Defense · Enhance · Duration | Increases Armor and Elemental Resist. Mana 20.8, CD 15s |
+| Shout of Provocation | All | Attack · AoE · Shout · Duration | Increases Armor, taunts nearby enemies, temporary DMG boost on use. Mana 15.8, CD 15s |
+| Blood Explosion | All | Attack · Melee · AoE · Strike · Physical · Duration · Toggle | Chance for blood explosion around caster upon stacking Bleed. Resource 15% Amp, CD 3s |
+| Guardian | Shield | Attack · Melee · AoE · Strike · Physical · Duration | Hits nearby enemies, inflicts Stun or Slow. Mana 17, CD 5s |
+| Enduring Pain | All | Spell · Defense · Enhance · Toggle | Builds armor stacks on taking damage; Enhance buff at max stacks. Resource 15% Amp, CD 20s |
+| Electric Area | All | Attack · AoE · Strike · Lightning | Creates electric zone dealing periodic lightning damage. Mana 20, CD 8s |
+| Wheel Slash | Sword/Axe | Attack · Melee · Weapon Range · DoT · Physical | Circular slash applying physical DoT. Mana 5 |
+| Sprint | All | — | Fast sprint with temporary CC immunity. Mana 6, CD 9s |
+| Whirlwind Slash | Sword/Axe | Attack · Strike · Physical · Projectile | Slashes air sending whirlwind projectile. Mana 10, CD 7s |
+| Tenacious Regeneration | All | Spell · Defense · Enhance · Duration | Increases HP and HP Regen. Mana 20.8, CD 20s |
+| Seal of Condensed Destruction | All | — · Toggle | Increases Physical DMG. Resource 15% Amp, CD 5s |
+| Seal of Defense | All | — · Toggle | Increases Armor. Resource 15% Amp, CD 5s |
+| Seal of CC Dodge | All | — · Toggle | Increases Crowd Control Dodge Chance. Resource 15% Amp, CD 10s |
+| Fire Blow | Axe/Blunt/Staff | Attack · Melee · AoE · Strike · Fire · Projectile | Ground slam creates Fire Pillar. Mana 5 |
+| Shout of Justice | All | Attack · AoE · Shout · Duration | Dampens enemy DMG in range, recovers HP, removes status effects. Mana 15.8, CD 25s |
+| Fierce Strike | Axe/Blunt/Staff | Attack · AoE · Strike · Physical | Summons hammers; periodically spawns giant hammer. Mana 6 |
+| Fire Storm | Sword/Axe/Blunt/Staff | Attack · Melee · AoE · Strike · Fire | Spin to create fire storm; chance to spawn new storm on killing Burning enemy. Mana 6 |
+| Seal of Physical Domain | All | — · Toggle | Decreases target's Physical DMG Taken. Resource 15% Amp, CD 5s |
+| Seal of Striking | All | — · Toggle | Amplifies target's Strike DMG. Resource 25% Amp, CD 10s |
+
+---
+
+## Skill Runes — Dexterity (Green)
+
+> Primarily bow, dagger, sentry, trap, and agility-based skills.
+
+| Rune Name | Weapons | Tags | Effect Summary |
+|---|---|---|---|
+| Spread Shot | Bow | Attack · Strike · Physical · Projectile · Bow | Wide-area arrow volley. Mana 3 |
+| Explosive Arrow | Bow | Attack · AoE · Strike · Fire · Projectile · Bow | Exploding arrow; extra explosion on killing enemy with attached arrow. Mana 10, CD 11s |
+| Icy Arrow | Bow | Attack · AoE · Strike · Cold · Projectile · Bow | Icy arrow with frost spheres along path and explosion. Mana 5 |
+| Rapid Shot | Bow | Attack · Strike · Physical · Projectile · Bow | Multi-arrow straight-line burst. Mana 4 |
+| Poison Cloud | All | Spell · Melee · AoE · Strike · Poison | Poison cloud around caster. Mana 4 |
+| Piercing Arrow | Bow | Attack · Strike · Physical · Projectile · Bow | Arrow pierces all enemies in line. Mana 6 |
+| Rain of Arrows | Bow | Attack · AoE · Strike · Physical · Projectile · Bow | Temporary rain of arrows from above. Mana 15, CD 20s |
+| Burn Arrow | Bow | Attack · Strike · Fire · Projectile · Bow | Fire arrow causes Burn on hit. Mana 4 |
+| Cross Lightning Arrow | Bow | Attack · AoE · Strike · Lightning · Projectile · Bow | Cross-shaped lightning explosion on impact. Mana 4 |
+| Dagger Throw | Dagger | Attack · Strike · Poison · Projectile | Thrown dagger bouncing between nearby enemies. Mana 4 |
+| Roll | All | — | Short roll forward. Mana 3, CD 5s |
+| Cross Slash | Dagger | Attack · Melee · AoE · Strike · Physical | Cross weapons to hit twice in front. Mana 5 |
+| Illusion Strike | Dagger | Attack · Melee · AoE · Strike · Physical · Movement | Dash forward dealing damage; chance to trigger status on crit. Mana 5, CD 5s |
+| Piercing Sentry | All | Attack · Sentry · Strike · Physical · Projectile | Summons sentry firing piercing arrows. Mana 15 |
+| Fan Blade Sentry | All | Attack · Sentry · Strike · Physical · Projectile | Summons sentry firing wide-area arrows. Mana 15 |
+| Electric Sentry | All | Attack · Sentry · Strike · Lightning · Projectile | Summons sentry firing chaining lightning arrows. Mana 15 |
+| Frost Sentry | All | Attack · Sentry · Strike · AoE · Cold · Projectile | Summons sentry firing exploding frost arrows. Mana 15 |
+| Shockwave Sentry | All | Attack · Sentry · Strike · Physical · Projectile | Summons short-range high-damage sentry. Mana 15 |
+| Venom Fang | Dagger | Attack · Melee · AoE · Strike · Poison | Dagger swing with expanding range per hit. Mana 4 |
+| Shadow Forest | All | Spell · AoE · Strike · Physical | Creates space dealing physical DoT. Mana 15, CD 10s |
+| Blade of Death | All | Spell · Strike · Physical · Projectile | Dagger thrown and returns to caster. Mana 5 |
+| Bombardment Arrow | Bow | Attack · AoE · Strike · Physical · Projectile · Bow | Bombardment arrow covering wide area. Mana 7 |
+| Venomous Strength | Dagger | Attack · Melee · Weapon Range · Strike · Poison | Stab forward; stacks boost attack speed and poison. Mana 4 |
+| Unleash Lightning Shot | Bow | Attack · Strike · Lightning · Projectile · Bow | Lightning arrow; erupts bolts on already-Shocked target. Mana 6 |
+| Vital Strike | All | Spell · Attack · Enhance · Duration | Increases Crit Rate and Crit DMG. Mana 16.8, CD 15s |
+| Marksman | All | Spell · Attack · Enhance · Duration | Increases Projectile DMG and Pierce Count. Mana 20.8, CD 15s |
+| Illusion Arrow | Bow | Attack · Strike · Physical · Projectile · Duration · Toggle | Auto-fires guided arrow on stack buildup with Bow skills. Resource 15% Amp, CD 3s |
+| Poison Explosion | All | Attack · AoE · Strike · Poison · Duration · Toggle | Poison explosion on reaching Poison stack count. Resource 15% Amp, CD 3s |
+| Counterattack | All | Attack · AoE · Strike · Physical · Toggle | Chance to counter-attack upon dodging. Resource 15% Amp, CD 3s |
+| Improved Senses | Dagger | Spell · Defense · Enhance · Duration | Enhance effect scales with equipped dagger count. Mana 20, CD 15s |
+| Freeze Arrow | Bow | Attack · AoE · Strike · Cold · Projectile · Bow | Multi-arrows freeze target; Cold Explosion on Freeze proc. Mana 5 |
+| Scorching Arrow | Bow | Attack · Strike · Fire · Projectile · Bow | Burning arrow; stacks fire additional arrows. Mana 4 |
+| Lightning Arrow | Bow | Attack · Strike · Lightning · Projectile · Bow | Row of lightning arrows; chance to gain Lightning Energy stacks for more DMG/speed. Mana 5 |
+| Shockwave Trap | All | Attack · AoE · Trap · Strike · Physical | Physical explosion trap on enemy detection. Mana 5 |
+| Flame Fissure Trap | All | Attack · AoE · Trap · Strike · Fire | Fire explosion trap. Mana 5 |
+| Frost Trap | All | Attack · AoE · Trap · Strike · Cold · Projectile | Frost sphere explosion trap. Mana 5 |
+| Electric Sphere Trap | All | Attack · Trap · Strike · Lightning · Projectile | Fires electric ball trap on detection. Mana 5 |
+| Poison Gas Trap | All | Attack · AoE · Trap · Strike · Poison | Poison gas cloud trap. Mana 5, CD 5s |
+| Fireball Trap | All | Attack · AoE · Trap · Strike · Fire · Projectile | Random exploding fire sphere trap. Mana 5 |
+| Chill Zone Trap | All | Attack · AoE · Trap · Strike · Cold | Cold zone trap on detection. Mana 5, CD 5s |
+| Activate Trap | All | — | Forces all placed traps to trigger immediately. Mana 15, CD 8s |
+| Penetrating Slash | Dagger/Sword/Axe/Blunt/Staff | Attack · Strike · Physical · Duration · Movement | Dash forward hitting all enemies in path. Mana 5, CD 12s |
+| Poison Rain of Arrows | Bow | Attack · AoE · Strike · Poison · Projectile · Bow | Poison arrow raining from above. Mana 7 |
+| Attack Impulse | All | Spell · Attack · Enhance · Duration | Temporarily increases Attack Speed and Physical DMG from Dexterity. Mana 20, CD 20s |
+| Seal of Accuracy | All | — · Toggle | Increases Accuracy. Resource 15% Amp, CD 5s |
+| Seal of Dodge | All | — · Toggle | Increases Evasion. Resource 15% Amp, CD 5s |
+| Seal of Critical Chance | All | — · Toggle | Increases Critical Chance. Resource 15% Amp, CD 5s |
+| Seal of Chaos Resist | All | — · Toggle | Increases Chaos Resistance. Resource 25% Amp, CD 10s |
+| Sentry Expert | All | Spell · Defense Enhance · Attack Enhance · Toggle | Adapts sentry stats dynamically. Resource 15% Amp, CD 10s |
+| Veil of Protection | All | Spell · Defense · Enhance · Toggle | Decreases Melee/Projectile DMG Taken when using a skill. Resource 15% Amp, CD 15s |
+| Shockwave Arrow | Bow | Attack · Melee · Strike · Physical · Projectile · Bow | Short-range piercing arrow. Mana 5 |
+| Spinning Dagger | Dagger | Attack · Strike · Physical · Projectile | Spinning dagger in straight line. Mana 7 |
+| Enchanted Crossbow | All | Spell · Channel · Attack · Enhance | Focus to increase nearby crossbow attack speed by stacks. Mana 10 |
+
+---
+
+## Skill Runes — Intelligence (Blue)
+
+> Spell, elemental, summoning, totem, and utility skills.
+
+| Rune Name | Weapons | Tags | Effect Summary |
+|---|---|---|---|
+| Summon Abyssling | All | Spell · Minion · Abyssling · Strike · AoE · Physical · Melee | Summons charging physical minion. Mana 22, CD 3s |
+| Summon Javelin Abyssling | All | Spell · Minion · Abyssling · Strike · Physical · Projectile | Summons javelin-throwing minion. Mana 22, CD 3s |
+| Summon Twisted Abyssling | All | Spell · Minion · Abyssling · Strike · AoE · Physical · Melee | Exploding suicide charge minion. Mana 12, CD 0.3s |
+| Summon Fire Orb Abyssling | All | Spell · Minion · Abyssling · Strike · AoE · Fire · Projectile | Minion throwing fire orbs. Mana 27, CD 3s |
+| Summon Poison Arrow Abyssling | All | Spell · Minion · Abyssling · Strike · Poison · Projectile | Chaining poison arrow minion. Mana 27, CD 3s |
+| Summon Lightning Arrow Abyssling | All | Spell · Minion · Abyssling · Strike · Lightning · Projectile | Piercing lightning arrow minion. Mana 27, CD 3s |
+| Summon Snow Orb Abyssling | All | Spell · Minion · Abyssling · Strike · Cold · Projectile | Splitting cold orb minion. Mana 27, CD 3s |
+| Summon Bursting Rune Knight | All | Spell · Minion · Rune Knight · Strike · AoE · Fire · Melee | Fire Rune Knight breathing fire, enhancing Abysslings. Mana 50, CD 40s |
+| Summon Arctic Rune Knight | All | Spell · Minion · Rune Knight · Strike · AoE · Cold · Melee | Cold Rune Knight using Frost Wind, enhancing Abysslings. Mana 50, CD 40s |
+| Summon Lightning Rune Knight | All | Spell · Minion · Rune Knight · Strike · AoE · Lightning · Melee | Lightning Rune Knight using Lightning Wave, enhancing Abysslings. Mana 50, CD 40s |
+| Summon Wrathful Rune Knight | All | Spell · Minion · Rune Knight · Strike · AoE · Physical · Melee | Physical Rune Knight with speed enhancing Abysslings. Mana 50, CD 40s |
+| Gather Minions | All | — | Teleport all minions to caster. Mana 25, CD 25s |
+| Unite Crowd (Enrage) | All | Spell · Attack Enhance · Defense Enhance · Toggle | Toggle minion stance between attack and defense. Resource 15% Amp, CD 5s |
+| Mark of Focus | All | Spell · Attack · Enhance · Duration | Marks enemy for minion focus; increases minion DMG on target. Mana 15, CD 10s |
+| Sacred Devotion | All | Spell · Channel | Decreases own Armor/Resists while channeling; greatly increases Minion DMG. Mana 10.5 |
+| Fire Ball | All | Spell · AoE · Strike · Fire · Projectile | Exploding fireball. Mana 5 |
+| Frost Ball | All | Spell · Strike · Cold · Projectile | Slow piercing frost sphere. Mana 5 |
+| Frost Shock | All | Spell · Melee · AoE · Strike · Cold | Ice thorns around caster. Mana 5 |
+| Frost Thorn | All | Spell · Strike · Cold · Projectile | Burst of frost spikes. Mana 4 |
+| Frost Bomb | All | Spell · Strike · Cold · Projectile | Delayed frost bomb exploding into ice shards. Mana 5 |
+| Cold Outburst | All | Spell · AoE · Strike · Cold · Projectile | Multiple ice spikes with shard fallout. Mana 30, CD 9s |
+| Blizzard | All | Spell · AoE · Strike · Cold | Summons frontal blizzard. Mana 30, CD 10s |
+| Cold Armor | All | Spell · Toggle | Ice barrier; reflects Cold DMG and Chill on melee hits. Resource 15% Amp, CD 3s |
+| Flamethrower | All | Spell · Melee · AoE · Channel · DoT · Fire | Channeled fire; range and DMG increase per stage; fire explosion on cancel. Mana 7 |
+| Fire Torrent | All | Spell · Channel · Strike · Fire · Projectile | Channeled fire torrent that tracks enemies; speed increases with duration. Mana 6 |
+| Meteor | All | Spell · AoE · Strike · Fire · Projectile | Massive meteor impact. Mana 25, CD 10s |
+| Charge Release | All | Spell · Strike · Lightning · Projectile | Fires multiple electric currents. Mana 5 |
+| Lightning Chain | All | Spell · Strike · Lightning | Chaining lightning to multiple enemies. Mana 6 |
+| Lightning Typhoon | All | Spell · AoE · Strike · Lightning · Projectile | Lightning typhoon that chases enemies. Mana 30, CD 7s |
+| Electric Ball | All | Spell · AoE · Strike · Lightning · Projectile | Electric ball with periodic explosions. Mana 6 |
+| Electromagnetic Field | All | Spell · AoE · Strike · Lightning | Electric sphere pulling enemies to center. Mana 25, CD 10s |
+| Thunderbolt | All | Spell · Strike · Lightning · Toggle | Chance to call lightning on melee hit. Resource 15% Amp, CD 3s |
+| Lightning Pulse | All | Spell · AoE · Strike · Lightning | Consumes all Lightning Energy; DMG amplified per energy consumed. Mana 20 |
+| Toxic Flame | All | Spell · DoT · Poison · Projectile | Piercing poison flame DoT (not affected by Projectile DMG). Mana 8 |
+| Poison Orb | All | Spell · AoE · Strike · Poison · Projectile | Bouncing poison orb. Mana 5 |
+| Poison Area | All | Spell · AoE | Poison zone for duration. Mana 25, CD 15s |
+| Plague Spike | All | Spell · AoE · Strike · Poison · Projectile · Duration | Plague spikes; chance to spread DoT to nearby on hit. Mana 5 |
+| Sacred Light | All | Spell · Melee · AoE · Channel · Strike · Cold/Poison/Lightning/Fire | Channels highest-element DMG; penetrates elemental resist at max stacks. Mana 5 |
+| Judgment of Light | All | Spell · AoE · Strike · Cold/Poison/Lightning/Fire | Hits with highest elemental attribute; stacking increases DMG but resets on other skills. Mana 5 |
+| Weaken Element Totem | All | Spell · Totem | Totem increasing enemy Element DMG Taken. Mana 25, CD 1s |
+| Tremor Totem | All | Spell · Totem | Totem slowing enemy movement and attack speed. Mana 25, CD 1s |
+| Protection Totem | All | Spell · Totem | Totem increasing ally Barrier and Barrier regen. Mana 25, CD 5s |
+| Life Totem | All | Spell · Totem | Totem boosting ally HP Regen. Mana 25, CD 5s |
+| Mist Totem | All | Spell · Totem | Totem reducing enemy hit rate and crit chance. Mana 25, CD 1s |
+| Wind Totem | All | Spell · Totem | Totem increasing ally cast and attack speed. Mana 25, CD 1s |
+| Spell Protection Totem | All | Spell · Totem | Totem blocking enemy spells and reducing damage. Mana 25, CD 1s |
+| Teleport | All | Spell · Movement | Blink forward; temporarily increases Element Resist after. Mana 4, CD 6s |
+| Agile Movement | All | Spell · Defense · Enhance · Duration | DMG reduction based on Zodiac Evasion when taking damage during skill. Mana 20, CD 15s |
+| Pantheon | All | Spell · Defense · Enhance · Duration | Greatly increases Barrier Regen. Mana 50, CD 12s |
+| Siphon Life | All | Attack · Defense · Enhance · Duration | Grants HP absorb to self and allies. Mana 30.8, CD 30s |
+| Release Element | All | Spell · Attack · Enhance · Duration | Amplifies Element DMG and increases Cast Speed. Mana 25, CD 20s |
+| Intensify Pain | All | Spell · Attack · Enhance · Duration | Increases DoT rate, duration and DMG. Mana 25, CD 15s |
+| Energy Absorption | All | Spell · Attack · Enhance · Duration | Consumes energy to increase elemental damage. Mana 25, CD 20s |
+| Seal of Condensed Elements | All | — · Toggle | Increases Element DMG. Resource 15% Amp, CD 5s |
+| Seal of Element Resist | All | — · Toggle | Increases all Elemental Resistance. Resource 15% Amp, CD 5s |
+| Seal of Elemental Domain | All | — · Toggle | Decreases Element DMG Taken. Resource 15% Amp, CD 5s |
+| Seal of Pain | All | — · Toggle | Amplifies DoT damage. Resource 25% Amp, CD 10s |
+
+---
+
+## Link Runes — Strength (Red)
+
+> Primarily physical, fire, melee, shout, and area enhancement supports.
+
+| Link Rune | Compatible Skill Tags | Effect Summary |
+|---|---|---|
+| Knockback | Melee Attack | Adds knockback on hit |
+| Additional Physical DMG | Physical DMG (+ Minions) | Adds flat physical damage |
+| Additional Fire DMG | Fire DMG (+ Minions) | Adds flat fire damage |
+| Endless Pain | Physical Strike (+ Minions) | Extends pain / bleed effect |
+| Bloodthirst | Physical Strike (+ Minions) | Adds life steal on physical hit |
+| Armor Penetration | Physical DMG (+ Minions) | Reduces enemy armor |
+| Ignite | Fire Strike (+ Minions) | Applies Ignite status on fire hit |
+| Blazing Flame | Fire Strike (+ Minions) | Increases fire burn DoT |
+| Area Effect | Area DMG (+ Minions) | Increases area size |
+| Concentrated Area DMG | Area DMG (+ Minions) | Focuses area damage to smaller high-damage zone |
+| Decrease Duration | Duration Skills | Reduces skill duration (shorter CD tradeoff) |
+| Fire Penetration | Fire DMG (+ Minions) | Reduces enemy fire resistance |
+| Confidence | DMG Skills (+ Minions) | Increases overall damage output |
+| Regenerative | Melee Attack (no Totem/Sentry/Minion/Toggle/Movement) | Adds HP recovery on melee hit |
+| Spell Activation on Attack Hit | Attack Skills | Triggers a linked Spell on attack hit |
+| Fire Damage Conversion | Physical DMG (convert, no duplicate convert) | Converts physical damage to fire |
+| Center of Gravity | DMG Skills (no Channel/Totem/Sentry/Minion/Movement) | Pulls enemies toward hit point |
+| Overpower | Strike (no Toggle, + Minions) | Increases damage against full-HP targets |
+| Hushed Shout | Shout | Reduces shout resource cost |
+| Savagery | Melee Weapon Range (no Movement, + Minions) | Increases weapon-range melee damage |
+| Disarm | Movement (no Totem/Sentry/Minion) | Disarms enemies hit by movement skill |
+| Hunger | Melee Strike DMG (no Totem/Sentry/Minion/Movement) | Increases damage per consecutive hit |
+| Lingering Shout | Shout | Extends shout duration |
+| Improved Shout | Shout | Amplifies shout effect |
+| Attack DMG Increase | Attack DMG (+ Minions) | Flat increase to attack damage |
+| Trap Master | Trap | Improves trap damage |
+| Trap Area Effect | Trap | Expands trap explosion area |
+| Melee DMG Amplification | Melee Attack (+ Minions) | Multiplicative melee damage boost |
+| Preemptive Strike | DMG (+ Minions) | Increases damage on first hit / on approach |
+| Strike | Strike (no Toggle, + Minions) | General strike damage amplification |
+| Buff Activation When Hit | Shout/Attack Enhance/Defense Enhance | Activates linked buff skill when player is hit |
+| Ignition Explosion | Fire Strike DMG (+ Minions) | Causes explosion on Ignited enemies |
+| Activate Buff upon Crowd Control | Shout/Attack Enhance/Defense Enhance | Triggers linked buff when CC is applied |
+| Shout of Power | Shout | Increases shout damage bonus |
+| Increase Gold Gain Chance | Strike (no Totem/Sentry/Minion/Movement) | Increases gold drop chance |
+| Increase Gold Gain Amount | Strike (no Totem/Sentry/Minion/Movement) | Increases gold drop amount |
+| Increased Kill Experience | Strike (no Totem/Sentry/Minion/Movement) | Increases XP from kills |
+| Grip Strength | Melee Strike (no Totem/Sentry/Minion/Toggle) | Increases weapon grip / damage stability |
+| Counterattack Offset | Hitting Skills (no Totem/Movement/Toggle/Shout) | Reduces or negates enemy counterattack |
+| Refreshment | Defense Enhancement (no Totem/Sentry/Minion/Movement/Toggle/Shout) | Recovers resource on defense skill activation |
+| Concentrated Defense | Defense Enhancement (same restrictions) | Amplifies defense skill effect |
+| Overflowing Power | Defense Enhancement (same restrictions) | Overcharges defense buff |
+| Sentence Scope Reinforcement | Sentence/Seal Skills | Increases seal skill radius |
+| Slaughter Chariot | DoT Skills (no Minion Crossbow) | Amplifies DoT on moving enemies |
+| Tenacity | Melee Attack (no Totem/Sentry/Minion/Toggle/Movement) | Increases resilience and sustained damage |
+| Wide Area Totem | Totem (no Sentry/Movement/Toggle/Shout) | Expands totem area of effect |
+| Concentrated Bang | Bash Skills | Increases bash impact damage |
+| Cohesion | Abyssal Skills | Enhances Abyssling coordination |
+| Advanced Technology | Attack or Spell (+ Minions via Summon) | General skill efficiency improvement |
+
+---
+
+## Link Runes — Dexterity (Green)
+
+> Primarily projectile, poison, sentry, trap, and agility-based supports.
+
+| Link Rune | Compatible Skill Tags | Effect Summary |
+|---|---|---|
+| Quick Attack | Attack DMG (+ Minions) | Increases attack speed |
+| Find Weakness | Hitting (+ Minions) | Increases critical hit rate |
+| Additional Poison DMG | Poison DMG (+ Minions) | Adds flat poison damage |
+| Multishot | Projectile capable of Multishot (+ Minions, no Totem/Movement) | Fires additional projectiles |
+| Slaughter | Hitting (+ Minions) | Increases kill damage / damage vs wounded |
+| Increase Duration | Duration Skills | Extends skill duration |
+| Piercing | Piercing-capable Projectile (+ Minions, no Totem/Movement) | Projectile pierces enemies |
+| Poison Penetration | Poison DMG (+ Minions) | Reduces enemy poison resistance |
+| Projectile Acceleration | Projectile (+ Minions, no Cannot-Change-Speed) | Increases projectile speed and damage |
+| Precision | Hitting (+ Minions) | Increases accuracy |
+| Projectile Deceleration | Projectile (+ Minions, no Cannot-Change-Speed) | Slows projectile but increases damage |
+| Split Projectile | Split-capable Projectile (+ Minions, no Totem/Movement) | Splits projectile into multiple on impact |
+| Flowing Pain | Poison DMG (+ Minions) | Extends and strengthens poison DoT |
+| Elite Slayer | DMG (+ Minions) | Increased damage against elite/rare enemies |
+| Blind Aid | Poison Strike DMG (+ Minions) | Adds blind on poison hit |
+| Deadly Poison | Poison DMG (+ Minions) | Amplifies poison damage significantly |
+| Convert Poison DMG | Physical DMG (convert, no duplicate) | Converts physical damage to poison |
+| Close Range Shot | Bow Projectile (+ Minions) | Increases bow damage at close range |
+| Aim | Attack (+ Minions, no Totem) | Increases attack accuracy and precision |
+| Chain Impact | Chainable Skills | Chains projectile or hit to additional targets |
+| Pierce Wound | Piercing Projectile | Adds wound on pierce |
+| Precise Shot | Bow Projectile (+ Minions) | Increases single-target bow precision |
+| Life Imbued Sentry | Sentry | Increases sentry HP |
+| Precise Sentry | Sentry | Increases sentry accuracy |
+| Sturdy Sentry | Sentry | Increases sentry armor/defense |
+| Multi Sentry | Sentry | Places multiple sentries |
+| Parallel Multiple Traps | Trap (no other Multi-Trap) | Places traps in parallel line |
+| Random Multiple Traps | Trap (no other Multi-Trap) | Places traps randomly in radius |
+| Quick Set Trap | Trap | Reduces trap placement time |
+| Increased Trap Placement Distance | Trap | Increases how far traps can be placed |
+| Trap Projectile Multiple Shots | Trap Projectile | Fires multiple shots from trap |
+| Trap Damage Amplification | Trap | Amplifies all trap damage |
+| Lasting Trap | Trap | Extends trap duration |
+| Channeling | Melee Attack (no Totem/Sentry/Minion/Toggle/Movement) | Converts skill into channel version |
+| Parallel Multishot | Multishot-capable Projectile (no Totem/Sentry/Minion/Movement) | Fires multishot horizontally spread |
+| Spell Activation upon Enemy Kill | Strike (must register target in slot) | Triggers linked spell on kill |
+| Amplify Physical Projectile DMG | Physical Projectile (+ Minions) | Amplifies physical projectile damage |
+| Opportunistic Strike | Attack or Spell Strike (no Channel/Totem/Sentry/Minion/Toggle) | Increases damage on debuffed targets |
+| Quick Shout | Shout | Reduces shout cast time |
+| Universal | Attack Enhancement (no Totem/Sentry/Minion/Movement/Toggle/Shout) | Enhances all attack buffs |
+| Sentry Quick Install | Sentry (no Totem/Movement/Toggle/Shout) | Reduces sentry placement time |
+| Totem Quick Install | Totem (no Sentry/Movement/Toggle/Shout) | Reduces totem placement time |
+| Cut | Melee Strike / Damage Skill (+ Minions) | Adds armor shred on hit |
+| Increase Item Drop Rarity | Strike (no Totem/Sentry/Minion/Movement) | Improves gear drop quality |
+| Increase Skill Rune Drop Chance | Strike (no Totem/Sentry/Minion/Movement) | Improves skill rune drop rate |
+| Increase Link Rune Drop Chance | Strike (no Totem/Sentry/Minion/Movement) | Improves link rune drop rate |
+| Effect Enhancement | Enhance and Shout | Amplifies buff/shout skill effects |
+
+---
+
+## Link Runes — Intelligence (Blue)
+
+> Primarily elemental, spell, minion, totem, and utility supports.
+
+| Link Rune | Compatible Skill Tags | Effect Summary |
+|---|---|---|
+| Additional Lightning DMG | Lightning DMG (+ Minions) | Adds flat lightning damage |
+| Additional Cold DMG | Cold DMG (+ Minions) | Adds flat cold damage |
+| Quick Cast | Spell (+ Minions) | Increases spell cast speed |
+| Lingering Chill | Cold Strike DMG (+ Minions) | Extends chill/freeze duration |
+| Use Count | Strike with Use Count | Increases skill use charges |
+| Frost Explosion | Cold Strike (+ Minions) | Adds explosion on freeze proc |
+| Cold Penetration | Cold DMG (+ Minions) | Reduces enemy cold resistance |
+| Lightning Penetration | Lightning DMG (+ Minions) | Reduces enemy lightning resistance |
+| Time Acceleration | Skills with Cooldown | Reduces skill cooldown |
+| Channeling Enhancement | Channeling Skills | Increases channeling damage/speed |
+| Minion Speed | Minion | Increases minion movement/attack speed |
+| Minion HP | Minion | Increases minion health pool |
+| Minion Body Shield | Minion | Minion absorbs some damage for caster |
+| Minion Armor | Minion | Increases minion armor |
+| Minion DMG | Minion | Increases minion damage output |
+| Continuous Shock | Lightning Strike (+ Minions) | Extends shock duration |
+| Conductor | Lightning Strike (+ Minions) | Increases chain/arc damage |
+| Persistence | Strike DMG (no Crit Runes, + Minions) | Replaces crits with steady high consistent damage |
+| Spell Activation on Spell Hit | Spell (must register target in slot) | Triggers linked spell when a spell hits |
+| Spell Activation while Channeling | Channeling Spell (must register in slot) | Triggers linked spell during channel |
+| Convert Cold DMG | Physical DMG (convert, no duplicate) | Converts physical damage to cold |
+| Convert Lightning DMG | Physical DMG (convert, no duplicate) | Converts physical damage to lightning |
+| Sharpness | Cold Strike (no Channel/Totem/Sentry/Minion/Movement) | Adds cold-enhanced crit |
+| Status Effect Enhancement | Hitting (+ Minions) | Increases status effect potency and duration |
+| DoT | DMG (+ Minions) | Converts hit damage to add DoT |
+| Enhance DoT | DMG | Amplifies DoT damage |
+| Spell DMG Increase | Spell DMG (+ Minions) | Increases spell damage |
+| Chain | Chainable Skills (+ Minions, no Totem/Movement) | Adds chain bouncing to skill |
+| Element DMG Amplification | Element DMG (+ Minions) | Multiplicative elemental damage boost |
+| Finishing Strike | Hitting (+ Minions) | Increases damage to enemies below HP threshold |
+| Electric Shock | Strike DMG (+ Minions) | Applies electric shock status |
+| Impact | Melee Strike DMG (+ Minions) | Increases impact stagger and damage |
+| Acceleration | Strike (no Totem/Sentry/Minion/Toggle/Movement) | Increases attack/cast speed |
+| Totem Affinity | Totem | Improves totem stat scaling with caster |
+| Life Imbued Totem | Totem | Increases totem HP |
+| Lingering Totem | Totem | Extends totem duration |
+| Enhanced Totem | Totem | Amplifies totem effect |
+| Barrier Absorb | Spell Strike (no Totem/Sentry/Minion/Toggle) | Some damage is absorbed by barrier instead of HP |
+| Preserve Mana | Attack or Spell (no Channel/Toggle) | Reduces mana cost |
+| Reduced Resource Consumption | All Skills | Reduces all resource costs |
+| Intellectual | Attack Enhance (no Totem/Sentry/Minion/Movement/Toggle/Shout) | Enhances intelligence-based attack buffs |
+| Element Ruler | Elemental DMG (+ Minions) | Further amplifies elemental mastery damage |
+| Disruptive Behavior | Movement Skills | Applies debuff on movement skill use |
+| Energy Harvesting | Hitting (no Minion Crossbow) | Restores energy on hit |
+| Time Warp | DMG without Cooldown (no Channel/Totem/Sentry/Minion/Movement) | Resets or speeds up time-based mechanics |
+| Mana Storm | DMG (+ Minions) | Deals mana burn alongside damage |
+| Harmony | Attack Spell DMG (no Totem/Movement/Toggle/Shout/Enhance) | Harmonizes attack and spell scaling |
+| Trigger Spell on Hit | DMG + Spell (must register in slot) | Triggers spell when primary skill hits |
+| Activate Totem When Using Enhancement Skills | Enhance + Totem (must register in slot) | Auto-activates totem when buff skill is used |
+| Crush | Damage Skills (+ Minions) | Increases armor crush on hit |
+| Increase Essence Drop Chance | Strike (no Totem/Sentry/Minion/Movement) | Improves essence drop rate |
+| Increase Charm Drop Chance | Strike (no Totem/Sentry/Minion/Movement) | Improves charm drop rate |
+| Increased Alchemy Ingredient Drop Chance | Strike (no Totem/Sentry/Minion/Movement) | Improves alchemy material drops |
+| Increase Element Drop Chance | Strike (no Totem/Sentry/Minion/Movement) | Improves elemental material drops |
+| Buff Activation upon using Movement Skill | Movement + Shout/Enhance (must register in slot) | Triggers buff when movement skill is used |
+
+---
+
+## Skill Tags Reference
+
+Tags determine which Link Runes can attach to a Skill Rune. A Link Rune checks if the Skill Rune's tags match its requirements.
+
+| Tag | Meaning |
+|---|---|
+| Attack | Scales with attack stats; weapon damage based |
+| Spell | Scales with spell stats; cast-based |
+| Melee | Hits within melee range |
+| Projectile | Fires a projectile |
+| AoE (Area of Effect) | Hits a zone |
+| Strike | Single hit or discrete hits (vs DoT) |
+| DoT | Damage over time effect |
+| Channel | Sustained channeled skill |
+| Duration | Skill has a timed duration |
+| Toggle | Persistent on/off mode; costs resource while active |
+| Movement | Moves the player character |
+| Physical / Fire / Cold / Lightning / Poison | Damage element type |
+| Bow | Requires a bow weapon |
+| Minion / Abyssling / Rune Knight | Summoned entity type |
+| Sentry | Deployed stationary attacker |
+| Totem | Deployed stationary support structure |
+| Trap | Placed triggered effect |
+| Shout | Buff/debuff shout-type skill |
+| Enhance (Attack/Defense) | Buff category |
+| Seal | Sentence/seal-type activation |
+| Weapon Range | Uses equipped weapon's attack range |
+
+---
+
+## Rune Color & Slot Rules
+
+| Color | Primary Attribute | Primary Skill Type |
+|---|---|---|
+| Red | Strength | Melee, Physical, Fire, Shout |
+| Green | Dexterity | Bow, Dagger, Trap, Sentry, Poison |
+| Blue | Intelligence | Spell, Elemental, Summon, Totem |
+
+**Rules:**
+- A Link Rune can only be placed in a slot whose color matches the Link Rune's color.
+- Each Skill Rune has up to 6 slots; the actual slot count and colors vary per rune.
+- Slot colors can be changed using **Rune Color Essence** (enchanting material).
+- Slot positions can be changed using **Rune Link Essence**.
+- New slots can be added using **Rune Birth Essence** (up to max for that rune).
+- Two Skill Runes can be chained via a **Channel-tagged Link Rune** linking them in arrow direction order.
+- Only one **Convert DMG** Link Rune can be active per Skill Rune at a time.
+- Some Link Runes explicitly cannot be combined together (e.g., Persistence disables Crit-based Links).
+
+---
+
+*Reference compiled from Undecember (LINE Games / NGEL Games) for game design study purposes.*
