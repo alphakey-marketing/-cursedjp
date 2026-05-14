@@ -35,5 +35,66 @@
         ]
       }
     ]
+  },
+  {
+    "id": "chapter_2",
+    "index": 2,
+    "title": "The Haunted Forest",
+    "regionIds": ["region_haunted_forest"],
+    "chapterBossId": "boss_jorogumo",
+    "unlockCondition": { "completedChapterId": "chapter_1" },
+    "isCompleted": false,
+    "dialogues": [
+      {
+        "dialogueId": "ch2_intro",
+        "speakerName": "Narrator",
+        "speakerPortraitId": "portrait_narrator",
+        "triggerCondition": "ChapterStart",
+        "lines": [
+          "Beyond Edo's walls lies the Kageyama Forest — ancient, silent, and cursed.",
+          "Villagers speak of silk-wrapped bodies hanging from blackened trees.",
+          "A spider demon, Jorogumo, weaves fate for any who enter.",
+          "The forest whispers your name. Something there knows you are coming.",
+          "Chapter 2 begins. Do not let the silk catch you."
+        ]
+      },
+      {
+        "dialogueId": "ch2_midpoint",
+        "speakerName": "Forest Spirit",
+        "speakerPortraitId": "portrait_forest_spirit",
+        "triggerCondition": "Midpoint",
+        "lines": [
+          "Wanderer. You have passed the outer wards.",
+          "The Yokai grow stronger the deeper you go.",
+          "The Spider Queen's web spans the entire forest heart.",
+          "Bring flame. Bring poison. She is not immune to her own gifts."
+        ]
+      },
+      {
+        "dialogueId": "ch2_boss_intro",
+        "speakerName": "Jorogumo",
+        "speakerPortraitId": "portrait_jorogumo",
+        "triggerCondition": "BossEncounter",
+        "lines": [
+          "A mortal dares enter my grove?",
+          "You smell of Oni blood. How amusing.",
+          "I will add you to my collection — preserved in silk, forever.",
+          "Let us see if your blade cuts web as well as it cuts shadow."
+        ]
+      },
+      {
+        "dialogueId": "ch2_boss_kill",
+        "speakerName": "Wanderer",
+        "speakerPortraitId": "portrait_player_wanderer",
+        "triggerCondition": "BossKill",
+        "lines": [
+          "The Spider Queen's silk shroud unravels.",
+          "Her eight eyes dim. The forest holds its breath.",
+          "Webs dissolve like morning frost. The cursed fog retreats.",
+          "Villagers will sleep safely tonight.",
+          "Chapter 2 Complete. Darker gods stir in the deep mountains."
+        ]
+      }
+    ]
   }
 ]

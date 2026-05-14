@@ -126,5 +126,116 @@
     "connectedNodeIds": ["node_int_001"],
     "cost": 1,
     "stats": { "intelligence": 10 }
+  },
+  {
+    "id": "node_poison_001",
+    "label": "+8% Poison Damage",
+    "type": "StatNode",
+    "position": { "x": 400, "y": 420 },
+    "connectedNodeIds": ["node_int_002", "node_poison_002"],
+    "cost": 1,
+    "stats": { "poisonDamage": 0.08 }
+  },
+  {
+    "id": "node_poison_002",
+    "label": "+12% Poison Duration",
+    "type": "StatNode",
+    "position": { "x": 450, "y": 470 },
+    "connectedNodeIds": ["node_poison_001", "node_poison_003"],
+    "cost": 1,
+    "stats": { "poisonDuration": 0.12 }
+  },
+  {
+    "id": "node_poison_003",
+    "label": "+10% Chaos Resistance",
+    "type": "StatNode",
+    "position": { "x": 390, "y": 510 },
+    "connectedNodeIds": ["node_poison_002", "keystone_toxic_bloom"],
+    "cost": 1,
+    "stats": { "chaosResistance": 0.10 }
+  },
+  {
+    "id": "keystone_toxic_bloom",
+    "label": "Toxic Bloom",
+    "type": "Keystone",
+    "position": { "x": 330, "y": 540 },
+    "connectedNodeIds": ["node_poison_003"],
+    "cost": 1,
+    "stats": {},
+    "keystoneEffect": "Your Poison stacks explode on enemy death, dealing 50% remaining DoT damage to nearby enemies."
+  },
+  {
+    "id": "node_resist_001",
+    "label": "+6% All Resistances",
+    "type": "StatNode",
+    "position": { "x": 480, "y": 300 },
+    "connectedNodeIds": ["node_int_001", "node_resist_002"],
+    "cost": 1,
+    "stats": { "allResistances": 0.06 }
+  },
+  {
+    "id": "node_resist_002",
+    "label": "+8% Elemental Resist",
+    "type": "StatNode",
+    "position": { "x": 540, "y": 340 },
+    "connectedNodeIds": ["node_resist_001", "node_barrier_001"],
+    "cost": 1,
+    "stats": { "elementalResistance": 0.08 }
+  },
+  {
+    "id": "node_barrier_001",
+    "label": "+60 Max Barrier",
+    "type": "StatNode",
+    "position": { "x": 570, "y": 400 },
+    "connectedNodeIds": ["node_resist_002", "node_barrier_002"],
+    "cost": 1,
+    "stats": { "maxBarrier": 60 }
+  },
+  {
+    "id": "node_barrier_002",
+    "label": "+80 Max Barrier",
+    "type": "StatNode",
+    "position": { "x": 560, "y": 460 },
+    "connectedNodeIds": ["node_barrier_001", "keystone_spirit_shield"],
+    "cost": 1,
+    "stats": { "maxBarrier": 80 }
+  },
+  {
+    "id": "keystone_spirit_shield",
+    "label": "Spirit Shield",
+    "type": "Keystone",
+    "position": { "x": 540, "y": 520 },
+    "connectedNodeIds": ["node_barrier_002"],
+    "cost": 1,
+    "stats": {},
+    "keystoneEffect": "Your Barrier regenerates 2% of max value per second out of combat. Barrier absorbs 25% more damage."
+  },
+  {
+    "id": "node_hp_forest_001",
+    "label": "+80 Max HP",
+    "type": "StatNode",
+    "position": { "x": 230, "y": 430 },
+    "connectedNodeIds": ["node_armor_002", "node_hp_forest_002"],
+    "cost": 1,
+    "stats": { "maxHp": 80 }
+  },
+  {
+    "id": "node_hp_forest_002",
+    "label": "+100 Max HP",
+    "type": "StatNode",
+    "position": { "x": 200, "y": 490 },
+    "connectedNodeIds": ["node_hp_forest_001", "node_notable_forest_ward"],
+    "cost": 1,
+    "stats": { "maxHp": 100 }
+  },
+  {
+    "id": "node_notable_forest_ward",
+    "label": "Forest Ward",
+    "type": "NotableNode",
+    "position": { "x": 250, "y": 550 },
+    "connectedNodeIds": ["node_hp_forest_002"],
+    "cost": 1,
+    "stats": { "maxHp": 150, "poisonResistance": 0.10 },
+    "keystoneEffect": "Gain 150 Max HP and 10% Poison Resistance. Nature curse durations reduced by 20%."
   }
 ]

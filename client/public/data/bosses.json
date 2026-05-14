@@ -9,14 +9,8 @@
     "defenseProfile": {
       "armor": 0.20,
       "elementalResistances": {
-        "Physical": 0,
-        "Fire": 0.10,
-        "Cold": 0.10,
-        "Lightning": 0.10,
-        "Poison": 0.15,
-        "Bleed": 0.05,
-        "Holy": 0,
-        "Chaos": 0
+        "Physical": 0, "Fire": 0.10, "Cold": 0.10, "Lightning": 0.10,
+        "Poison": 0.15, "Bleed": 0.05, "Holy": 0, "Chaos": 0
       },
       "dodgeChance": 0.05,
       "barrierMax": 0,
@@ -64,6 +58,90 @@
         "itemTemplateId": "unique_oni_mask",
         "dropChance": 0.01,
         "isGuaranteedFirstKill": false
+      }
+    ]
+  },
+  {
+    "id": "boss_jorogumo",
+    "name": "Jorogumo — The Silk Weaver",
+    "tier": "Boss",
+    "regionIds": ["region_haunted_forest"],
+    "level": 28,
+    "baseHP": 15000,
+    "defenseProfile": {
+      "armor": 0.15,
+      "elementalResistances": {
+        "Physical": 0.05, "Fire": -0.30, "Cold": 0.20, "Lightning": 0.10,
+        "Poison": 0.45, "Bleed": 0.10, "Holy": -0.15, "Chaos": 0.05
+      },
+      "dodgeChance": 0.12,
+      "barrierMax": 1200,
+      "hpMax": 15000,
+      "damageTakenDecrease": [],
+      "dampening": []
+    },
+    "attackDamageMin": 140,
+    "attackDamageMax": 195,
+    "attackSpeed": 1.0,
+    "damageType": "Poison",
+    "statusProcChance": { "Poison": 0.30, "Slow": 0.20 },
+    "expReward": 3200,
+    "dropTableId": "loot_jorogumo",
+    "lootTableId": "loot_jorogumo",
+    "spriteId": "sprite_jorogumo",
+    "phases": [
+      {
+        "phaseIndex": 1,
+        "hpThreshold": 0.65,
+        "behaviorModifier": "Web Burst: spawns Venom Spawn adds, silk trap telegraphs increase frequency",
+        "statMultipliers": { "attackSpeed": 1.2 }
+      },
+      {
+        "phaseIndex": 2,
+        "hpThreshold": 0.30,
+        "behaviorModifier": "True Form: barrier regenerates, Poison DoT bypasses 50% resistance, attack speed max",
+        "statMultipliers": { "attackSpeed": 1.5 }
+      }
+    ],
+    "telegraphAttacks": [
+      {
+        "id": "silk_trap_warning",
+        "name": "Silk Trap",
+        "warningDurationTicks": 3,
+        "damagePacket": {
+          "skillCoef": 1.8,
+          "damageType": "Poison",
+          "deliveryMode": "AoE"
+        },
+        "description": "Silk threads envelop arena — move or be rooted and poisoned."
+      },
+      {
+        "id": "venom_bite_warning",
+        "name": "Venom Bite",
+        "warningDurationTicks": 2,
+        "damagePacket": {
+          "skillCoef": 3.2,
+          "damageType": "Poison",
+          "deliveryMode": "Strike"
+        },
+        "description": "Massive fang strike — stacks 3 Poison on hit."
+      }
+    ],
+    "signatureDrops": [
+      {
+        "runeId": "skill_rune_venom_strike",
+        "dropChance": 0.05,
+        "isGuaranteedFirstKill": false
+      },
+      {
+        "runeId": "skill_rune_silk_nova",
+        "dropChance": 0.04,
+        "isGuaranteedFirstKill": false
+      },
+      {
+        "itemTemplateId": "unique_jorogumo_silk_robe",
+        "dropChance": 0.02,
+        "isGuaranteedFirstKill": true
       }
     ]
   }
