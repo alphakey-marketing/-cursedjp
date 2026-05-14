@@ -3,6 +3,7 @@ import { usePlayerStore } from './store/usePlayerStore'
 import { useOfflineStore } from './store/useOfflineStore'
 import { useChapterStore } from './store/useChapterStore'
 import { useSettingsStore } from './store/useSettingsStore'
+import { useQuestStore } from './store/useQuestStore'
 import { WorldMapScreen } from './screens/WorldMapScreen'
 import { BattleScreen } from './screens/BattleScreen'
 import { ResultScreen } from './screens/ResultScreen'
@@ -14,9 +15,12 @@ import { ShrineScreen } from './screens/ShrineScreen'
 import { OfflineSummaryScreen } from './screens/OfflineSummaryScreen'
 import { BossDetailScreen } from './screens/BossDetailScreen'
 import { StoryScreen } from './screens/StoryScreen'
+import { QuestScreen } from './screens/QuestScreen'
+import { DataPreviewScreen } from './screens/DataPreviewScreen'
 import { SettingsPanel } from './components/SettingsPanel'
 import { DebugPanel } from './components/DebugPanel'
 import { useOfflineAccrual } from './hooks/useOfflineAccrual'
+import { useAutosave } from './hooks/useAutosave'
 import { resolveDrops } from './engine/items/dropResolver'
 import { localStats } from './engine/analytics/localStats'
 import { useCraftingStore } from './store/useCraftingStore'
@@ -24,9 +28,10 @@ import type { BattleEndResult } from './hooks/useCombatLoop'
 import type { DropResult } from './engine/items/dropResolver'
 import type { BossTemplate } from './types/enemy'
 import type { ChapterDialogue } from './types/chapter'
+import type { Quest } from './types/quest'
 import './App.css'
 
-type Screen = 'map' | 'battle' | 'result' | 'inventory' | 'runes' | 'passive' | 'crafting'
+type Screen = 'map' | 'battle' | 'result' | 'inventory' | 'runes' | 'passive' | 'crafting' | 'quest'
 
 function App() {
   const [screen, setScreen] = useState<Screen>('map')
@@ -39,14 +44,27 @@ function App() {
   const [bossBattleTemplate, setBossBattleTemplate] = useState<BossTemplate | null>(null)
   const [pendingDialogue, setPendingDialogue] = useState<ChapterDialogue | null>(null)
   const [showSettings, setShowSettings] = useState(false)
+  const [showDataPreview, setShowDataPreview] = useState(false)
 
   const character = usePlayerStore((s) => s.character)
   const { hasPendingGains } = useOfflineStore()
   const { isBossKilled, isChapterCompleted, recordBossKill, completeChapter } = useChapterStore()
   const { showDebugPanel, toggleDebugPanel } = useSettingsStore()
+  const { loadQuests, updateKillCount, updateBossKill, updateItemAcquired, updateNodeCleared, updateLevelReached, unlockQuestsForCondition } = useQuestStore()
+
+  // Load quests from JSON on mount
+  useEffect(() => {
+    fetch('/data/quests.json')
+      .then((r) => r.json())
+      .then((quests: Quest[]) => loadQuests(quests))
+      .catch(() => {})
+  }, [loadQuests])
 
   // Run offline accrual check on mount
   useOfflineAccrual()
+
+  // Periodic autosave checkpoint
+  useAutosave()
 
   // Show chapter intro on first load if chapter 1 not seen
   useEffect(() => {
@@ -105,10 +123,14 @@ function App() {
       const addMat = useCraftingStore.getState().addMaterial
       drops.materials.forEach(({ name, qty }) => addMat(name, qty))
 
+      // Update quest item acquisition
+      drops.materials.forEach(({ name, qty }) => updateItemAcquired(name, qty))
+
       // Analytics
       if (result.isBoss && result.bossId) {
         localStats.recordBossKill(result.bossId)
         recordBossKill(result.bossId)
+        updateBossKill(result.bossId)
 
         // Trigger boss-kill dialogue
         fetch('/data/chapters.json')
@@ -118,17 +140,27 @@ function App() {
             if (ch) {
               const killDialogue = ch.dialogues.find((d) => d.triggerCondition === 'BossKill')
               if (killDialogue) setPendingDialogue(killDialogue)
-              if (!isChapterCompleted(ch.id)) completeChapter(ch.id)
+              if (!isChapterCompleted(ch.id)) {
+                completeChapter(ch.id)
+                unlockQuestsForCondition(`${ch.id}_complete`)
+              }
             }
           })
           .catch(() => {})
       } else {
         localStats.recordCampKill(battleNodeId)
+        // Update kill counts for each enemy in the battle
+        result.enemies.forEach((e) => updateKillCount(e.templateId))
+        // Track node clear for quest objectives
+        updateNodeCleared(battleNodeId)
       }
+
+      // Track level-up for reach_level quest objectives
+      updateLevelReached(usePlayerStore.getState().character.stats.level)
 
       setScreen('result')
     }
-  }, [battleNodeId, isChapterCompleted, recordBossKill, completeChapter]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [battleNodeId, isChapterCompleted, recordBossKill, completeChapter, updateKillCount, updateBossKill, updateItemAcquired, updateNodeCleared, updateLevelReached, unlockQuestsForCondition]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleBossInfo = useCallback((bossId: string) => {
     setActiveBossId(bossId)
@@ -185,23 +217,36 @@ function App() {
           <button style={navBtnStyle(screen === 'crafting')} onClick={() => setScreen('crafting')}>
             ⚒️ Craft
           </button>
+          <button style={navBtnStyle(screen === 'quest')} onClick={() => setScreen('quest')}>
+            📜 Quests
+          </button>
           <button
             style={{ ...navBtnStyle(false), marginLeft: 'auto' }}
             onClick={() => setShowSettings(true)}
           >
             ⚙️
           </button>
+          {import.meta.env.DEV && (
+            <button
+              style={navBtnStyle(false)}
+              onClick={() => setShowDataPreview(true)}
+            >
+              🔬 Data
+            </button>
+          )}
         </nav>
       )}
 
       {/* ── Screen Router ── */}
 
       {screen === 'map' && (
-        <WorldMapScreen
-          onFight={handleFight}
-          onBossInfo={handleBossInfo}
-          onShrineVisit={() => setShowShrine(true)}
-        />
+        <div key="map" className="cj-screen-enter">
+          <WorldMapScreen
+            onFight={handleFight}
+            onBossInfo={handleBossInfo}
+            onShrineVisit={() => setShowShrine(true)}
+          />
+        </div>
       )}
 
       {screen === 'battle' && (battleNodeId || bossBattleTemplate) && (
@@ -238,19 +283,33 @@ function App() {
       )}
 
       {screen === 'inventory' && (
-        <InventoryScreen onClose={() => setScreen('map')} />
+        <div key="inventory" className="cj-screen-enter">
+          <InventoryScreen onClose={() => setScreen('map')} />
+        </div>
       )}
 
       {screen === 'runes' && (
-        <RuneScreen onClose={() => setScreen('map')} />
+        <div key="runes" className="cj-screen-enter">
+          <RuneScreen onClose={() => setScreen('map')} />
+        </div>
       )}
 
       {screen === 'passive' && (
-        <PassiveWebScreen onClose={() => setScreen('map')} />
+        <div key="passive" className="cj-screen-enter">
+          <PassiveWebScreen onClose={() => setScreen('map')} />
+        </div>
       )}
 
       {screen === 'crafting' && (
-        <CraftingScreen onClose={() => setScreen('map')} />
+        <div key="crafting" className="cj-screen-enter">
+          <CraftingScreen onClose={() => setScreen('map')} />
+        </div>
+      )}
+
+      {screen === 'quest' && (
+        <div key="quest" className="cj-screen-enter">
+          <QuestScreen onClose={() => setScreen('map')} />
+        </div>
       )}
 
       {/* Shrine modal overlay */}
@@ -290,6 +349,11 @@ function App() {
 
       {/* Debug panel — toggle with backtick key */}
       {showDebugPanel && <DebugPanel />}
+
+      {/* Dev-only data preview */}
+      {import.meta.env.DEV && showDataPreview && (
+        <DataPreviewScreen onClose={() => setShowDataPreview(false)} />
+      )}
     </div>
   )
 }

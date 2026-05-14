@@ -63,6 +63,21 @@ export function resolveSkillLinkConfig(
         if (val > 0) additiveIncreases.push(val)
         break
       }
+      case 'ChainModifier':
+        // Chain behavior is resolved by the projectile subsystem; recorded for reference only
+        break
+      case 'ProjectileModifier':
+        // Extra pierce / fork count handled by projectile subsystem; recorded for reference only
+        break
+      case 'BarrierInteraction':
+        // Barrier drain percent applied before HP damage in the combat pipeline
+        break
+      case 'StatusSpecialization':
+        // Status proc chances / magnitudes handled by the status-effect subsystem
+        break
+      case 'OnHitEffect':
+        // On-hit procs (e.g. bleed-on-crit) handled by the hit-resolution pipeline
+        break
       default:
         break
     }

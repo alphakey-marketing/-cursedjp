@@ -2,6 +2,15 @@ import React from 'react'
 import type { AnyItem, WeaponItem, ArmorItem, ItemGrade } from '../types/item'
 import { getItemSellValue } from '../engine/items/dropResolver'
 
+const GRADE_LOOT_CLASS: Record<ItemGrade, string> = {
+  Normal: 'cj-loot-normal',
+  Magic: 'cj-loot-magic',
+  Rare: 'cj-loot-rare',
+  Legendary: 'cj-loot-legendary',
+  Unique: 'cj-loot-unique',
+  Holy: 'cj-loot-holy',
+}
+
 const GRADE_COLORS: Record<ItemGrade, string> = {
   Normal: '#c0c0c0',
   Magic: '#6060ff',
@@ -41,6 +50,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
 
   return (
     <div
+      className={GRADE_LOOT_CLASS[item.grade]}
       style={{
         border: `1px solid ${borderColor}`,
         borderRadius: 4,

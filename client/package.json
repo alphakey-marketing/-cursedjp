@@ -9,7 +9,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "validate:data": "node scripts/validateData.mjs",
+    "generate:chapter": "node scripts/generateChapterData.mjs"
   },
   "dependencies": {
     "phaser": "^4.1.0",

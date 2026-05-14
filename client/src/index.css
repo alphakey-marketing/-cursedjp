@@ -109,3 +109,196 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CURSED JAPAN — Game-specific visual polish
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Panel / screen transitions ─────────────────────────────────────────── */
+.cj-screen-enter {
+  animation: cj-fadeSlideIn 0.18s ease-out both;
+}
+
+@keyframes cj-fadeSlideIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Modal overlays ─────────────────────────────────────────────────────── */
+.cj-modal-overlay {
+  animation: cj-overlayIn 0.14s ease-out both;
+}
+
+@keyframes cj-overlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── EXP bar fill animation ─────────────────────────────────────────────── */
+.cj-exp-bar-fill {
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Crit hit flash ─────────────────────────────────────────────────────── */
+@keyframes cj-critFlash {
+  0%   { background: rgba(255, 200, 60, 0.30); }
+  50%  { background: rgba(255, 200, 60, 0.15); }
+  100% { background: transparent; }
+}
+
+.cj-crit-flash {
+  animation: cj-critFlash 0.35s ease-out both;
+}
+
+/* ── Death / defeat flash ────────────────────────────────────────────────── */
+@keyframes cj-deathFlash {
+  0%   { background: rgba(220, 40, 40, 0.35); }
+  100% { background: transparent; }
+}
+
+.cj-death-flash {
+  animation: cj-deathFlash 0.5s ease-out both;
+}
+
+/* ── Loot rarity glow ────────────────────────────────────────────────────── */
+.cj-loot-normal   { border-left: 3px solid #888; }
+.cj-loot-magic    { border-left: 3px solid #4a80e0; }
+.cj-loot-rare     { border-left: 3px solid #e0c020; }
+.cj-loot-legendary { border-left: 3px solid #e07020; }
+.cj-loot-unique   { border-left: 3px solid #c040c0; }
+.cj-loot-holy     { border-left: 3px solid #e0e060; }
+
+@keyframes cj-rarePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 192, 32, 0); }
+  50%       { box-shadow: 0 0 6px 2px rgba(224, 192, 32, 0.4); }
+}
+
+.cj-loot-rare,
+.cj-loot-legendary,
+.cj-loot-unique,
+.cj-loot-holy {
+  animation: cj-rarePulse 2.4s ease-in-out infinite;
+}
+
+/* ── Boss fight phase transition ─────────────────────────────────────────── */
+@keyframes cj-phaseFlash {
+  0%   { background: rgba(180, 40, 200, 0.25); }
+  100% { background: transparent; }
+}
+
+.cj-phase-flash {
+  animation: cj-phaseFlash 0.6s ease-out both;
+}
+
+/* ── Hover state polish for interactive buttons ──────────────────────────── */
+button:not(:disabled):hover {
+  filter: brightness(1.12);
+  transition: filter 0.12s ease;
+}
+
+button:not(:disabled):active {
+  filter: brightness(0.92);
+  transform: scale(0.98);
+  transition: filter 0.06s ease, transform 0.06s ease;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Typography scale for game UI ────────────────────────────────────────── */
+.cj-title        { font-size: 20px; font-weight: bold; color: #f0c060; letter-spacing: 0.5px; }
+.cj-subtitle     { font-size: 14px; color: #c0b090; letter-spacing: 0.3px; }
+.cj-label        { font-size: 11px; color: #a09070; text-transform: uppercase; letter-spacing: 1px; }
+.cj-value        { font-size: 13px; color: #e0d5c0; }
+.cj-value-good   { font-size: 13px; color: #60d060; }
+.cj-value-warn   { font-size: 13px; color: #e0a030; }
+.cj-value-danger { font-size: 13px; color: #e04040; }
+
+/* ── Scrollbar styling (dark UI) ─────────────────────────────────────────── */
+::-webkit-scrollbar            { width: 6px; height: 6px; }
+::-webkit-scrollbar-track      { background: #1a1612; }
+::-webkit-scrollbar-thumb      { background: #4a3a24; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #6a5a3a; }
+
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #9ca3af;
+    --text-h: #f3f4f6;
+    --bg: #16171d;
+    --border: #2e303a;
+    --code-bg: #1f2028;
+    --accent: #c084fc;
+    --accent-bg: rgba(192, 132, 252, 0.15);
+    --accent-border: rgba(192, 132, 252, 0.5);
+    --social-bg: rgba(47, 48, 58, 0.5);
+    --shadow:
+      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  }
+
+  #social .button-icon {
+    filter: invert(1) brightness(2);
+  }
+}
+
+#root {
+  width: 1126px;
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  border-inline: 1px solid var(--border);
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+h1,
+h2 {
+  font-family: var(--heading);
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+h1 {
+  font-size: 56px;
+  letter-spacing: -1.68px;
+  margin: 32px 0;
+  @media (max-width: 1024px) {
+    font-size: 36px;
+    margin: 20px 0;
+  }
+}
+h2 {
+  font-size: 24px;
+  line-height: 118%;
+  letter-spacing: -0.24px;
+  margin: 0 0 8px;
+  @media (max-width: 1024px) {
+    font-size: 20px;
+  }
+}
+p {
+  margin: 0;
+}
+
+code,
+.counter {
+  font-family: var(--mono);
+  display: inline-flex;
+  border-radius: 4px;
+  color: var(--text-h);
+}
+
+code {
+  font-size: 15px;
+  line-height: 135%;
+  padding: 4px 8px;
+  background: var(--code-bg);
+}

@@ -5,6 +5,7 @@ import type { ItemSlot, AnyItem } from "../types/item";
 import type { EquippedSkillSlot } from "../types/rune";
 import { DEFAULT_ELEMENTAL_RESISTANCES } from "../constants/damageTypes";
 import { usePassiveStore } from "./usePassiveStore";
+import { migrateState, CURRENT_SAVE_VERSION } from "../engine/save/saveMigration";
 
 const DEFAULT_STATS: CharacterStats = {
   strength: 10,
@@ -45,6 +46,7 @@ const DEFAULT_SKILL_SLOTS: EquippedSkillSlot[] = [
 
 interface PlayerStore {
   character: PlayerCharacter;
+  killsSinceLastRareDrop: number;
   setCharacter: (character: PlayerCharacter) => void;
   updateStats: (partial: Partial<CharacterStats>) => void;
   takeDamage: (hpDamage: number, barrierDamage: number) => void;
@@ -58,6 +60,8 @@ interface PlayerStore {
   addGold: (amount: number) => void;
   spendGold: (amount: number) => boolean;
   resetToShrine: () => void;
+  incrementKillsSinceRareDrop: () => void;
+  resetKillsSinceRareDrop: () => void;
 }
 
 export const usePlayerStore = create<PlayerStore>()(
@@ -101,6 +105,8 @@ export const usePlayerStore = create<PlayerStore>()(
         runeInventory: [],
         currency: { gold: 0, runeDust: 0, essences: {} },
       },
+
+      killsSinceLastRareDrop: 0,
 
       setCharacter: (character) => set({ character }),
 
@@ -254,7 +260,22 @@ export const usePlayerStore = create<PlayerStore>()(
             },
           },
         })),
+
+      incrementKillsSinceRareDrop: () =>
+        set((state) => ({ killsSinceLastRareDrop: state.killsSinceLastRareDrop + 1 })),
+
+      resetKillsSinceRareDrop: () => set({ killsSinceLastRareDrop: 0 }),
     }),
-    { name: "cursed-japan-player" }
+    {
+      name: "cursed-japan-player",
+      version: CURRENT_SAVE_VERSION,
+      migrate: (persistedState, version) => {
+        const { state } = migrateState(
+          persistedState as Record<string, unknown>,
+          version
+        )
+        return state
+      },
+    }
   )
 );

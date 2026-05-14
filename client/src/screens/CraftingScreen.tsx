@@ -3,7 +3,6 @@ import { useInventoryStore } from '../store/useInventoryStore'
 import { useCraftingStore } from '../store/useCraftingStore'
 import { salvageItem, rerollAffixes, upgradeItemGrade, getCraftingCost } from '../engine/items/craftingEngine'
 import { getItemSellValue } from '../engine/items/dropResolver'
-import type { AnyItem } from '../types/item'
 import type { BaseItem } from '../types/item'
 
 type CraftTab = 'salvage' | 'reroll' | 'upgrade'

@@ -1,6 +1,7 @@
 import React from 'react'
 import { usePlayerStore } from '../store/usePlayerStore'
 import { useInventoryStore } from '../store/useInventoryStore'
+import { useQuestStore } from '../store/useQuestStore'
 import { useItemEquip } from '../hooks/useItemEquip'
 import { ItemCard } from '../components/ItemCard'
 import { getItemSellValue } from '../engine/items/dropResolver'
@@ -27,6 +28,10 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
   const addGold = usePlayerStore((s) => s.addGold)
   const addToBag = useInventoryStore((s) => s.addToBag)
   const { equipDirectly, sellFromBag } = useItemEquip()
+  const activeQuests = useQuestStore((s) => s.quests.filter((q) => q.status === 'active'))
+  const justCompletedQuests = useQuestStore((s) =>
+    s.quests.filter((q) => q.status === 'completed' && !s.claimedQuestIds.includes(q.id))
+  )
 
   const [collectedGold, setCollectedGold] = React.useState(false)
   const [stashedItems, setStashedItems] = React.useState<Set<string>>(new Set())
@@ -253,6 +258,43 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Quest progress reminder */}
+        {(justCompletedQuests.length > 0 || activeQuests.length > 0) && (
+          <div
+            style={{
+              marginTop: 16,
+              padding: '10px 14px',
+              background: justCompletedQuests.length > 0 ? '#2a1e06' : '#141a0e',
+              border: `1px solid ${justCompletedQuests.length > 0 ? '#c09030' : '#344028'}`,
+              borderRadius: 4,
+              fontSize: 11,
+            }}
+          >
+            {justCompletedQuests.length > 0 ? (
+              <div style={{ color: '#f0c060', marginBottom: 4 }}>
+                🎁 Quest{justCompletedQuests.length > 1 ? 's' : ''} complete — claim your reward in the Quests tab!
+                {justCompletedQuests.map((q) => (
+                  <div key={q.id} style={{ color: '#d0a040', marginLeft: 8, marginTop: 2 }}>
+                    ✓ {q.title}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{ color: '#90c070' }}>
+                📜 Active quests ({activeQuests.length}):
+                {activeQuests.slice(0, 3).map((q) => {
+                  const nextObj = q.objectives.find((o) => o.currentCount < o.targetCount)
+                  return nextObj ? (
+                    <div key={q.id} style={{ color: '#80a060', marginLeft: 8, marginTop: 2 }}>
+                      • {nextObj.description} ({nextObj.currentCount}/{nextObj.targetCount})
+                    </div>
+                  ) : null
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Action buttons */}
         <div
