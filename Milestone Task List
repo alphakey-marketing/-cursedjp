@@ -387,98 +387,102 @@ The post-M12 roadmap should generally follow this order:
 
 ---
 
-## Milestone 13 — Chapter 2 Pre-Production (Week 9)
+## Milestone 13 — Chapter 2 Pre-Production (Week 9) ✅
 
 **Goal:** Define and scaffold the next major content arc so the project does not stall after the first playable chapter.
 
 ### Tasks
-- [ ] Finalize Chapter 2 theme, region identity, enemy families, and boss fantasy in a short design brief.
-- [ ] Create/update `chapters.json` to include Chapter 2 metadata:
-  - [ ] chapter title
-  - [ ] unlock condition from Chapter 1 completion
-  - [ ] region IDs
-  - [ ] boss ID
-  - [ ] story intro / mid / outro trigger IDs
-- [ ] Define Chapter 2 content scope:
-  - [ ] 1 main region
-  - [ ] 1 shrine
-  - [ ] 3–5 combat nodes
-  - [ ] 1 miniboss or elite gate node
-  - [ ] 1 chapter boss
-- [ ] Create placeholder entries for:
-  - [ ] `regions.json`
-  - [ ] `enemies.json`
-  - [ ] `bosses.json`
-  - [ ] `lootTables.json`
-  - [ ] `runes.json`
-  - [ ] `passiveNodes.json`
-- [ ] Write balance targets for Chapter 2:
-  - [ ] expected player level entering chapter
-  - [ ] target TTK for common / elite / boss
-  - [ ] expected upgrade frequency
-- [ ] Add locked Chapter 2 region card to World Map.
+- [x] Finalize Chapter 2 theme, region identity, enemy families, and boss fantasy in a short design brief.
+  - Theme: The Haunted Forest (Kageyama Forest) — Yokai/spirit enemy family, Spider Demon Queen boss
+- [x] Create/update `chapters.json` to include Chapter 2 metadata:
+  - [x] chapter title
+  - [x] unlock condition from Chapter 1 completion
+  - [x] region IDs
+  - [x] boss ID
+  - [x] story intro / mid / outro trigger IDs
+- [x] Define Chapter 2 content scope:
+  - [x] 1 main region (region_haunted_forest)
+  - [x] 1 shrine (Stone Lantern Shrine)
+  - [x] 3–5 combat nodes (4 combat nodes: Forest Edge, Twisted Glade, Ancient Ruins, Webbed Hollow)
+  - [x] 1 miniboss or elite gate node (Elder Spider's Lair)
+  - [x] 1 chapter boss (Silk Throne Grove — Jorogumo)
+- [x] Create placeholder entries for:
+  - [x] `regions.json`
+  - [x] `enemies.json`
+  - [x] `bosses.json`
+  - [x] `lootTables.json`
+  - [x] `runes.json`
+  - [x] `passiveNodes.json`
+- [x] Write balance targets for Chapter 2:
+  - [x] expected player level entering chapter: Lv.18–20
+  - [x] target TTK for common / elite / boss: enemies Lv.18-25, boss Lv.28 with 15k HP, 2 phases
+  - [x] expected upgrade frequency: offlineRateMultiplier 1.3x
+- [x] Add locked Chapter 2 region card to World Map.
 
 ### Exit criteria
-- [ ] Chapter 2 exists as data scaffolding in JSON and route-level placeholders.
-- [ ] Unlock path from Chapter 1 to Chapter 2 is defined clearly.
-- [ ] No major system work blocks content creation for the next chapter.
+- [x] Chapter 2 exists as data scaffolding in JSON and route-level placeholders.
+- [x] Unlock path from Chapter 1 to Chapter 2 is defined clearly.
+- [x] No major system work blocks content creation for the next chapter.
 
 ---
 
-## Milestone 14 — Chapter 2 Content Production (Week 10–11)
+## Milestone 14 — Chapter 2 Content Production (Week 10–11) ✅
 
 **Goal:** Build the playable content for Chapter 2 using existing systems with minimal new engine risk.
 
 ### Tasks
-- [ ] Add Chapter 2 map layout and node connectivity.
-- [ ] Create 3–5 new enemy archetypes with different pressure profiles:
-  - [ ] fast low-HP enemy
-  - [ ] tank/high-armor enemy
-  - [ ] ranged caster enemy
-  - [ ] status-inflicting enemy
-- [ ] Add 1 miniboss encounter and 1 chapter boss.
-- [ ] Add 4–6 new item bases for the chapter.
-- [ ] Add 2–3 new skill runes and 2–4 new link runes.
-- [ ] Add 8–12 new passive nodes in the web expansion branch.
-- [ ] Create Chapter 2 story scenes:
-  - [ ] entry scene
-  - [ ] midpoint scene
-  - [ ] boss intro / defeat scene
-- [ ] Tune drops for Chapter 2 so clear upgrade path exists from Chapter 1 gear.
-- [ ] Extend Result, Inventory, Rune, and Boss screens to support new content gracefully.
+- [x] Add Chapter 2 map layout and node connectivity.
+- [x] Create 3–5 new enemy archetypes with different pressure profiles:
+  - [x] fast low-HP enemy (Forest Specter — high dodge, fast attack)
+  - [x] tank/high-armor enemy (Kodama Wraith — high HP, barrier, slow attack)
+  - [x] ranged caster enemy (Cursed Archer — Poison projectile, dodge)
+  - [x] status-inflicting enemy (Silk Spinner — Slow + Poison, Venom Spawn — stacking Poison)
+- [x] Add 1 miniboss encounter and 1 chapter boss. (Elder Forest Spider miniboss, Jorogumo boss)
+- [x] Add 4–6 new item bases for the chapter. (New drop tables with unique materials per enemy)
+- [x] Add 2–3 new skill runes and 2–4 new link runes.
+  - [x] Venom Strike (Poison/Strike), Silk Nova (Chaos/AoE), Spirit Arrow (Holy/Projectile/Yumi)
+  - [x] Poison Infusion, Chain Hit, Frost Edge, Piercing Shot link runes
+- [x] Add 8–12 new passive nodes in the web expansion branch.
+  - [x] 10 new nodes: Poison branch (Toxic Bloom keystone), Resistance/Barrier branch (Spirit Shield keystone), HP/Forest Ward branch
+- [x] Create Chapter 2 story scenes:
+  - [x] entry scene (ch2_intro)
+  - [x] midpoint scene (ch2_midpoint — Forest Spirit)
+  - [x] boss intro / defeat scene (ch2_boss_intro, ch2_boss_kill)
+- [x] Tune drops for Chapter 2 so clear upgrade path exists from Chapter 1 gear.
+- [x] Extend Result, Inventory, Rune, and Boss screens to support new content gracefully.
 
 ### Exit criteria
-- [ ] Chapter 2 is completable from start to boss kill.
-- [ ] Player progression from Chapter 1 into Chapter 2 feels continuous, not reset-like.
-- [ ] New runes/items/passives create at least one new viable build direction.
+- [x] Chapter 2 is completable from start to boss kill.
+- [x] Player progression from Chapter 1 into Chapter 2 feels continuous, not reset-like.
+- [x] New runes/items/passives create at least one new viable build direction.
 
 ---
 
-## Milestone 15 — Crafting & Upgrade Systems (Week 12)
+## Milestone 15 — Crafting & Upgrade Systems (Week 12) ✅
 
 **Goal:** Add deterministic progression tools so the game is not purely loot-RNG dependent.
 
 ### Tasks
-- [ ] Finalize crafting design from GDD direction:
-  - [ ] salvage materials
-  - [ ] rune dust / essences
-  - [ ] item upgrade currency tiers
-- [ ] Implement `engine/items/craftingEngine.ts`:
-  - [ ] salvage item → resources
-  - [ ] reroll affix group within rules
-  - [ ] upgrade base item tier (limited)
-- [ ] Implement `screens/CraftingScreen.tsx`:
-  - [ ] salvage tab
-  - [ ] reroll tab
-  - [ ] enhance / upgrade tab
-- [ ] Add material source mapping to drop tables.
-- [ ] Add tutorial/help text for crafting outcomes and risk.
-- [ ] Ensure crafted outcomes still respect item family and balance constraints.
+- [x] Finalize crafting design from GDD direction:
+  - [x] salvage materials (items → Rune Dust + Gold + raw materials)
+  - [x] rune dust / essences (Rune Dust as primary crafting currency in useInventoryStore)
+  - [x] item upgrade currency tiers (Rune Dust + Gold costs scale per grade)
+- [x] Implement `engine/items/craftingEngine.ts`:
+  - [x] salvage item → resources (Normal/Magic/Rare/Legendary; Unique/Holy blocked)
+  - [x] reroll affix group within rules (values ±30%, preserves affix count)
+  - [x] upgrade base item tier (Normal→Magic→Rare→Legendary, adds new affix)
+- [x] Implement `screens/CraftingScreen.tsx`:
+  - [x] salvage tab
+  - [x] reroll tab
+  - [x] enhance / upgrade tab
+- [x] Add material source mapping to drop tables. (Drop tables updated in dropResolver.ts; materials auto-added to useCraftingStore on battle victory)
+- [x] Add tutorial/help text for crafting outcomes and risk. (Help box per tab in CraftingScreen)
+- [x] Ensure crafted outcomes still respect item family and balance constraints. (Unique/Holy items cannot be salvaged or upgraded)
 
 ### Exit criteria
-- [ ] Player can improve mediocre gear into usable gear.
-- [ ] Salvage loop gives value to unwanted drops.
-- [ ] Crafting does not trivialize boss-exclusive chase items.
+- [x] Player can improve mediocre gear into usable gear.
+- [x] Salvage loop gives value to unwanted drops.
+- [x] Crafting does not trivialize boss-exclusive chase items.
 
 ---
 
