@@ -1,7 +1,6 @@
 import React from 'react'
 import { usePlayerStore } from '../store/usePlayerStore'
 import { useInventoryStore } from '../store/useInventoryStore'
-import { useChapterStore } from '../store/useChapterStore'
 import { useItemEquip } from '../hooks/useItemEquip'
 import { ItemCard } from '../components/ItemCard'
 import { getItemSellValue } from '../engine/items/dropResolver'
@@ -27,7 +26,6 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
   const character = usePlayerStore((s) => s.character)
   const addGold = usePlayerStore((s) => s.addGold)
   const addToBag = useInventoryStore((s) => s.addToBag)
-  const { recordBossKill } = useChapterStore()
   const { equipDirectly, sellFromBag } = useItemEquip()
 
   const [collectedGold, setCollectedGold] = React.useState(false)
@@ -36,14 +34,11 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
   const [equippedItems, setEquippedItems] = React.useState<Set<string>>(new Set())
   const [errors, setErrors] = React.useState<Record<string, string>>({})
 
-  // Auto-apply gold on mount; record boss kill if applicable
+  // Auto-apply gold on mount
   React.useEffect(() => {
     if (drops.gold > 0 && !collectedGold) {
       addGold(drops.gold)
       setCollectedGold(true)
-    }
-    if (battleResult.isBoss && battleResult.bossId) {
-      recordBossKill(battleResult.bossId)
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 

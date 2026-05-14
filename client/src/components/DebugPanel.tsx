@@ -11,18 +11,15 @@ export const DebugPanel: React.FC = () => {
   const { killedBossIds, completedChapterIds } = useChapterStore()
   const { allocatedNodeIds, totalPointsAvailable } = usePassiveStore()
 
-  const [tick, setTick] = useState(0)
-  const snapshot = localStats.getSnapshot()
-  const topSkills = localStats.getMostUsedSkills(3)
+  const [snapshot, setSnapshot] = useState(() => localStats.getSnapshot())
 
-  // Refresh debug panel every 2s
+  // Refresh debug panel every 2s (drives re-render for fresh analytics snapshot)
   useEffect(() => {
-    const id = setInterval(() => setTick((t) => t + 1), 2000)
+    const id = setInterval(() => setSnapshot(localStats.getSnapshot()), 2000)
     return () => clearInterval(id)
   }, [])
 
-  // Suppress unused warning for tick
-  void tick
+  const topSkills = localStats.getMostUsedSkills(3)
 
   return (
     <div

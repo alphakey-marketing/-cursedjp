@@ -51,7 +51,7 @@ export const BossDetailScreen: React.FC<BossDetailScreenProps> = ({
     )
   }
 
-  const killCount = killedBossIds.includes(bossId) ? 1 : 0
+  const killCount = killedBossIds.filter((id) => id === bossId).length
   const isKilled = killCount > 0
   const playerPower = Math.round(
     character.stats.baseAttackMax * character.stats.attackSpeed * 10

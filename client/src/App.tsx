@@ -213,7 +213,6 @@ function App() {
           drops={lastDrops}
           onFightAgain={() => {
             if (bossBattleTemplate) {
-              setBossBattleTemplate(bossBattleTemplate)
               setLastBattleResult(null)
               setLastDrops(null)
               setScreen('battle')

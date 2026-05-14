@@ -10,6 +10,7 @@ interface EnemyDropTable {
   tier: string
   expReward: number
   dropTableId: string
+  isFirstKill?: boolean
 }
 
 interface BossSignatureDrop {
@@ -190,7 +191,7 @@ export function resolveDrops(enemies: EnemyDropTable[]): DropResult {
     const boss = enemy as BossTemplate
     if (boss.signatureDrops) {
       for (const sig of boss.signatureDrops) {
-        const isFirstKillBonus = sig.isGuaranteedFirstKill && (enemy as { isFirstKill?: boolean }).isFirstKill
+        const isFirstKillBonus = sig.isGuaranteedFirstKill && enemy.isFirstKill === true
         if (isFirstKillBonus || Math.random() < sig.dropChance) {
           if (sig.runeId) {
             runeIds.push(sig.runeId)

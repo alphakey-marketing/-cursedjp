@@ -449,9 +449,8 @@ export class BossScene extends Phaser.Scene {
     this.currentPhaseIndex = phase.phaseIndex
     this.phaseText.setText(`Phase ${phase.phaseIndex + 1}`)
 
-    // Apply stat multipliers
-    if (phase.statMultipliers?.attackSpeed) {
-      this.attackSpeedMultiplier = phase.statMultipliers.attackSpeed as number
+      if (phase.statMultipliers?.attackSpeed !== undefined) {
+        this.attackSpeedMultiplier = phase.statMultipliers.attackSpeed
     }
 
     // Visual effect: tint boss red
