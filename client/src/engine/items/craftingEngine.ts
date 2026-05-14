@@ -42,6 +42,14 @@ export interface UpgradeResult {
 
 const GRADE_ORDER: ItemGrade[] = ['Normal', 'Magic', 'Rare', 'Legendary', 'Unique', 'Holy']
 
+// Reroll variance: affix values are randomised within this multiplier range of their current value
+const REROLL_MIN_MULTIPLIER = 0.7
+const REROLL_MAX_MULTIPLIER = 1.3
+
+// Upgrade affix: new affix value range added when a grade upgrade succeeds
+const UPGRADE_AFFIX_MIN = 0.05
+const UPGRADE_AFFIX_RANGE = 0.10
+
 function nextGrade(grade: ItemGrade): ItemGrade | null {
   const idx = GRADE_ORDER.indexOf(grade)
   if (idx < 0 || idx >= GRADE_ORDER.indexOf('Legendary')) return null
@@ -124,10 +132,10 @@ export function rerollAffixes(item: AnyItem, availableDust: number): RerollResul
 
   const base = item as BaseItem
   const rerolledPrefixes = base.prefixes.map((affix) =>
-    clampAffixValue(affix, affix.value * 0.7, affix.value * 1.3)
+    clampAffixValue(affix, affix.value * REROLL_MIN_MULTIPLIER, affix.value * REROLL_MAX_MULTIPLIER)
   )
   const rerolledSuffixes = base.suffixes.map((affix) =>
-    clampAffixValue(affix, affix.value * 0.7, affix.value * 1.3)
+    clampAffixValue(affix, affix.value * REROLL_MIN_MULTIPLIER, affix.value * REROLL_MAX_MULTIPLIER)
   )
 
   const rerolledItem: AnyItem = {
@@ -178,7 +186,7 @@ export function upgradeItemGrade(item: AnyItem, availableDust: number, available
   // Add a new affix when upgrading grade
   const newPrefix: ItemAffix = {
     affixId: `affix_upgraded_${next.toLowerCase()}`,
-    value: 0.05 + Math.random() * 0.10,
+    value: UPGRADE_AFFIX_MIN + Math.random() * UPGRADE_AFFIX_RANGE,
     tier: 1,
   }
 

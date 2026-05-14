@@ -131,7 +131,7 @@ export const CraftingScreen: React.FC<CraftingScreenProps> = ({ onClose }) => {
       {/* Tab help text */}
       <div style={helpBoxStyle}>
         {activeTab === 'salvage' && (
-          <span>Break down an item into Rune Dust and crafting materials. Unique and Holy items cannot be salvaged. <em>No item is lost while locked.</em></span>
+          <span>Break down an item into Rune Dust and crafting materials. Unique and Holy items cannot be salvaged. <em>Locked items cannot be salvaged.</em></span>
         )}
         {activeTab === 'reroll' && (
           <span>Reroll all affix values on an item within the same tier range. Preserves affix count and base stats. <em>Cannot add new affixes or change grade.</em></span>

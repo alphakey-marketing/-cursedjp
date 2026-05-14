@@ -149,7 +149,7 @@ export const WorldMapScreen: React.FC<WorldMapScreenProps> = ({ onFight, onBossI
           </button>
         ) : (
           <div style={lockedChapterStyle}>
-            🔒 Chapter 2: Haunted Forest{ch2Region ? ` — Rec. Lv.20+` : ''}
+            🔒 Chapter 2: Haunted Forest{ch2Region ? ` — Rec. Power ${Math.min(...ch2Region.nodes.map((n) => n.recommendedPower).filter((p) => p > 0))}+` : ''}
             <span style={{ fontSize: 10, display: 'block', color: '#666' }}>
               Complete Chapter 1 to unlock
             </span>
