@@ -9,6 +9,7 @@ import { ResultScreen } from './screens/ResultScreen'
 import { InventoryScreen } from './screens/InventoryScreen'
 import { RuneScreen } from './screens/RuneScreen'
 import { PassiveWebScreen } from './screens/PassiveWebScreen'
+import { CraftingScreen } from './screens/CraftingScreen'
 import { ShrineScreen } from './screens/ShrineScreen'
 import { OfflineSummaryScreen } from './screens/OfflineSummaryScreen'
 import { BossDetailScreen } from './screens/BossDetailScreen'
@@ -18,13 +19,14 @@ import { DebugPanel } from './components/DebugPanel'
 import { useOfflineAccrual } from './hooks/useOfflineAccrual'
 import { resolveDrops } from './engine/items/dropResolver'
 import { localStats } from './engine/analytics/localStats'
+import { useCraftingStore } from './store/useCraftingStore'
 import type { BattleEndResult } from './hooks/useCombatLoop'
 import type { DropResult } from './engine/items/dropResolver'
 import type { BossTemplate } from './types/enemy'
 import type { ChapterDialogue } from './types/chapter'
 import './App.css'
 
-type Screen = 'map' | 'battle' | 'result' | 'inventory' | 'runes' | 'passive'
+type Screen = 'map' | 'battle' | 'result' | 'inventory' | 'runes' | 'passive' | 'crafting'
 
 function App() {
   const [screen, setScreen] = useState<Screen>('map')
@@ -98,6 +100,10 @@ function App() {
       )
       setLastBattleResult(result)
       setLastDrops(drops)
+
+      // Feed drop materials into crafting store
+      const addMat = useCraftingStore.getState().addMaterial
+      drops.materials.forEach(({ name, qty }) => addMat(name, qty))
 
       // Analytics
       if (result.isBoss && result.bossId) {
@@ -176,6 +182,9 @@ function App() {
           <button style={navBtnStyle(screen === 'passive')} onClick={() => setScreen('passive')}>
             🌿 Passive
           </button>
+          <button style={navBtnStyle(screen === 'crafting')} onClick={() => setScreen('crafting')}>
+            ⚒️ Craft
+          </button>
           <button
             style={{ ...navBtnStyle(false), marginLeft: 'auto' }}
             onClick={() => setShowSettings(true)}
@@ -238,6 +247,10 @@ function App() {
 
       {screen === 'passive' && (
         <PassiveWebScreen onClose={() => setScreen('map')} />
+      )}
+
+      {screen === 'crafting' && (
+        <CraftingScreen onClose={() => setScreen('map')} />
       )}
 
       {/* Shrine modal overlay */}
