@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { usePlayerStore } from './store/usePlayerStore'
 import { useOfflineStore } from './store/useOfflineStore'
+import { useChapterStore } from './store/useChapterStore'
+import { useSettingsStore } from './store/useSettingsStore'
 import { WorldMapScreen } from './screens/WorldMapScreen'
 import { BattleScreen } from './screens/BattleScreen'
 import { ResultScreen } from './screens/ResultScreen'
@@ -9,10 +11,17 @@ import { RuneScreen } from './screens/RuneScreen'
 import { PassiveWebScreen } from './screens/PassiveWebScreen'
 import { ShrineScreen } from './screens/ShrineScreen'
 import { OfflineSummaryScreen } from './screens/OfflineSummaryScreen'
+import { BossDetailScreen } from './screens/BossDetailScreen'
+import { StoryScreen } from './screens/StoryScreen'
+import { SettingsPanel } from './components/SettingsPanel'
+import { DebugPanel } from './components/DebugPanel'
 import { useOfflineAccrual } from './hooks/useOfflineAccrual'
 import { resolveDrops } from './engine/items/dropResolver'
+import { localStats } from './engine/analytics/localStats'
 import type { BattleEndResult } from './hooks/useCombatLoop'
 import type { DropResult } from './engine/items/dropResolver'
+import type { BossTemplate } from './types/enemy'
+import type { ChapterDialogue } from './types/chapter'
 import './App.css'
 
 type Screen = 'map' | 'battle' | 'result' | 'inventory' | 'runes' | 'passive'
@@ -23,39 +32,105 @@ function App() {
   const [lastBattleResult, setLastBattleResult] = useState<BattleEndResult | null>(null)
   const [lastDrops, setLastDrops] = useState<DropResult | null>(null)
   const [showShrine, setShowShrine] = useState(false)
+  const [showBossDetail, setShowBossDetail] = useState(false)
+  const [activeBossId, setActiveBossId] = useState<string>('')
+  const [bossBattleTemplate, setBossBattleTemplate] = useState<BossTemplate | null>(null)
+  const [pendingDialogue, setPendingDialogue] = useState<ChapterDialogue | null>(null)
+  const [showSettings, setShowSettings] = useState(false)
 
   const character = usePlayerStore((s) => s.character)
   const { hasPendingGains } = useOfflineStore()
+  const { isBossKilled, isChapterCompleted, recordBossKill, completeChapter } = useChapterStore()
+  const { showDebugPanel, toggleDebugPanel } = useSettingsStore()
 
   // Run offline accrual check on mount
   useOfflineAccrual()
 
-  const handleFight = (nodeId: string) => {
+  // Show chapter intro on first load if chapter 1 not seen
+  useEffect(() => {
+    if (isChapterCompleted('chapter_1')) return
+    fetch('/data/chapters.json')
+      .then((r) => r.json())
+      .then((chapters: Array<{ id: string; dialogues: ChapterDialogue[] }>) => {
+        const ch1 = chapters.find((c) => c.id === 'chapter_1')
+        const intro = ch1?.dialogues.find((d) => d.triggerCondition === 'ChapterStart')
+        if (intro) setPendingDialogue(intro)
+      })
+      .catch(() => {})
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Keyboard shortcut: backtick toggles debug panel
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === '`') toggleDebugPanel()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [toggleDebugPanel])
+
+  const handleFight = useCallback((nodeId: string) => {
     setBattleNodeId(nodeId)
+    setBossBattleTemplate(null)
     setLastBattleResult(null)
     setLastDrops(null)
     setScreen('battle')
-  }
+  }, [])
 
-  const handleBattleEnd = (result: BattleEndResult) => {
+  const handleFightBoss = useCallback((boss: BossTemplate) => {
+    setBossBattleTemplate(boss)
+    setBattleNodeId(boss.id)
+    setLastBattleResult(null)
+    setLastDrops(null)
+    setShowBossDetail(false)
+    setScreen('battle')
+  }, [])
+
+  const handleBattleEnd = useCallback((result: BattleEndResult) => {
     if (result.victory) {
       const drops = resolveDrops(
         result.enemies.map((e) => ({
           id: e.templateId,
-          tier: 'Common',
+          tier: e.isBoss ? 'Boss' : 'Common',
           expReward: e.expReward,
           dropTableId: e.dropTableId,
+          signatureDrops: e.signatureDrops,
         }))
       )
       setLastBattleResult(result)
       setLastDrops(drops)
+
+      // Analytics
+      if (result.isBoss && result.bossId) {
+        localStats.recordBossKill(result.bossId)
+        recordBossKill(result.bossId)
+
+        // Trigger boss-kill dialogue
+        fetch('/data/chapters.json')
+          .then((r) => r.json())
+          .then((chapters: Array<{ id: string; chapterBossId: string; dialogues: ChapterDialogue[] }>) => {
+            const ch = chapters.find((c) => c.chapterBossId === result.bossId)
+            if (ch) {
+              const killDialogue = ch.dialogues.find((d) => d.triggerCondition === 'BossKill')
+              if (killDialogue) setPendingDialogue(killDialogue)
+              if (!isChapterCompleted(ch.id)) completeChapter(ch.id)
+            }
+          })
+          .catch(() => {})
+      } else {
+        localStats.recordCampKill(battleNodeId)
+      }
+
       setScreen('result')
     }
-  }
+  }, [battleNodeId, isChapterCompleted, recordBossKill, completeChapter]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleBossInfo = (_bossId: string) => {
-    // Placeholder — Milestone 10
-  }
+  const handleBossInfo = useCallback((bossId: string) => {
+    setActiveBossId(bossId)
+    setShowBossDetail(true)
+  }, [])
+
+  // Suppress unused isBossKilled (used to potentially unlock content)
+  void isBossKilled
 
   return (
     <div
@@ -77,6 +152,7 @@ function App() {
             borderBottom: '1px solid #444',
             paddingBottom: '8px',
             flexWrap: 'wrap',
+            alignItems: 'center',
           }}
         >
           <span style={{ color: '#f0c060', fontWeight: 'bold' }}>⚔️ CURSED JAPAN</span>
@@ -100,6 +176,12 @@ function App() {
           <button style={navBtnStyle(screen === 'passive')} onClick={() => setScreen('passive')}>
             🌿 Passive
           </button>
+          <button
+            style={{ ...navBtnStyle(false), marginLeft: 'auto' }}
+            onClick={() => setShowSettings(true)}
+          >
+            ⚙️
+          </button>
         </nav>
       )}
 
@@ -113,10 +195,14 @@ function App() {
         />
       )}
 
-      {screen === 'battle' && battleNodeId && (
+      {screen === 'battle' && (battleNodeId || bossBattleTemplate) && (
         <BattleScreen
           nodeId={battleNodeId}
-          onRetreat={() => setScreen('map')}
+          bossTemplate={bossBattleTemplate ?? undefined}
+          onRetreat={() => {
+            setBossBattleTemplate(null)
+            setScreen('map')
+          }}
           onBattleEnd={handleBattleEnd}
         />
       )}
@@ -125,8 +211,20 @@ function App() {
         <ResultScreen
           battleResult={lastBattleResult}
           drops={lastDrops}
-          onFightAgain={() => handleFight(battleNodeId)}
-          onBackToMap={() => setScreen('map')}
+          onFightAgain={() => {
+            if (bossBattleTemplate) {
+              setBossBattleTemplate(bossBattleTemplate)
+              setLastBattleResult(null)
+              setLastDrops(null)
+              setScreen('battle')
+            } else {
+              handleFight(battleNodeId)
+            }
+          }}
+          onBackToMap={() => {
+            setBossBattleTemplate(null)
+            setScreen('map')
+          }}
           onOpenInventory={() => setScreen('inventory')}
         />
       )}
@@ -151,10 +249,35 @@ function App() {
         />
       )}
 
+      {/* Boss Detail modal */}
+      {showBossDetail && activeBossId && (
+        <BossDetailScreen
+          bossId={activeBossId}
+          onFightBoss={handleFightBoss}
+          onClose={() => setShowBossDetail(false)}
+        />
+      )}
+
+      {/* Story / Dialogue modal */}
+      {pendingDialogue && (
+        <StoryScreen
+          dialogue={pendingDialogue}
+          onFinish={() => setPendingDialogue(null)}
+        />
+      )}
+
+      {/* Settings panel */}
+      {showSettings && (
+        <SettingsPanel onClose={() => setShowSettings(false)} />
+      )}
+
       {/* Offline Summary modal — shown on app load if gains exist */}
-      {hasPendingGains && !showShrine && (
+      {hasPendingGains && !showShrine && !pendingDialogue && (
         <OfflineSummaryScreen onCollect={() => setScreen('map')} />
       )}
+
+      {/* Debug panel — toggle with backtick key */}
+      {showDebugPanel && <DebugPanel />}
     </div>
   )
 }

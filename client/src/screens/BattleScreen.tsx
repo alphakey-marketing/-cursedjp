@@ -4,19 +4,29 @@ import { useRuneStore } from '../store/useRuneStore'
 import { useCombatLoop } from '../hooks/useCombatLoop'
 import { PhaserGame } from '../phaser/PhaserGame'
 import { ShrineScreen } from './ShrineScreen'
-import type { EnemyTemplate } from '../types/enemy'
+import { PhaserEventBus, PHASER_EVENTS } from '../phaser/events/PhaserEventBus'
+import type { EnemyTemplate, BossTemplate } from '../types/enemy'
 import type { BattleEndResult } from '../hooks/useCombatLoop'
+
+interface TelegraphWarning {
+  attackName: string
+  ticksRemaining: number
+  description: string
+}
 
 interface BattleScreenProps {
   nodeId: string
   onRetreat: () => void
   onBattleEnd: (result: BattleEndResult) => void
+  /** When set, runs boss battle mode with BossScene */
+  bossTemplate?: BossTemplate
 }
 
 export const BattleScreen: React.FC<BattleScreenProps> = ({
   nodeId,
   onRetreat,
   onBattleEnd,
+  bossTemplate,
 }) => {
   const character = usePlayerStore((s) => s.character)
   const resetToShrine = usePlayerStore((s) => s.resetToShrine)
@@ -24,39 +34,74 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
   const [enemies, setEnemies] = useState<EnemyTemplate[]>([])
   const [battleSpeed, setBattleSpeed] = useState(1)
   const [showDeathModal, setShowDeathModal] = useState(false)
+  const [telegraphWarning, setTelegraphWarning] = useState<TelegraphWarning | null>(null)
+  const [currentPhase, setCurrentPhase] = useState<{ phaseIndex: number; behaviorModifier: string } | null>(null)
 
   const { combatLog, enemyHPMap, battleResult, playerDied, initEnemies } = useCombatLoop()
 
-  // Load enemy data
+  // Listen for boss-specific events
   useEffect(() => {
+    const onTelegraph = (data: unknown) => {
+      setTelegraphWarning(data as TelegraphWarning | null)
+    }
+    const onPhaseTransition = (data: unknown) => {
+      setCurrentPhase(data as { phaseIndex: number; behaviorModifier: string })
+    }
+    PhaserEventBus.on(PHASER_EVENTS.TELEGRAPH_WARNING, onTelegraph)
+    PhaserEventBus.on(PHASER_EVENTS.PHASE_TRANSITION, onPhaseTransition)
+    return () => {
+      PhaserEventBus.off(PHASER_EVENTS.TELEGRAPH_WARNING, onTelegraph)
+      PhaserEventBus.off(PHASER_EVENTS.PHASE_TRANSITION, onPhaseTransition)
+    }
+  }, [])
+
+  // Load enemy data (only for normal battles)
+  useEffect(() => {
+    if (bossTemplate) {
+      // Boss mode: init single boss HP entry
+      initEnemies([
+        {
+          instanceId: 'boss',
+          templateId: bossTemplate.id,
+          name: bossTemplate.name,
+          currentHP: bossTemplate.baseHP,
+          maxHP: bossTemplate.baseHP,
+          currentBarrier: bossTemplate.defenseProfile.barrierMax,
+          maxBarrier: bossTemplate.defenseProfile.barrierMax,
+        },
+      ])
+      return
+    }
+
     Promise.all([
       fetch('/data/regions.json').then((r) => r.json()),
       fetch('/data/enemies.json').then((r) => r.json()),
-    ]).then(([regions, enemyTemplates]) => {
-      const region = regions.find((rg: { nodes: Array<{ id: string; enemyIds?: string[] }> }) =>
-        rg.nodes.some((n: { id: string }) => n.id === nodeId)
-      )
-      const node = region?.nodes.find((n: { id: string }) => n.id === nodeId)
-      const nodeEnemyIds: string[] = node?.enemyIds ?? []
-      const loaded: EnemyTemplate[] = nodeEnemyIds
-        .map((id: string) => enemyTemplates.find((e: EnemyTemplate) => e.id === id))
-        .filter(Boolean)
-      setEnemies(loaded)
+    ])
+      .then(([regions, enemyTemplates]) => {
+        const region = regions.find((rg: { nodes: Array<{ id: string; enemyIds?: string[] }> }) =>
+          rg.nodes.some((n: { id: string }) => n.id === nodeId)
+        )
+        const node = region?.nodes.find((n: { id: string }) => n.id === nodeId)
+        const nodeEnemyIds: string[] = node?.enemyIds ?? []
+        const loaded: EnemyTemplate[] = nodeEnemyIds
+          .map((id: string) => enemyTemplates.find((e: EnemyTemplate) => e.id === id))
+          .filter(Boolean)
+        setEnemies(loaded)
 
-      // Initialize HP tracking
-      initEnemies(
-        loaded.map((e: EnemyTemplate, i: number) => ({
-          instanceId: `${e.id}_${i}`,
-          templateId: e.id,
-          name: e.name,
-          currentHP: e.baseHP,
-          maxHP: e.baseHP,
-          currentBarrier: e.defenseProfile.barrierMax,
-          maxBarrier: e.defenseProfile.barrierMax,
-        }))
-      )
-    })
-  }, [nodeId]) // eslint-disable-line react-hooks/exhaustive-deps
+        initEnemies(
+          loaded.map((e: EnemyTemplate, i: number) => ({
+            instanceId: `${e.id}_${i}`,
+            templateId: e.id,
+            name: e.name,
+            currentHP: e.baseHP,
+            maxHP: e.baseHP,
+            currentBarrier: e.defenseProfile.barrierMax,
+            maxBarrier: e.defenseProfile.barrierMax,
+          }))
+        )
+      })
+      .catch(() => {})
+  }, [nodeId, bossTemplate]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Handle player death
   useEffect(() => {
@@ -109,6 +154,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
       ? Math.round((character.stats.currentBarrier / character.stats.maxBarrier) * 100)
       : 0
 
+  const showCanvas = bossTemplate ? true : enemies.length > 0
+
   return (
     <div style={{ color: '#e0d5c0', position: 'relative' }}>
       {/* Battle header */}
@@ -126,7 +173,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
           ◀ Map
         </button>
         <span style={{ color: '#c0b090', fontWeight: 'bold' }}>
-          {nodeId.replace(/_/g, ' ').toUpperCase()}
+          {bossTemplate
+            ? bossTemplate.name.toUpperCase()
+            : nodeId.replace(/_/g, ' ').toUpperCase()}
         </span>
         <span style={{ marginLeft: 'auto', fontSize: 12, color: '#888' }}>Speed:</span>
         {([1, 2, 4] as const).map((s) => (
@@ -143,6 +192,71 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
           </button>
         ))}
       </div>
+
+      {/* Boss HUD (phase + telegraph) */}
+      {bossTemplate && (
+        <div
+          style={{
+            background: '#1a0808',
+            border: '1px solid #662222',
+            borderRadius: 4,
+            padding: '8px 12px',
+            marginBottom: 8,
+          }}
+        >
+          <div style={{ fontSize: 12, color: '#e06060', fontWeight: 'bold', marginBottom: 4 }}>
+            💀 {bossTemplate.name}
+            {currentPhase && (
+              <span style={{ marginLeft: 12, color: '#e07040', fontWeight: 'normal' }}>
+                — Phase {currentPhase.phaseIndex + 1}
+              </span>
+            )}
+          </div>
+          {/* Boss HP bar */}
+          {(() => {
+            const bossState = Object.values(enemyHPMap).find((e) => e.templateId === bossTemplate.id)
+            if (!bossState) return null
+            const bPct = Math.round((bossState.currentHP / bossState.maxHP) * 100)
+            return (
+              <div style={{ fontSize: 11 }}>
+                <span style={{ color: '#aaa' }}>HP</span>
+                <BarFill
+                  value={bossState.currentHP}
+                  max={bossState.maxHP}
+                  percent={bPct}
+                  color="#dd2222"
+                />
+              </div>
+            )
+          })()}
+          {/* Phase description */}
+          {currentPhase && (
+            <div style={{ fontSize: 10, color: '#e07040', marginTop: 4 }}>
+              ⚡ {currentPhase.behaviorModifier}
+            </div>
+          )}
+          {/* Telegraph warning */}
+          {telegraphWarning && (
+            <div
+              style={{
+                marginTop: 8,
+                background: '#2a0808',
+                border: '1px solid #aa2222',
+                borderRadius: 3,
+                padding: '6px 10px',
+                fontSize: 12,
+              }}
+            >
+              <span style={{ color: '#ff6060', fontWeight: 'bold' }}>
+                ⚠️ {telegraphWarning.attackName} incoming in {telegraphWarning.ticksRemaining} ticks…
+              </span>
+              <span style={{ color: '#888', marginLeft: 8, fontSize: 10 }}>
+                [GUARD NOW]
+              </span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Player HUD */}
       <div
@@ -186,7 +300,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
       </div>
 
       {/* Phaser canvas */}
-      {enemies.length > 0 && (
+      {showCanvas && (
         <PhaserGame
           enemies={enemies}
           playerStats={{
@@ -201,13 +315,14 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
           }}
           skillSlots={phaserSkillSlots}
           battleSpeed={battleSpeed}
+          bossTemplate={bossTemplate}
           width={540}
           height={240}
         />
       )}
 
-      {/* Enemy HUD */}
-      {Object.values(enemyHPMap).length > 0 && (
+      {/* Enemy HUD (normal battles only) */}
+      {!bossTemplate && Object.values(enemyHPMap).length > 0 && (
         <div
           style={{
             background: '#1a1410',
@@ -362,3 +477,5 @@ function btnStyle(): React.CSSProperties {
     fontSize: 12,
   }
 }
+
+

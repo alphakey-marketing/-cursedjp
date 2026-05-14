@@ -29,6 +29,7 @@ export interface DropResult {
   gold: number
   runeIds: string[]
   materials: { name: string; qty: number }[]
+  signatureRuneIds: string[]
 }
 
 // Simplified drop tables keyed by dropTableId
@@ -168,6 +169,7 @@ export function resolveDrops(enemies: EnemyDropTable[]): DropResult {
   const runeIds: string[] = []
   let gold = 0
   const materialsMap: Record<string, number> = {}
+  const signatureRuneIds: string[] = []
 
   for (const enemy of enemies) {
     const table = DROP_TABLE[enemy.dropTableId]
@@ -188,8 +190,12 @@ export function resolveDrops(enemies: EnemyDropTable[]): DropResult {
     const boss = enemy as BossTemplate
     if (boss.signatureDrops) {
       for (const sig of boss.signatureDrops) {
-        if (Math.random() < sig.dropChance) {
-          if (sig.runeId) runeIds.push(sig.runeId)
+        const isFirstKillBonus = sig.isGuaranteedFirstKill && (enemy as { isFirstKill?: boolean }).isFirstKill
+        if (isFirstKillBonus || Math.random() < sig.dropChance) {
+          if (sig.runeId) {
+            runeIds.push(sig.runeId)
+            signatureRuneIds.push(sig.runeId)
+          }
           if (sig.itemTemplateId) {
             const found = ITEM_POOL.find((t) => t.templateId === sig.itemTemplateId)
             if (found) items.push({ ...found, instanceId: genId('item') } as AnyItem)
@@ -201,7 +207,7 @@ export function resolveDrops(enemies: EnemyDropTable[]): DropResult {
 
   const materials = Object.entries(materialsMap).map(([name, qty]) => ({ name, qty }))
 
-  return { items, gold, runeIds, materials }
+  return { items, gold, runeIds, materials, signatureRuneIds }
 }
 
 export function getItemSellValue(item: AnyItem): number {
