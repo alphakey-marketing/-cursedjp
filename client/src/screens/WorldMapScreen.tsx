@@ -170,7 +170,7 @@ export const WorldMapScreen: React.FC<WorldMapScreenProps> = ({ onFight, onBossI
         >
           <svg
             width="600"
-            height="420"
+            height="580"
             viewBox="0 0 600 580"
             style={{ display: 'block', maxWidth: '100%' }}
           >
