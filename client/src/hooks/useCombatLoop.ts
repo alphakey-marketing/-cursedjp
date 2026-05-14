@@ -117,8 +117,9 @@ export function useCombatLoop() {
       if (!d.result.missed && !d.result.dodged) {
         takeDamage(d.result.hpDamage, d.result.barrierDamage)
 
-        // G2 fix: detect player death after applying damage.  Zustand's set() is
-        // synchronous so getState() returns the updated HP immediately.
+        // G2 fix: detect player death after applying damage.
+        // Zustand's set() is synchronous, so getState() returns the already-
+        // updated HP immediately — no async subscribe needed.
         const newHP = usePlayerStore.getState().character.stats.currentHP
         if (newHP <= 0) {
           setPlayerDied(true)

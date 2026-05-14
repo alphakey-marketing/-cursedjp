@@ -23,8 +23,10 @@ export function canAllocateNode(
   if (node.requiredNodeIds && node.requiredNodeIds.length > 0) {
     const hasRequired = node.requiredNodeIds.every((req) => allocatedNodeIds.includes(req))
     if (!hasRequired) return false
-    // E6 fix: when a node's prerequisites are satisfied it is allocatable
-    // regardless of graph adjacency (keystones / gated nodes).
+    // E6 fix: nodes with explicit prerequisites (keystones / gated nodes) are
+    // allocatable once their prerequisites are met — adjacency is not required
+    // for these nodes, since they are intentionally placed outside the normal
+    // web flow.  Nodes without requiredNodeIds still use the adjacency check.
     return true
   }
 

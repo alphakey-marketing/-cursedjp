@@ -59,7 +59,11 @@ export class BossScene extends Phaser.Scene {
   init(data: BossSceneData) {
     // G5 fix: PreloadScene starts this scene without data on first boot.
     // Guard here so the first empty pass doesn't crash or corrupt state.
-    if (!data?.boss) return
+    // The PhaserGame 'ready' callback will immediately restart with real data.
+    if (!data?.boss) {
+      console.warn('[BossScene] init called without boss data — awaiting restart with real data')
+      return
+    }
 
     this.sceneData = data
     this.battleEnded = false

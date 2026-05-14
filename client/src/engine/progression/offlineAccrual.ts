@@ -37,6 +37,9 @@ export function calculateOfflineGains(
   // Stale save data could reference a node from a different (or removed) region.
   const farmNode = region.nodes.find((n) => n.id === idleFarmNodeId)
   if (!farmNode) {
+    console.warn(
+      `[offlineAccrual] idleFarmNodeId "${idleFarmNodeId}" not found in region "${currentRegionId}" — skipping gains`
+    )
     return { exp: 0, materials: {}, elapsedSeconds }
   }
 
