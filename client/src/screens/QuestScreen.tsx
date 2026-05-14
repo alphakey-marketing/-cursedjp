@@ -34,7 +34,12 @@ export function QuestScreen({ onClose }: QuestScreenProps) {
   const addMaterial = useCraftingStore((s) => s.addMaterial)
 
   const filteredQuests = quests.filter((q) => (q.type as QuestType) === activeTab)
-  const selectedQuest: Quest | undefined = quests.find((q) => q.id === selectedQuestId) ?? filteredQuests[0]
+  const selectedQuest: Quest | undefined = filteredQuests.find((q) => q.id === selectedQuestId) ?? filteredQuests[0]
+
+  function handleTabChange(tab: QuestTab) {
+    setActiveTab(tab)
+    setSelectedQuestId(null)
+  }
 
   function handleClaimReward(questId: string) {
     const quest = claimReward(questId)
@@ -105,7 +110,7 @@ export function QuestScreen({ onClose }: QuestScreenProps) {
           {(['chapter', 'side', 'daily'] as QuestTab[]).map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => handleTabChange(tab)}
               style={{
                 background: activeTab === tab ? '#3a2a10' : 'transparent',
                 border: activeTab === tab ? '1px solid #806040' : '1px solid #444',

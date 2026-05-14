@@ -84,9 +84,12 @@ export const useQuestStore = create<QuestStore>()(
         }),
 
       updateNodeCleared: (nodeId) =>
-        set((state) => ({
-          quests: advanceObjective(state.quests, 'clear_node', nodeId, 1),
-        })),
+        set((state) => {
+          // Advance objectives that match a specific nodeId AND wildcard objectives (no targetId)
+          let updated = advanceObjective(state.quests, 'clear_node', nodeId, 1)
+          updated = advanceObjective(updated, 'clear_node', undefined, 1)
+          return { quests: updated }
+        }),
 
       updateLevelReached: (level) =>
         set((state) => ({

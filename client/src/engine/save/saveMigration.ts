@@ -47,8 +47,12 @@ export function migrateState(
       try {
         state = migrateFn(state)
       } catch (err) {
-        console.warn(`[saveMigration] Migration v${version}→v${version + 1} failed:`, err)
-        // Continue with un-migrated state rather than crashing
+        console.warn(
+          `[saveMigration] Migration v${version}→v${version + 1} failed:`,
+          err,
+          'Save will remain at version', version, '— some new fields may be missing and will use defaults.'
+        )
+        // Continue; missing fields will fall back to store defaults
       }
     }
     version++
